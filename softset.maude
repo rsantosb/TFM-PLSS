@@ -98,9 +98,16 @@ fmod SOFTSET is
  op __ : Dish AttSet -> SoftDish [ctor] .
 
 
-*** operador change de prueba. BORRAME
-op change : Qid -> Qid .
-eq change(Q:Qid) = 'Hello .
+*** Seleccinar dish/atts de un SoftDish T: dish(T), atts(T)
+var DSH : Dish .
+var ATTS : AttSet .
+
+op dish : SoftDish -> Dish .
+op atts : SoftDish -> AttSet .
+
+eq dish(DSH ATTS) =  DSH .
+eq atts(DSH ATTS) =  ATTS .
+
 
 endfm
 

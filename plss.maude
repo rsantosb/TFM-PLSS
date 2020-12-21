@@ -24,7 +24,7 @@ fmod COMMAND-PROCESSING is
  var  PR : ParsingRes .
  var  ODS : OpDeclSet .
  var  TyL : TypeList .
- vars Ty Ty' : Type .
+ vars Ty Ty' Ty'' : Type .
  var  AtS : AttrSet .
  var  DB : Database .
  vars S S' : String .
@@ -601,12 +601,13 @@ mod PLSS is
  ***          SOFTREW          ***
  ***                           ***
 
- crl [softrewComm] :   --- de momento es igual a redComm (salvo el nombre de la regla y del comando)
+ crl [softrewComm] :   
      < plss : PLSS | state: executeComm, input: ('softrew_['bubble[T]], INPLST), module: M, AtS >
   => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
      write(stdout, plss, STR)
-  if {T', Ty} := metaParse(M, downQidList(T), anyType) /\
-     {T'', Ty'} := metaReduce(M, T') /\
+  if {T', Ty} := metaParse(M, downQidList(dish(T), anyType) /\
+     {ATTS', Ty'} := metaParse(M, downQidList(atts(T)), anyType) /\
+     {T'', Ty''} := rewStrat(M, T', ATTS') /\
      QIL := metaPrettyPrint(M, T'') /\
      STR := "\nResult: " + printTokens(QIL) + "\n" .
 
