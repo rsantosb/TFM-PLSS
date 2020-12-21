@@ -1,0 +1,40 @@
+red (Tgfb1Dish  [cdc6 = 0])
+
+red (Tgfb1Dish  [cdc6 = 0], [cdkn1a = 0], [cdkn2b = 0], [col1a1 = 0], [col3a1 = 0], [ctgf = *], [fn1 = *], [mmp2 = 0], [pai1 = *], [smad6 = 0], [smad7 = 0], [tgfb1 = 0], [timp1 = 0], [cst6 = 0], [dst = 0], [mmp9 = *], [mylk = 0], [pthlh = *], [gfi1 = 0], [csrp2 = 0], [rorc = *])
+
+
+
+
+***************************************
+eof
+
+
+(mod TEST is
+ pr TGFB1RULES .
+ pr TGFB1DISH .
+
+ op atts : -> AttSet .
+ eq atts = [cdc6 = 0], [cdkn1a = 0], [cdkn2b = 0], [col1a1 = 0], [col3a1 = 0], [ctgf = *],
+     [fn1 = *], [mmp2 = 0], [pai1 = *], [smad6 = 0], [smad7 = 0], [tgfb1 = 0], [timp1 = 0],
+     [cst6 = 0], [dst = 0], [mmp9 = *], [mylk = 0], [pthlh = *], [gfi1 = 0], [csrp2 = 0],
+     [rorc = *] .
+
+ op init : -> SoftDish .
+ eq init = Tgfb1Dish atts .
+endm)
+
+(ssrew init for cdc6 cdkn1a cdkn2b col1a1 col3a1 ctgf fn1 mmp2 pai1 smad6 smad7
+     tgfb1 timp1 cst6 dst mmp9 mylk pthlh gfi1 csrp2 rorc  .)
+
+Result: PD(
+{CLc | Akt1 Atf2 Fak1 Jnks Mekk1 Mlk3 P38s Pml Smad2 Smad3 Tab1 Tab2 Tab3 Tak1 Traf6 Zfyve16[Abl1 - act][Erks - phos(TEY)]}
+{CLi |([Pak2 - act]:[Rac1 - GTP])[Cdc42 - GTP][Hras - GTP]}
+{CLm | empty}
+{CLo | empty}
+{NUc | Cdkn1a-gene Col1a1-gene Csrp2-gene Cst6-gene Ctdsp1 Dst-gene Ets1 Gfi1-gene Mmp9-gene Mylk-gene Pai1-gene Smad4[Cdc6-gene - on][Cdkn2b-gene - on][Col3a1-gene - on][Ctgf-gene
+    - on][Fn1-gene - on][Mmp2-gene - on][Pthlh-gene - on][RoRc-gene - on][Smad6-gene - on][Smad7-gene - on][Tgfb1-gene - on][Timp1-gene - on]}
+{Tgfb1RC | Smad7 Smurf1 Smurf2 Tgfb1 :[TgfbR1 - ubiq]:[TgfbR2 - act]}
+{XOut | empty})[cdc6 = 1],[cdkn1a = 0],[cdkn2b = 1],[col1a1 = 0],[col3a1 = 1],[csrp2 = 0],[cst6 = 0],[ctgf = 1],[dst = 0],[fn1 = 1],[gfi1 = 0],[mmp2 = 1],[mmp9 = *],[mylk = 0],[pai1
+    = *],[pthlh = 1],[rorc = 1],[smad6 = 1],[smad7 = 1],[tgfb1 = 1],[timp1 = 1]
+
+
