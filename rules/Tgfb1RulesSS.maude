@@ -8,6 +8,7 @@
 mod TGFB1RULES is inc ALLOPS .
 
   pr SOFTSET .
+---  pr UNDEF-TO-SEMI .    --- BORRAME
 
 var xout : Soup .
 vars clo clm clr cli clc nuo num nui nuc : Soup .
@@ -25,6 +26,31 @@ var  V : Value .
 ops cdc6 cdkn1a cdkn2b col1a1 col3a1 timp1 csrp2 cst6 ctgf dst fn1
     gfi1 mmp2 mmp9 myc mylk pai1 pthlh rorc smad6 smad7 tgfb1
     timp1 : -> AttId [ctor] .
+
+*** REGLAS DE PRUEBA
+rl[regla.prueba01]:
+  PD({CLc | Akt3 clc } SOUP) 
+  =>
+  PD({CLc | Akt1 clc } SOUP) .
+  ----------------------------------------------------------------
+
+rl[regla.prueba02]:
+  PD({CLc | Akt3 clc } SOUP)  ([cdc6 = V], Atts)
+  =>
+  PD({CLc | Akt2 clc } SOUP)  ([cdc6 = 0], Atts) .
+  ----------------------------------------------------------------
+
+rl[regla.prueba03]:
+  PD({CLc | Akt3 })  ([cdc6 = V], Atts)
+  =>
+  PD({CLc | Akt2 })  ([cdc6 = 1], Atts) .
+  ----------------------------------------------------------------
+
+endm
+
+eof
+
+
 
 *** ~/evidence/Tgfb1-Evidence/00Tgfb1evidence.txt
 
