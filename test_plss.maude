@@ -29,6 +29,8 @@ softdishselect MySoftdish >> dish PD({NUc | empty}) . attributes ([cdc6 = 0], [c
 
 softdishselect MySoftdish >> (kkk) (kkk)
 
+specsoftrew
+
 
 
 ***************************************
