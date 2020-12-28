@@ -231,6 +231,7 @@ fmod AUX-MODULE-OPS is
                      endth .
 endfm
 
+
 fmod QUANTIFICATION-OPS is
  pr AUX-MODULE-OPS .
 
@@ -264,6 +265,7 @@ fmod QUANTIFICATION-OPS is
      Q := getName(V) [owise] .
  eq getVars(empty, VS) = none .
 endfm
+
 
 fmod ERROR-MSGS is
  pr QID-LIST .
@@ -319,6 +321,8 @@ fmod ERROR-MSGS is
  eq initialQid('op) = true .
  eq initialQid('flexible) = true .
  eq initialQid('pred) = true .
+ eq initialQid('dish) = true .  --- añadido por nosotros
+ eq initialQid('attributes) = true .  --- añadido por nosotros
  eq initialQid('var) = true .
  eq initialQid('vars) = true .
  eq initialQid('eq) = true .

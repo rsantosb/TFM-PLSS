@@ -1,0 +1,8 @@
+(softrew (Tgfb1Dish 
+  ([cdc6 = 0])) )
+
+
+(red (Tgfb1Dish  ([cdc6 = 0])) )
+
+
+(q)

@@ -1,0 +1,13 @@
+fmod TACTIC1 is
+ pr SOFTDISH .
+endfm
+
+fmod TACTIC2 is
+ pr SOFTDISH .
+
+endfm
+
+fmod TACTICS is
+ pr TACTIC1 .
+ pr TACTIC2 .
+endfm

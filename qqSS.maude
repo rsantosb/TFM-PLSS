@@ -3,7 +3,7 @@
 mod QQ is
  inc ALLRULES .
  inc ALLOPS .
- inc UNDEF-TO-SEMI .    --- SOFTSET
+ inc UNDEF-TO-SEMI .    --- SOFTSET  UNDEF-TO-SEMI
 *** *** inc MODEL-CHECKER .
 *** *** inc CLMCONTENTS .  *** ~/PLA/Models/STM/SDishes/Contents/CLmContents.maude
 *** *** inc CLICONTENTS .  *** ~/PLA/Models/STM/SDishes/Contents/CLiContents.maude

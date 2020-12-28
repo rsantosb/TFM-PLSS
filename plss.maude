@@ -1,9 +1,11 @@
 load metaInterpreter.maude
 load predef_modules.maude
 load aux_modules.maude
+load softdish.maude
 load grammar.maude
+load parsing-softdish.maude
 load file.maude
-load allSS.maude  --- fichero a cargar de prueba: softset vending-machine
+load qqallSS.maude
 
 fmod COMMAND-PROCESSING is
  pr QUANTIFICATION-OPS .
@@ -24,7 +26,7 @@ fmod COMMAND-PROCESSING is
  var  PR : ParsingRes .
  var  ODS : OpDeclSet .
  var  TyL : TypeList .
- vars Ty Ty' Ty'' : Type .
+ vars Ty Ty' : Type .
  var  AtS : AttrSet .
  var  DB : Database .
  vars S S' : String .
@@ -427,6 +429,7 @@ fmod COMMAND-PROCESSING is
  eq generateQuantificationAtts(UV, EV) = nonexec metadata(vars2str(EV)) .
 endfm
 
+
 mod PLSS is
  pr (MAYBE * (op maybe to noMod)){Module} .
  pr (MAYBE * (op maybe to noQid)){Qid} .
@@ -438,11 +441,14 @@ mod PLSS is
  inc STD-STREAM .
  pr ERROR-MSGS .
  pr DATABASE .
+ pr SOFTDISH-PARSING .
+--- pr TACTICS .
+ pr QQ .     --- UNDEF-TO-SEMI
  inc FILE .
 
  vars Text Original Read Source STR MSG : String .
- vars TL TL' BUBBS MODL IN INPLST : TermList .
- vars T T' T'' T1 T2 T3 T4 : Term .
+ vars TL TL' BUBBS MODL IN INPLST ATTS : TermList .
+ vars T T' T'' T1 T2 T3 T4 DISH : Term .
  vars FHIn FHOut MI : Oid .
  var  MM : Maybe{Module} .
  var  AtS : AttributeSet .
@@ -454,6 +460,8 @@ mod PLSS is
  var  MQ : Maybe{Qid} .
  var  SI : SortInfo .
  vars Ty Ty' : Type .
+ var  SDL : SoftdishList .
+ var  SD : Softdish .
  var  Q : Qid .
  var  N : Nat .
 
@@ -464,8 +472,10 @@ mod PLSS is
  op load-std-db : -> State [ctor] .
  *** Loading grammar
  op load-grammar : -> State [ctor] .
- *** Load user modules
- op load-user-mod : -> State [ctor] .
+ *** Create user metainterpreter
+ op load-user-mi : -> State [ctor] .
+ *** Load modules into user metainterpreter
+ op load-user-mods : -> State [ctor] .
  *** Waiting input from the user
  op idle : -> State [ctor] .
  *** Reading file
@@ -488,13 +498,17 @@ mod PLSS is
  op print&idle : -> State [ctor] .
  *** Waits for a wrote msg and keeps executing commands.
  op print&executeComm : -> State [ctor] .
+ *** Extracts the softdish module from the metainterpreter
+ op processSoftdish : -> State [ctor] .
 
+ op foo : -> State [ctor] .
 
  *** Object and class definition
  op PLSS : -> Cid .
  op plss : -> Oid .
 
  *** Attributes
+ op uload:_ : List{Preload} -> Attribute [ctor gather (&)] .
  op load:_ : List{Preload} -> Attribute [ctor gather (&)] .
  op parsModName:_ : Maybe{Qid} -> Attribute [ctor] .
  op module:_ : Maybe{Module} -> Attribute [ctor] .
@@ -503,6 +517,7 @@ mod PLSS is
  op bubbles:_ : TermList -> Attribute [ctor] .
  op file:_ : Maybe{Oid} -> Attribute [ctor] .
  op input:_ : TermList -> Attribute [ctor] .
+ op softdish:_ : SoftdishList -> Attribute [ctor] .
  op db:_ : Database -> Attribute [ctor] .
  op state:_ : State -> Attribute [ctor] .
  op out:_ : String -> Attribute [ctor] .
@@ -526,25 +541,28 @@ mod PLSS is
               --- module('SOFTSET) .
               --- module('META-LEVEL) module('SS-STRAT) .
               --- module('UNDEF-TO-ZERO) module('UNDEF-TO-ONE) module('UNDEF-TO-SEMI)
+
+ *** Initial value for loading into the user metainterpreter
+ op umodList : -> List{Preload} .
  ***(
- eq modList = module('TRUTH-VALUE) module('BOOL-OPS) module('TRUTH) module('BOOL)
-              module('EXT-BOOL) module('NAT) module('INT) module('RAT) module('FLOAT)
-              module('STRING) module('CONVERSION) module('QID) module('TRIV)
-              view('Qid) module('LIST) module('QID-LIST) module('COMMON-SIGN)
-              module('SPEC-SIGN) module('COMMAND-SIGN) module('PLSS-SIGN)
-              module('VENDING-MACHINE-SIGNATURE).
- eq modList = module('TRUTH-VALUE) module('BOOL-OPS) module('TRUTH) module('BOOL)
-              module('EXT-BOOL) module('NAT) module('INT) module('RAT) module('FLOAT)
-              module('STRING) module('CONVERSION) module('QID) module('TRIV)
-              view('Qid) module('LIST) module('QID-LIST) module('COMMON-SIGN)
-              module('SPEC-SIGN) module('COMMAND-SIGN) module('PLSS-SIGN) .
-)
+ eq umodList = module('TRUTH-VALUE) module('BOOL-OPS) module('TRUTH) module('BOOL)
+               module('NAT) module('TRIV) module('@NOMINAL@) .
+ )
+ eq umodList = module('TRUTH-VALUE) module('BOOL-OPS) module('TRUTH) module('BOOL)
+               module('NAT) module('TRIV) module('@NOMINAL@) 
+               module('COMMON-SIGN) module('SPEC-SIGN) .
 
  *** Initial value for loading into the user module
  op qModule : -> Qid .
  eq qModule = 'QQ .    --- UNDEF-TO-ZERO  SOFTSET  SS-STRAT   VENDING-MACHINE
  op userModule : -> FModule .
  eq userModule = upModule(qModule, true) .
+
+ *** Initial value for loading into the user spec module   --- añadido por nosotros ¿?
+ op specModule : -> Qid .
+ eq specModule = 'MySoftdish .
+ op userspecModule : -> FModule .
+ eq userspecModule = upModule(specModule, true) .
 
 
  *** Run command
@@ -605,12 +623,11 @@ mod PLSS is
      < plss : PLSS | state: executeComm, input: ('softrew_['bubble[T]], INPLST), module: M, AtS >
   => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
      write(stdout, plss, STR)
-  if {T', Ty} := metaParse(M, downQidList(dish(T), anyType) /\
-     {ATTS', Ty'} := metaParse(M, downQidList(atts(T)), anyType) /\
-     {T'', Ty''} := rewStrat(M, T', ATTS') /\
-     QIL := metaPrettyPrint(M, T'') /\
+  if {'__[DISH, ATTS], 'SoftDish} := metaParse(M, downQidList(T), 'SoftDish) /\
+     T' := rewStrat(M, DISH, ATTS) /\
+     QIL := metaPrettyPrint(M, T') /\
      STR := "\nResult: " + printTokens(QIL) + "\n" .
-
+    
  ***                            ***
  ***          OPENFILE          ***
  ***                            ***
@@ -728,6 +745,59 @@ mod PLSS is
  => < plss : PLSS | file: null, state: parseModMetaparse, AtS > .
 
  ***                         ***
+ ***          SOFTDISHSELECT ***
+ ***                         ***
+
+  crl [moduleSoftdish] :
+     < plss : PLSS | state: executeComm, input: ('softdishselect_>>_['token[T1],T2]),
+                   umi: MI, AtS >
+  => < plss : PLSS | state: processSoftdish, input: ('softdishselect_>>_['token[T1],T2]),
+                   umi: MI, AtS >
+     showModule(MI, plss, Q, true)
+  if Q := downQid(T1) .
+
+ ***(
+ crl [processSoftdish] :
+     showingModule(plss, MI, M)
+     < plss : PLSS | state: processSoftdish, input: ('softdishselect_>>_['token[T1],T2]),
+                   umi: MI, softdish: SDL, db: DB, AtS >
+  => < plss : PLSS | state: print&executeComm, input: empty, umi: MI, softdish: SD, db: DB, AtS >
+     write(stdout, plss, "\nsoftdishselect introduced.\n")
+  if Q := downQid(T1) /\
+     SD := processSoftdish(M, T2, getVS(DB[Q])) .
+ )
+
+
+ crl [processSoftdish] :
+     showingModule(plss, MI, M)
+     < plss : PLSS | state: processSoftdish, input: ('softdishselect_>>_['token[T1],T2]),
+                   umi: MI, softdish: SDL, db: DB, AtS >
+  => < plss : PLSS | state: foo, input: empty, umi: MI, softdish: SDL, db: DB, AtS >
+     write(stdout, plss, "\nsoftdish selected and introduced.\n")
+  if Q := downQid(T1) .
+
+ rl [foo] :
+     < plss : PLSS | state: foo, AtS >
+  => < plss : PLSS | state: print&executeComm, AtS >
+     write(stdout, plss, "\nKKKK Softdish selected and introduced.\n") .
+
+ ***                           ***
+ ***          SPECSOFTREW      ***
+ ***                           ***
+
+ ***(
+ crl [specsoftrewComm] :      --- añadido por nosotros
+     < plss : PLSS | state: executeComm, input: ('specsoftrew.@Command@, INPLST), module: M, 
+     softdish: SDL, AtS >
+  => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, softdish: SDL, AtS >
+     write(stdout, plss, STR)
+  if {'dish_.attributes_.[DISH,ATTS], 'SoftDish} := metaParse(M, downQidList(SDL), 'SoftDish) /\
+     T' := rewStrat(M, DISH, ATTS) /\
+     QIL := metaPrettyPrint(M, T') /\
+     STR := "\nResult: " + printTokens(QIL) + "\n" .
+ )
+     
+ ***                         ***
  ***          EXIT           ***
  ***                         ***
 
@@ -799,8 +869,28 @@ mod PLSS is
  rl [load-grammar-finished] :
     insertedModule(plss, MI)
     < plss : PLSS | state: load-grammar, AtS >
+ => < plss : PLSS | state: load-user-mi, AtS >
+    createInterpreter(interpreterManager, plss, none) .
+
+
+ rl [user-metainterpreter-created] :
+    createdInterpreter(plss, interpreterManager, MI)
+    < plss : PLSS | state: load-user-mi, uload: module(Q) LP, AtS >
+ => < plss : PLSS | state: load-user-mods, umi: MI, uload: LP, AtS >
+    insertModule(MI, plss, upModule(Q, false)) .
+
+ rl [load-user-predef-module-metainterpreter] :
+    insertedModule(plss, MI)
+    < plss : PLSS | state: load-user-mods, uload: module(Q) LP, AtS >
+ => < plss : PLSS | state: load-user-mods, uload: LP, AtS >
+    insertModule(MI, plss, upModule(Q, false)) .
+
+ rl [user-predef-module-metainterpreter-finished] :
+    insertedModule(plss, MI)
+    < plss : PLSS | state: load-user-mods, uload: nil, AtS >
  => < plss : PLSS | state: idle, AtS >
     getLine(stdin, plss, "PLSS> ") .
+
 
 
  ***                        ***
@@ -809,9 +899,9 @@ mod PLSS is
 
  eq run =
     <> < plss : PLSS | file: null, out: "", state: init, db: empty,
-                     load: modList, current: noQid,
+                     load: modList, uload: umodList, current: noQid,
                      parsModName: noQid, bubbles: empty, top: noMod,
-                     input: empty, module: userModule >
+                     input: empty, module: userModule, softdish: noSoftdish >
     createInterpreter(interpreterManager, plss, none) .
 endm
 
@@ -825,6 +915,8 @@ erew run .
 
 *************************************************
 eof
+
+
 
 red (Tgfb1Dish)
 red (PD({CLm | empty}) ([cdc6 = 1]))

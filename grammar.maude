@@ -11,6 +11,7 @@ fmod COMMON-SIGN is
  op __ : @DefSet@ @DefSet@ -> @DefSet@ [ctor assoc comm] .
 endfm
 
+
 fmod SPEC-SIGN is
  ex COMMON-SIGN .
 
@@ -112,7 +113,16 @@ fmod SPEC-SIGN is
  ops ctor frozen ditto iter : -> @Attr@ [ctor] .
  op  metadata_ : @Token@ -> @Attr@ .
 
+
+ ***(
+              SOFTSET OPERATORS
+ )
+ op dish_. : @NeTokenList@ -> @Def@ [ctor] .   --- añadido por nosotros
+ op attributes_. : @NeTokenList@ -> @Def@ [ctor] .   --- añadido por nosotros
+ op kkk :  -> @Def@ [ctor] .   --- añadido por nosotros
+
 endfm
+
 
 fmod COMMAND-SIGN is
  ex COMMON-SIGN .
@@ -124,7 +134,12 @@ fmod COMMAND-SIGN is
  op softrew_ : @Bubble@ -> @Command@ [ctor] .
  op exit : -> @Command@ [ctor] .
  op q : -> @Command@ [ctor] .
+ op softdishselect_>>_ : @Token@ @DefSet@ -> @Command@ [ctor] .    --- personalizar para SS ¿?
+--- op softdishselect_>>_ : @Token@ @Token@ -> @Command@ [ctor] .  --- personalizar para SS ¿?
+ op specsoftrew : -> @Command@ [ctor] .    --- personalizar para SS ¿?
 endfm
+
+
 
 fmod PLSS-SIGN is
  pr COMMAND-SIGN .
@@ -136,6 +151,8 @@ fmod PLSS-SIGN is
 
  op __ : @Input@ @Input@ -> @Input@ [ctor assoc] .
 endfm
+
+
 
 fmod META-PLSS-SIGN is
  including AUX-MODULE-OPS .
@@ -159,6 +176,7 @@ fmod META-PLSS-SIGN is
                 op-hook('qidSymbol, '<Qids>, nil, 'Qid)
                 id-hook('Exclude, 'eq 'ceq 'rl 'crl 'mb 'cmb 'sd 'csd
                                   'var 'vars 'forall 'exists
+                                  'dish 'attribute 'attributes
                                   'sorts 'subsort 'subsorts 'op 'ops
                                   'protecting 'pr 'including 'inc 'extending
                                   'ctor 'assoc 'comm '== '/\ 'spec* 'spec!)))] .
@@ -167,7 +185,7 @@ fmod META-PLSS-SIGN is
                (id-hook('Bubble, '1 '-1 '`( '`))
                 op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList)
                 op-hook('qidSymbol, '<Qids>, nil, 'Qid)
-                id-hook('Exclude, '. ': '`[ 'forall 'exists)))] .
+                id-hook('Exclude, '. ': '`[ 'forall 'exists 'dish 'attribute 'attributes)))] .
         none
         none
      endfm) .
