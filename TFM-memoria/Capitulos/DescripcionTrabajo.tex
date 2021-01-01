@@ -1,0 +1,725 @@
+%!TEX root = ../TFMRocioSantos.tex
+
+\chapter{Descripción del Trabajo}
+\label{cap:descripcionTrabajo}
+
+En este capítulo se describe el trabajo realizado en el proyecto \textbf{PLSS}.
+\smallskip
+
+Como se ha descrito en la sección~\ref{PL}, Pathway Logic es una herramienta diseñada para tratar con sistemas biológicos simbólicos desarrollada en SRI International~\citep{sfm/Talcott08}. Está basada en redes de Petri y el lenguaje de reescritura Maude. Se han desarrollado numerosos modelos de rutas de señalización celular con esta herramienta. 
+\smallskip
+
+El modelo STM7 es una base de conocimiento formal que contiene información sobre los cambios que ocurren en las proteínas dentro de una célula en respuesta a la exposición a ligandos/receptores, sustancias químicas o diversas tensiones. 
+Para simplificar, STM7 se divide en 32 mapas, cada uno de los cuales representa un estímulo.
+Estos mapas se llaman platos o dishes porque describen un estado inicial que corresponde al estado de las células en un plato de cultivo al comienzo de un experimento, más un estímulo.
+En nuestro caso, se toma el mapa que corresponde al factor de crecimiento transformante beta 1 (Tgfb1).
+\medskip
+
+
+Por otra parte, en este proyecto se pretende utilizar un modelo que permita trabajar con datos imprecisos o inciertos.
+Según se ha descrito en la sección~\ref{SS}, la teoría de conjuntos difusos (fuzzy sets) supuso un cambio paradigmático en las matemáticas al permitir un grado de pertenencia parcial~\citep{Zadeh}. 
+En nuestro trabajo se emplea la teoría de los conjuntos blandos (soft sets), una generalización de los fuzzy sets, que ha demostrado ser una herramienta útil para el problema de la toma de decisiones bajo situaciones de imprecisión o falta de información.
+\medskip
+
+
+Con el sistema de Pathway Logic, en este trabajo se pretende implementar una variante de búsqueda basada en soft sets. El comando \texttt{search} estándar permite realizar búsquedas a través del árbol de reescrituras partiendo de un estado inicial. La implementación propuesta se realizará con ayuda del metaintérprete de Maude y proporcionará las ventajas sobre la toma de decisiones bajo información incompleta de los soft sets. 
+En las secciones~\ref{Maude} y~\ref{MI}, se comentó brevemente los aspectos fundamentales del lenguaje de reescritura Maude y de su metaintérprete~\citep{maude30}.
+\bigskip
+
+
+La implementación de este proyecto se puede dividir en los siguientes bloques:
+\begin{enumerate}
+% {Módulos de Pathway Logic} 
+\item Importación y adaptación de los módulos de Tgfb1 en el modelo STM7 de Pathway Logic
+% {Soft sets y funciones asociadas}
+\item Implementación en Maude de los soft sets y desarrollo de los operadores y funciones asociados
+% {Definición de \textit{softdish}} 
+\item Definición de los \textit{softdish}, que son los platos o dishes de Pathway Logic con unos atributos que permitirán establecer una elección entre las distintas reglas de ejecución basadas en soft sets
+% {Metaintérprete: entorno de ejecución para PLSS} 
+\item Elaboración de un entorno de ejecución para PLSS utilizando entradas/salidas y metaintérpretes
+% {Comandos de simplificación con ecuaciones y reglas soft} 
+\item Implementación en el metaintérprete de los comandos de simplificación con ecuaciones y reglas soft
+% {Comando de carga de ficheros} 
+\item Implementación en el metaintérprete de otros comandos: carga de ficheros de instrucciones y salida del programa
+% {Especificaciones para \textit{softdish}} 
+\item Definición e implementación de especificaciones para los softdish
+% {Comandos a través de especificaciones} 
+\item Implementación en el metaintérprete de los comandos de selección y reescritura a través de la especificación
+% {Integración de los módulos} 
+\item Integración de todas las partes en el proyecto PLSS
+\end{enumerate}
+\medskip
+
+En las secciones que vienen a continuación se desarrollan cada uno de los bloques enumerados.
+A continuación, en el resto del capítulo, se describen los módulos y ficheros desarrollados para este proyecto.
+Después se muestran algunos ejemplos de ejecución del programa.
+Por último, se incluyen algunos comentarios sobre el rendimiento de la aplicación y se realiza un análisis comparativo de los resultados obtenidos con los resultados del uso estándar de la reescritura.
+\medskip
+
+
+% *****************************************************
+\section{Módulos de Pathway Logic}
+
+En este apartado se aborda la importación y adaptación de los módulos de Tgfb1 en el modelo STM7 de Pathway Logic.
+
+De acuerdo con la sección~\ref{PL}, en el módulo \texttt{QQ} se definen la sintaxis y la semántica del modelo Tgfb1:
+
+\begin{lstlisting}[language=Maude,caption={Módulo \texttt{QQ}}]
+mod QQ is
+ inc ALLRULES .
+ inc TGFB1DISH .
+ inc ALLOPS .
+ inc UNDEF-TO-SEMI .
+endm
+\end{lstlisting}
+
+\noindent
+Así pues, este módulo importa los módulos: (1) \texttt{ALLOPS} que especifica los operadores que definen los elementos y componentes de la célula; (2) \texttt{TGFB1DISH}  que establece el dish o estado inicial en este modelo;
+(3) \texttt{ALLRULES} que incluye todas las reglas de reescritura que gobiernan la dinámica de la célula; y 
+(4) \texttt{UNDEF-TO-SEMI} que define la estrategia del soft set utilizado.
+\bigskip
+
+El módulo \texttt{ALLOPS} a su vez incluye los módulos en los que se definen las constantes para los químicos, genes y proteinas que pueden existir en la célula y también sus modificaciones (\texttt{MODIFICATIONOPS}). En otros módulos se definen las signaturas, sitios y tensiones. El listado~\ref{ALLOPS} muestra el código de este módulo.
+
+El módulo \texttt{ALLOPS} también importa el módulo donde se definen las localizaciones de la célula \texttt{LOCATIONOPS}, por ejemplo, se define la constante \texttt{NUc} que representa el núcleo de la célula.
+El último módulo que incluye es \texttt{THEOPS}, en el cual se establece toda la sintaxis de la célula.
+
+\begin{lstlisting}[label=ALLOPS,language=Maude,caption={Módulo \texttt{ALLOPS}}]
+fmod ALLOPS is
+ inc CHEMICALOPS .
+ inc GENEOPS .
+ inc LOCATIONOPS .
+ inc MODIFICATIONOPS .
+ inc PROTEINOPS .
+ inc SIGNATUREOPS .
+ inc SITEOPS .
+ inc STRESSOPS .
+ inc THEOPS .
+endfm
+\end{lstlisting}
+
+En el módulo \texttt{THEOPS} y los módulos que se incluyen sucesivamente se definen las clases y operadores que nos permiten modelizar la célula, según muestra el listado~\ref{THEOPS} de forma reducida.
+Se comprueba la construcción de un dish (\texttt{Dish}) con el operador \texttt{PD} cuyo argumento es la sopa de localizaciones. Cada una de las localizaciones se construye con el operador \verb${_|_}$, donde el primer argumento es el identificador o nombre de la localización y el segundo argumento es la sopa (\texttt{Soup}) de sus componentes.
+\begin{lstlisting}[language=Maude]
+op PD : Soup -> Dish [ctor] .
+op {_|_} : LocName Soup -> Location [ctor format (n d d d d d)] .
+\end{lstlisting}
+
+La sopa se construye con el operador \verb$__$, de forma que una sopa es un conjunto asociativo y commutativo de elementos (\texttt{Things}) tales como genes, proteinas modificadas, compuestos, etc.
+
+En el módulo \texttt{MODIFICATION} se incluye la sintaxis para las modificaciones. Se construye con el operador 
+\verb$[_-_]$, donde su primer argumento es el elemento a modificar (por ejemplo, una proteina) y el segundo argumento es el conjunto de modificadores que afectan a ese elemento. Estos elementos se definen también como una sopa o multiconjunto asociativo y commutativo de modificadores.
+
+\begin{lstlisting}[label=THEOPS,language=Maude,caption={Módulo \texttt{THEOPS} y asociados}]
+***********************************************************************
+fmod THEOPS is inc DISH .
+
+endfm
+***********************************************************************
+fmod DISH is inc LOCATION .
+
+sort Dish .
+op PD : Soup -> Dish [ctor] .
+
+endfm
+***********************************************************************
+fmod LOCATION is inc MODIFICATION .
+
+sort LocName .
+
+op {_|_} : LocName Soup -> Location [ctor format (n d d d d d)] .
+
+sort CompName .
+subsort CompName < LocName .
+
+endfm
+***********************************************************************
+fmod MODIFICATION is pr SOUP .  
+ 
+sorts Site  Modification ModSet .
+subsort Modification < ModSet . 
+
+op none : -> ModSet . 
+op __ : ModSet ModSet -> ModSet [assoc comm id: none] . 
+
+op [_-_] : Protein   ModSet -> Protein   [right id: none ] .
+op [_-_] : Chemical  ModSet -> Chemical  [right id: none ] .
+op [_-_] : Gene      ModSet -> Gene      [right id: none ] .
+
+endfm
+***********************************************************************
+fmod SOUP is pr THING .
+
+sort MtSoup .
+op empty : -> MtSoup [ctor] .  
+
+sort Soup .
+subsort MtSoup < Soup .
+op __ : Soup Soup -> Soup [ctor assoc comm id: empty] .
+op __ : MtSoup MtSoup -> MtSoup [ditto] .
+
+**** Soup sorts
+sort Things .  **** soup of things
+subsort MtSoup < Things .
+subsorts Thing < Things < Soup .
+op __ : Things Things -> Things [ditto] .
+
+sort Location .
+sort Locations .  **** soup of locations
+subsort MtSoup < Locations .
+subsorts Location < Locations < Soup . 
+op __ : Locations Locations -> Locations [ditto] .
+
+endfm
+***********************************************************************
+fmod THING is pr PROTEIN .
+
+sorts SimpleThing Complex Thing .
+sorts Gene Chemical .
+subsort Protein Gene Chemical < SimpleThing .
+subsort Complex SimpleThing < Thing .
+
+op (_:_) : Thing Thing -> Complex [ctor assoc comm] .           
+
+endfm
+***********************************************************************
+fmod PROTEIN is pr NAT .
+
+sort AminoAcid Protein BProtein .
+subsort AminoAcid < Protein . 
+subsort BProtein < Protein .
+
+ops A C T Y S K P N L M V I F D E R H Q W G : -> AminoAcid [ctor] . 
+ 
+endfm 
+\end{lstlisting}
+\bigskip
+
+A continuación, el módulo \texttt{TGFB1DISH} define el dish o estado inicial en el modelo Tgfb1 de STM7.
+En el listado~\ref{TGFB1DISH} vemos que se define la constante \texttt{Tgfb1Dish} de la clase \texttt{Dish} como un conjunto de localizaciones con sus contenidos. Por ejemplo, se puede comprobar que la membrana de la célula está vacía (\verb${CLm | empty}$); que el citoplasma contiene, entre otras, las proteinas \texttt{Abl1}, \texttt{Akt1} y \texttt{Atf2}; y que en el interior de la membrana celular está presente la proteina \texttt{Hras} con la modificaicón \texttt{GDP} (\verb$[Hras - GDP]$)
+
+\begin{lstlisting}[label=TGFB1DISH,language=Maude,caption={Módulo \texttt{TGFB1DISH}}]
+mod TGFB1DISH is inc ALLOPS .
+
+op Tgfb1Dish : -> Dish .
+eq Tgfb1Dish = PD(    
+ {XOut | Tgfb1 } {Tgfb1RC | TgfbR1 TgfbR2  } {CLo | empty } {CLm | empty } 
+ {CLi | [Cdc42 - GDP] [Hras - GDP] [Rac1 - GDP] }
+ {CLc | Abl1 Akt1 Atf2 Erks Fak1 Jnks Mekk1 Mlk3 P38s Pak2 Pml Smad2 Smad3 Smad4 Smurf1 Smurf2 Tab1 Tab2 Tab3 Tak1 Traf6 Zfyve16 }
+ {NUc | Ctdsp1 Ets1 Smad7 Cdc6-gene Cdkn1a-gene Cdkn2b-gene Col1a1-gene Col3a1-gene Ctgf-gene Fn1-gene Mmp2-gene Pai1-gene Smad6-gene Smad7-gene Tgfb1-gene Timp1-gene Cst6-gene Dst-gene Mmp9-gene Mylk-gene Pthlh-gene Gfi1-gene Csrp2-gene RoRc-gene } ) .
+
+endm
+\end{lstlisting}
+\bigskip
+
+
+El módulo \texttt{ALLRULES} incluye todas las reglas de reescritura que gobiernan la dinámica de la célula.
+En el listado~\ref{ALLRULES} se muestran dos reglas. El significado de estas reglas se explicó con detalle en la seccion~\ref{PL}.
+
+\begin{lstlisting}[label=ALLRULES,language=Maude,caption={Reglas en el módulo \texttt{ALLRULES}}]
+rl[931.TgfbR1.TgfbR2.by.Tgfb1]:
+  {XOut    | xout Tgfb1                                        }
+  {Tgfb1RC | tgfb1rc  TgfbR1 TgfbR2                            }
+  =>
+  {XOut    | xout                                              }
+  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) } .
+
+rl[1719.Abl1.irt.Tgfb1]:
+  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+  {CLc     | clc      [Fak1 - fak1mods] Abl1                   }
+  =>
+  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+  {CLc     | clc      [Fak1 - fak1mods] [Abl1 - act]           } .
+\end{lstlisting}
+\bigskip
+
+
+Por último, el módulo \texttt{UNDEF-TO-SEMI} que define la estrategia del soft set utilizado se comentará en la siguiente sección~\ref{sec:SoftSets}.
+
+
+
+% *****************************************************
+\section{Soft sets y funciones asociadas}
+\label{sec:SoftSets}
+
+En la sección~\ref{SS} se han descrito los fundamentos teóricos de los soft sets. 
+Ahora se comenta la implementación en Maude de los soft sets y el desarrollo de los operadores y funciones asociados.
+
+Un soft set se puede representar como una matriz cuyos elementos son ceros, unos y asteriscos. En nuestro caso, las filas corresponden a las reglas que se pueden ejecutar y las columnas a cada uno de los atributos que se consideran.
+Por tanto, la implementación consiste en definir matrices. En el módulo \texttt{MATRIX} se han definido una fila de la matriz como una listas de valores y la matriz como una lista de filas:
+
+\begin{lstlisting}[language=Maude]
+fmod MATRIX is
+ pr VALUE .
+ sorts Row SoftSet .
+ subsort Value < Row < SoftSet .
+
+ op mtRow : -> Row [ctor] .
+ op _,_ : Row Row -> Row [ctor assoc id: mtRow] .
+
+ op mt : -> SoftSet [ctor] .
+ op __ : SoftSet SoftSet -> SoftSet [ctor assoc id: mt] .
+endfm
+\end{lstlisting}
+\medskip
+
+Después se definen las funciones que calculan los valores de elección (\textit{choice values}).
+Los valores de elección asignan un valor (número) a cada regla y la regla \textit{mejor} será la que tenga un mayor valor.
+Existen varias formas de definir estos valores de elección. 
+Según se explica en la sección~\ref{SS}, uno de los valores de elección es $c_{i(0)}$, que es el valor de elección si se supone que todos los datos que faltan son ceros.
+A continuación se detalla el código Maude para $c_{i(0)}$, con un fragmento del módulo \texttt{PREDEF-VALUE-FUNCTIONS} en el que se define el funcionamiento de las funciones \texttt{undefZero} y su función auxiliar \texttt{compUndefZero}:
+
+\begin{lstlisting}[language=Maude]
+ *** Replaces * by 0 and adds up all values
+ op undefZero : SoftSet -> Nat .
+ eq undefZero(M) = compUndefZero(M, 0, 0, 0) .
+
+ *** Current - Best value - Selected Row
+ op compUndefZero : SoftSet Nat Nat Nat -> Nat .
+ eq compUndefZero(mt, C, BV, S) = S .
+ ceq compUndefZero(R M, C, BV, S) =
+               if N >= BV
+               then compUndefZero(M, s(C), N, C)
+               else compUndefZero(M, s(C), BV, S)
+               fi
+  if N := addUndefZero(R) .
+
+ op addUndefZero : Row -> Nat .
+ eq addUndefZero(mtRow) = 0 .
+ eq addUndefZero((0, R)) = addUndefZero(R) .
+ eq addUndefZero((1, R)) = s(addUndefZero(R)) .
+ eq addUndefZero((*, R)) = addUndefZero(R) .
+\end{lstlisting}
+
+
+% *****************************************************
+\section{Definición de \textit{softdish}}
+
+El objeto fundamental en nuestro proyecto es el \textit{softdish}. 
+Se define un \textit{softdish} como un plato o dish de Pathway Logic con unos atributos que permitirán establecer una elección entre las distintas reglas de ejecución basadas en soft sets.
+Para realizar la reescritura de un softdish, se necesita construir la matriz buscando todas las reglas posibles a aplicar al término inicial con el valor de sus atributos y,
+por último, se elige aplicar la regla cuyo valor de elección sea mayor (ver módulo \texttt{SS-STRAT}).
+
+La implementación de la reescritura de un softdish se realiza con el operador \texttt{rewStrat} que se apoya en el operador auxiliar \texttt{next}, que es el que calcula el término reescrito:
+
+\begin{lstlisting}[language=Maude]
+ op rewStrat : Module Term TermList -> Term .
+ ceq rewStrat(M, T, ATTS) = rewStrat(M, T', ATTS)
+  if T' := next(M, T, ATTS) .
+ eq rewStrat(M, T, ATTS) = T [owise] .
+
+ op next : Module Term TermList ~> Term .
+ ceq next(M, T, ATTS) = T'
+  if TL := allReachableTerms(M, T) /\
+     TL =/= empty /\
+     MX := matrixFromTerms(TL, ATTS) /\
+     N := computeValue(MX) /\
+     T' := TL [N] .
+\end{lstlisting}
+
+\noindent
+Como se observa en el código, el operador next se apoya en las siguientes funciones:
+
+\begin{itemize}
+\item \texttt{allReachableTerms}: Calcula todos los términos alcanzables desde el término actual
+\item \texttt{matrixFromTerms}: Construye la matriz asociada al soft set
+\item \texttt{computeValue}: Calcula la fila (regla de reescritura) correspondiente con el mayor valor de decisión (con la función de choice value que se haya escogido)
+\end{itemize}
+
+La función \texttt{allReachableTerms} se implementa haciendo uso del \texttt{metaReduce} y \texttt{metaSearch}:
+
+\begin{lstlisting}[language=Maude]
+ op allReachableTerms : Module Term -> TermList .
+ ceq allReachableTerms(M, T) = allReachableTerms(M, T, V, 0, empty)
+  if Ty := getType(metaReduce(M, T)) /\
+     V := qid("V:" + string(Ty)) .
+
+ op allReachableTerms : Module Term Variable Nat TermList -> TermList .
+ ceq allReachableTerms(M, T, V, N, TL) = TL
+  if metaSearch(M, T, V, nil, '+, 1, N) == failure .
+ ceq allReachableTerms(M, T, V, N, TL) = allReachableTerms(M, T, V, s(N), (TL, T'))
+  if {T', Ty, SB} := metaSearch(M, T, V, nil, '+, 1, N) .
+\end{lstlisting}
+
+
+
+% *****************************************************
+\section{Metaintérprete: entorno de ejecución para PLSS}
+
+Elaboración de un entorno de ejecución para PLSS utilizando entradas/salidas y metaintérpretes
+
+\begin{lstlisting}[label=ALLOPS,language=Maude,caption={Módulo \texttt{ALLOPS}}]
+\begin{lstlisting}[language=Maude,caption={Modelo \texttt{QQ}}]
+mod QQ is
+\end{lstlisting}
+
+\lstinputlisting[language=Maude,caption={Fichero \texttt{softsetfile.txt}}]{Code/softsetfile.txt}
+
+
+
+
+% *****************************************************
+\section{Comandos de simplificación con ecuaciones y reglas soft}
+
+Implementación en el metaintérprete de los comandos de simplificación con ecuaciones y reglas soft
+
+
+
+% *****************************************************
+\section{Comando de carga de ficheros}
+
+Implementación en el metaintérprete de otros comandos: carga de ficheros de instrucciones y salida del programa
+
+
+
+% *****************************************************
+\section{Especificaciones para \textit{softdish}}
+\label{sec:EspecificacionesSS}
+
+Definición e implementación de especificaciones para los softdish
+
+
+
+% *****************************************************
+\section{Comandos a través de especificaciones}
+
+Implementación en el metaintérprete de los comandos de selección y reescritura a través de la especificación
+
+
+
+% *****************************************************
+\section {Integración de los módulos}
+ 
+Integración de todas las partes en el proyecto PLSS
+
+
+
+
+
+% *****************************************************
+\section{Ficheros utilizados}
+incluir la dependencia entre los ficheros utilizados.
+\medskip
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width = 1.0\textwidth]{Imagenes/ficheros.png}
+	\caption{Dependencia de carga de ficheros (ficheros.png)}
+	\label{fig:loads}
+\end{figure}
+
+(2) He cambiado algo los nombres de ficheros. Los ficheros que intervienen en el proyecto son:
+
+\texttt{plss.maude}: modulo principal del proyecto PLSS
+
+
+\texttt{aux\_modules.maude} y \texttt{predef\_modules.maude}: módulos auxiliares de database, mensajes, ... y otras operaciones con módulos
+
+\texttt{grammar.maude}: definición de la gramática (todavía quedan restos del mtp y cuantificación)
+Los comandos son definidos (en \texttt{COMMAND-SIGN}): load, red, softrew, softdishselect, specsoftrew, q y exit, 
+En la signatura de la especificación, he definido los operadores dish y attributes (y kkk para probar).
+
+\texttt{softdishspec.plss}: Definición de la especificación MySoftdish
+De esta forma, pretendemos que se seleccione el softdish con la instrucción:
+
+\begin{lstlisting}[language=Maude]
+   softdishselect MySoftdish >> dish PD({NUc | empty}) . attributes ([cdc6 = 0], [cdkn1a = 0]) .
+\end{lstlisting}
+
+
+
+\texttt{parsing-softdish.maude}: hace el parsing del softdish (todavía sin cambiar)
+
+\texttt{proof\_tactics.maude} (no se utiliza)
+
+
+\texttt{qqallSS.maude} y \texttt{qqSS.maude}: ficheros de operadores y reglas de Pathway Logic (antiguo allSS.maude)
+
+\texttt{softset.maude}: fichero de definición de softsets con la función de reescritura rewStrat.
+
+\texttt{softdish.maude}: (antiguo goal.maude) define la clase \texttt{Softdish}, la constante \texttt{noSoftdish} y el operador \verb$>>$ para la especificación
+
+\texttt{softsetfile.txt}, \texttt{softsetfile1.txt}, \texttt{softsetfile2.txt}: ejemplos de ficheros para importar con la instrucción load
+
+\texttt{test\_plss.maude}: ejemplos de comandos para utilizar dentro de PLSS
+
+Las carpetas \texttt{ops}, \texttt{rules} y \texttt{SDishes}: igual que antes (salvo que he creado un par de rules sencillas para comprobar el comportamiento del \texttt{softrew})
+
+
+
+% *****************************************************
+\section{Módulos utilizados}
+incluir la dependencia entre los módulos utilizados.
+\medskip
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width = 0.5\textwidth]{Imagenes/modulosA.png}
+	\caption{Dependencia de módulos 1/2}
+	\label{fig:modulos}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width = 0.4\textwidth]{Imagenes/modulosB.png}
+	\caption{Dependencia de módulos 2/2}
+	\label{fig:modulos2}
+\end{figure}
+
+
+% *****************************************************
+\section{Ejemplo de ejecución}
+Una vez que se han descrito los bloques y el código del proyecto, se incluye ahora un ejemplo de ejecución (con todos los comandos implementados y también con la carga de un fichero de instrucciones)
+\medskip
+
+1. Lanzamos el comando \texttt{run} que nos devuelve una configuración con un portal que el interprete puede comunicarse y podemos tratrarlo. Esta configuración comienza en un estado \texttt{init} que luego se irá modificando.
+La base de datos se encuentra vacía al comienzo.
+
+2. Una vez lanzado, comenzará a entrar en las reglas con las que haga matching. En nuestro caso puede encontrarse con dos (\texttt{init-module} o \texttt{init-view}), ya que poseen el \texttt{msg} de \texttt{createdInterpreter}, es decir, que el intérprete fue creado. Además, pasará al estado \texttt{load-std-db}.  
+
+3. Cuando se inserta el primer módulo o vista, existen varias formas de continuar. Entre ellas se encuentra \texttt{insertaModulo} o \texttt{insertaVista} si se ha insertado un módulo y \texttt{insertaModulo} o \texttt{insertaVista} si se ha insertado una vista.
+
+Continúa en el mismo estado hasta que termina con los módulos y vistas, entonces pasará al estado \texttt{load-grammar} que carga la gramática.
+
+Cuando se complete, cambia de estado a \texttt{load-user-mi} y crea un nuevo interprete.
+
+Si ha sido creado con éxito, pasa al estado \texttt{load-user-mods} que sube el módulo aplanado hasta que se acaba la lista y cambia el estado a \texttt{idle} mientras espera recibir una entrada del usuario a través del prompt \texttt{PLSS>}.
+
+Si la recibe entonces pasa al estado \texttt{parseComm}. Este se encargará de parsear el texto introducido por el usuario utilizando la gramática elevada al metanivel.
+
+Si el texto fue parseado con éxito, entonces vuelve al primer paso, en caso contario cambiaría de estado a \texttt{print\&idle} y escribiría un mensaje de que el comando que se intenta introducir no existe.
+
+Del estado en que se encuentra volvería a \texttt{idle} (tal como se muestra en el diagrama de estados) hasta que el usuario volviera a escribir algo en el prompt del programa.
+
+Existen varios comandos que mi programa es capaz de gestioanr, entre ellos están: \texttt{load}, \texttt{red}, \texttt{softrew}, \texttt{softdishselect}, \texttt{specsoftrew}, \texttt{exit} y \texttt{q}. Con los dos últimos se saldría del programa.
+
+
+
+\medskip
+
+
+
+
+
+% *****************************************************
+\section{Rendimiento}
+Por último, se comentan algunos aspectos sobre el rendimiento del programa.
+Se muestra también una comparativa entre resultados de reescritura guidados para los distintos choice values implementados y con el sistema de reescritura nativo de Maude.
+\medskip
+
+
+
+
+
+
+
+% ***************************************************************
+% ***************************************************************
+\newpage
+\section{Un entorno de ejecución para Mini-Maude utilizando IO y metaintérpretes}
+
+En esta sección se pueden encontrar un ejemplo adicional del uso de flujos estándar y metaintérpretes, donde se utilizan para desarrollar un entorno de ejecución simple. Se presenta un entorno para el lenguaje MiniMaude.
+
+Estas mismas técnicas se pueden utilizar para desarrollar un lenguaje propio. Una vez definida una gramática (\texttt{MINI-MAUDE-SYNTAX} en el caso de MiniMaude) y una transformación de análisis de los términos en Maude (como proporciona la operación \texttt{processModule} en el módulo \texttt{MINI-MAUDE}) se puede construir un entorno de ejecución utilizando las técnicas que se muestran a continuación.
+\medskip
+
+El lenguaje de MiniMaude se ha diseñado para ser lo más simple posible, pero queríamos que incluyera varias características:
+\begin{itemize}
+\item Podemos declarar clases y operaciones, además de especificar ecuaciones en los términos que podemos construir.
+
+\item Podemos incluir módulos previamente definidos. También podemos almacenar módulos en la base de datos del metaintérprete para que puedan ser utilizados después.
+
+\item Podemos reducir los términos a sus formas normales utilizando las ecuaciones de un módulo. La sintaxis definida para MiniMaude sólo permite el comando \texttt{reduce}.
+\end{itemize}
+\medskip
+
+La principal diferencia entre metanivel y metaintérprete es que el metanivel es funcional pero el metaintérprete no lo es y se puede interactuar con él a través de mensajes. Al no ser funcional, el metaintérprete proporciona funcionalidad, por ejemplo, para almacenar módulos y vistas en su base de datos, y luego operar con ellos.
+
+Los metaintérpretes proporcionan la misma funcionalidad que el metanivel, además de algunas características adicionales para insertar elementos en su base de datos y recuperarlos. En otras palabras, podemos decir que proporciona la funcionalidad deseada tanto a nivel de objeto como a metanivel.
+\medskip
+
+
+En nuestro caso, almacenaremos un mínimo de información en un objeto que solicitará entradas al usuario utilizando el flujo de entrada estándar e intentará analizarlo en la gramática de MiniMaude. Para poder analizar las entradas usando el metaintérprete, empezaremos introduciendo el módulo \texttt{MINI-MAUDE-SYNTAX} en él. Una vez insertado, podemos intentar analizar las entradas. Cuando el flujo estándar recibe un mensaje \texttt{getLine}, responde con la cadena tecleada por el usuario hasta que se pulsa una tecla de retorno. Para poder analizar las entradas de varias líneas, necesitaremos solicitar nuevas líneas hasta que la entrada se complete. Por supuesto, en cualquier momento podemos obtener un error de parseo o una ambigüedad, en cuyo caso necesitamos informar del error.
+\medskip
+
+Una vez que se complete la entrada, podemos tener un módulo o un comando de reducción. Si es un módulo, primero necesitamos extraer la signatura y luego resolver las burbujas en sus ecuaciones. El proceso debe llevarse a cabo en dos pasos, ya que la signatura puede referirse a submódulos de la base de datos del metaintérprete, pero las ecuaciones con las burbujas procesadas deben insertarse en el módulo superior. Si la entrada corresponde a un comando de reducción, el término debe ser analizado y luego reducido por el metaintérprete.
+
+Aunque el proceso es bastante sistemático, se deben tener en cuenta diferentes casos. Para simplificar el proceso, utilizamos un estado de atributo que lleva la cuenta de las diferentes alternativas. En la figura~\ref{fig:estados} se muestra el diagrama de estado del entorno de ejecución. Este objeto también guarda el identificador del metaintérprete, el nombre del último módulo insertado y la entrada parcial introducida.
+\medskip
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width = 1.0\textwidth]{Imagenes/estados-diagrama.png}
+	\caption{Diagrama de estados}
+	\label{fig:estados}
+\end{figure}
+
+
+Los objetos de MiniMaude se representan con las siguientes declaraciones:
+
+\begin{lstlisting}[language=Maude]
+	sort MiniMaude .
+\end{lstlisting}
+\medskip
+
+Se utilizan varios mensajes para los pasos intermedios:
+
+\begin{lstlisting}[language=Maude]
+   op processInput : Oid Term -> Msg .
+\end{lstlisting}
+\medskip
+
+El entorno de MiniMaude puede iniciarse utilizando las constantes de minimaude, con ello se crea un intérprete y se envía un banner al flujo de salida.
+
+\begin{lstlisting}[language=Maude]
+   op o : -> Oid .
+\end{lstlisting}
+\medskip
+
+Una vez escrito el mensaje y creado el metaintérprete, se inserta el módulo \texttt{MINI-MAUDE-SYNTAX} en él. El segundo argumento del mensaje creado \texttt{createdInterpreter} es el remitente \texttt{interpreterManager}.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mi: null, st: 0, Atts >
+\end{lstlisting}
+\medskip
+
+Una vez que se inserta el módulo, se envía un mensaje \texttt{getLine} al objeto \texttt{stdin}.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mi: MI, st: 1, Atts >
+\end{lstlisting}
+\medskip
+
+\noindent
+Cuando el usuario introduce algunas entradas, el objeto \texttt{stdin} responde con un mensaje \texttt{gotLine} con la cadena introducida. Se espera que el usuario escriba \texttt{quit} o \texttt{q} para abandonar el entorno. Si la entrada es una de estas, se envía un mensaje de despedida al objeto \texttt{stdout} y se mata al metaintérprete. De lo contrario, se intenta analizar la entrada. Hay que tener en cuenta que algunas entradas pueden estar almacenadas en el atributo \texttt{in}, por lo que el mensaje al metaintérprete para que analice la entrada incluye toda la lista \texttt{Qid}.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mi: MI, in: QIL, st: 2, Atts >
+\end{lstlisting}
+\medskip
+
+Si se enviara un mensaje de renuncia al metaintérprete, éste respondería con un mensaje de despedida. Esta es la regla final, que termina la ejecución.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mi: MI, st: 3, Atts >
+\end{lstlisting}
+\medskip
+
+Si el análisis tiene éxito, el metaintérprete responde con un mensaje \texttt{parsedTerm} que incluye un término de tipo \texttt{ResultPair}. Este término se envía en un mensaje de \texttt{processInput}.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mi: MI, in: QIL, st: 4, Atts >
+\end{lstlisting}
+\medskip
+
+Si el análisis falló, el mensaje \texttt{parsedTerm} del metaintérprete incluye un término \texttt{noParse} con la posición en la que falló el análisis. Si la posición es el final de la entrada significa que la entrada estaba incompleta, y en ese caso esa entrada parcial se añade a la entrada actual y se solicita texto adicional al usuario. Si el error estaba en otra posición, se envía un mensaje de error.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mi: MI, in: QIL, st: 4, Atts >
+\end{lstlisting}
+\medskip
+
+La respuesta también puede informar sobre una ambigüedad. Aunque se podría dar información más precisa al usuario, hemos simplificado el mensaje de error.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mi: MI, in: QIL, st: 4, Atts >
+\end{lstlisting}
+\medskip
+
+El mensaje \texttt{processInput} puede corresponder a un módulo funcional o a un comando \texttt{reduce}. En el primer caso, si la entrada contiene una firma válida, tal módulo se inserta en el metaintérprete. La entrada se guarda en un mensaje \texttt{pendingBubbles} para su posterior procesamiento.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mi: MI, mn: QI?, st: 6, Atts >
+\end{lstlisting}
+\medskip
+
+Una vez que se inserta la firma, el objeto MiniMaude solicita el módulo aplanado. Si el módulo contiene importaciones de módulos previamente introducidos, se debe utilizar el módulo completo para el procesamiento de las burbujas del módulo superior.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mi: MI, mn: QI, st: 7, Atts >
+\end{lstlisting}
+\medskip
+
+El módulo aplanado recuperado se utiliza entonces para procesar las burbujas en las ecuaciones del módulo. Si el procesamiento falla, se muestra un mensaje de error al usuario. Si tiene éxito, se solicita el módulo superior para que las ecuaciones se añadan a él.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mi: MI, mn: QI, st: 8, Atts >
+\end{lstlisting}
+\medskip
+
+El módulo superior se inserta en el metaintérprete una vez que se le añaden las ecuaciones procesadas.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mi: MI, mn: QI, st: 9, Atts >
+\end{lstlisting}
+\medskip
+
+Cuando la inserción se completa con éxito, se informa al usuario.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mi: MI, st: 10, Atts >
+\end{lstlisting}
+\medskip
+
+Como puede verse en la figura~\ref{fig:estados}, el estado \texttt{5} es aquel al que vuelve el objeto cada vez que concluye una operación, ya sea con éxito o sin éxito, tras notificarlo al usuario y solicitar más entradas.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mi: MI, st: 5, Atts >
+\end{lstlisting}
+\medskip
+
+La entrada también puede corresponder a un comando de reducción. La siguiente regla trata el caso en que se introduce un comando pero no hay ningún módulo previo insertado en el que se pueda evaluar el comando.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mn: null, st: 6, Atts >
+\end{lstlisting}
+\medskip
+
+Si hay un módulo anterior, primero hay que analizar el término a reducir.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mi: MI, mn: MN, st: 6, Atts >
+\end{lstlisting}
+\medskip
+
+El análisis sintáctico del término puede dar lugar a éxito o fracaso. En el primer caso, se envía un mensaje \texttt{ReduceTerm} al metaintérprete y, en el segundo caso, se da un mensaje de error.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mi: MI, mn: MN, st: 11, Atts >
+\end{lstlisting}
+\medskip
+
+Una vez completado el comando de simplificación, el metaintérprete devuelve un mensaje \texttt{ReduceTerm} con el resultado de la ejecución. Antes de mostrar el resultado al usuario, se debe solicitar al metaintérprete la impresión del término.
+
+\begin{lstlisting}[language=Maude]
+   rl < O : MiniMaude | mi: MI, mn: MN, st: 12, Atts >
+\end{lstlisting}
+\medskip
+
+Podemos hacer funcionar el entorno con la configuración con:
+
+\begin{lstlisting}[language=Maude]
+	Maude> erew minimaude .
+\end{lstlisting}
+\medskip
+
+
+En primer lugar, introducimos un ejemplo sencillo, el módulo \texttt{NAT3}.
+
+\begin{lstlisting}[language=Maude]
+	> fmod NAT3
+\end{lstlisting}
+\medskip
+
+Podemos ejecutar un simple comando en ese módulo de la siguiente manera.
+Un módulo más interesante se refiere al anterior, ampliándolo con una operación más.
+
+Si se insertan entradas erróneas, se proporciona un mensaje de error.
+Finalmente podemos salir del entorno con un comando \texttt{q}.
+\medskip
+
+
+También se pueden recibir los comandos \texttt{exit} y \texttt{q} que existen para abandonar el programa.
+
+
+
