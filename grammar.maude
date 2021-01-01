@@ -1,13 +1,8 @@
 set include BOOL off .
 
 fmod COMMON-SIGN is
- sorts @Def@ @DefSet@ @Condition@ @QuantList@ @Quant@
-       @Token@ @Bubble@ @NeTokenList@ .
+ sorts @Def@ @DefSet@ @Token@ @Bubble@ @NeTokenList@ .
  subsort @Def@ < @DefSet@ .
-
- ***(
-            Definition Set
- )
  op __ : @DefSet@ @DefSet@ -> @DefSet@ [ctor assoc comm] .
 endfm
 
@@ -15,112 +10,14 @@ endfm
 fmod SPEC-SIGN is
  ex COMMON-SIGN .
 
- sorts @Spec@ @Subsort@ @Arity@ @ModExp@ @ParameterDecl@ @ParameterDeclList@ @Attr@ @AttrList@ .
- subsort @ParameterDecl@ < @ParameterDeclList@ .
- subsort @Attr@ < @AttrList@ .
- subsort @Token@ < @ModExp@ .
- subsort @Token@ < @Arity@ .
+ sort @Spec@ .
 
- ***(
-            SPECIFICATIONS
- )
- op spec!_=_end : @ModExp@ @DefSet@ -> @Spec@ [ctor] .
- op spec*_=_end : @ModExp@ @DefSet@ -> @Spec@ [ctor] .
+ *** SPECIFICATIONS
+ op spec_=_end : @Token@ @DefSet@ -> @Spec@ [ctor] .
 
- ***(
-            PARAMETERS
- )
- op _{_} : @Token@ @ParameterDeclList@ -> @ModExp@ [ctor] .
- op _::_ : @Token@ @Token@ -> @ParameterDecl@ [ctor] .
- op _,_ : @ParameterDeclList@ @ParameterDeclList@ -> @ParameterDeclList@ [ctor assoc] .
-
- ***(
-             IMPORTATIONS
- )
- op pr_. : @Token@ -> @Def@ [ctor] .
- op ex_. : @Token@ -> @Def@ [ctor] .
- op inc_. : @Token@ -> @Def@ [ctor] .
-
- ***(
-                SORTS
- )
- op rigid`sort_. : @NeTokenList@ -> @Def@ [ctor] .
- op rigid`sorts_. : @NeTokenList@ -> @Def@ [ctor] .
- op nominal`sort_. : @NeTokenList@ -> @Def@ [ctor] .
- op nominal`sorts_. : @NeTokenList@ -> @Def@ [ctor] .
- op sort_. : @NeTokenList@ -> @Def@ [ctor] .
- op sorts_. : @NeTokenList@ -> @Def@ [ctor] .
-
- ***(
-                SORTS
- )
- op subsort_<_. : @NeTokenList@ @Token@ -> @Def@ [ctor] .
-
- ***(
-              OPERATORS
- )
- *** Total
- op op_:`->_. : @Token@ @Token@ -> @Def@ [ctor] .
- op op_:`->_[_]. : @Token@ @Token@ @AttrList@ -> @Def@ [ctor] .
- op op_:_->_. : @Token@ @NeTokenList@ @Token@ -> @Def@ [ctor] .
- op op_:_->_[_]. : @Token@ @NeTokenList@ @Token@ @AttrList@ -> @Def@ [ctor] .
- *** Partial
- op op_:`~>_. : @Token@ @Token@ -> @Def@ [ctor] .
- op op_:`~>_[_]. : @Token@ @Token@ @AttrList@ -> @Def@ [ctor] .
- op op_:_~>_. : @Token@ @NeTokenList@ @Token@ -> @Def@ [ctor] .
- op op_:_~>_[_]. : @Token@ @NeTokenList@ @Token@ @AttrList@ -> @Def@ [ctor] .
- *** Total, flexible
- op flexible`op_:`->_. : @Token@ @Token@ -> @Def@ [ctor] .
- op flexible`op_:`->_[_]. : @Token@ @Token@ @AttrList@ -> @Def@ [ctor] .
- op flexible`op_:_->_. : @Token@ @NeTokenList@ @Token@ -> @Def@ [ctor] .
- op flexible`op_:_->_[_]. : @Token@ @NeTokenList@ @Token@ @AttrList@ -> @Def@ [ctor] .
- *** Predicates
- op pred_. : @Token@ -> @Def@ [ctor] .
- op pred_[_]. : @Token@ @AttrList@ -> @Def@ [ctor] .
- op pred_:_. : @Token@ @NeTokenList@ -> @Def@ [ctor] .
- op pred_:_[_]. : @Token@ @NeTokenList@ @AttrList@ -> @Def@ [ctor] .
-
- ***(
-               VARS
- )
- op var_:_. : @NeTokenList@ @Token@ -> @Def@ [ctor] .
- op vars_:_. : @NeTokenList@ @Token@ -> @Def@ [ctor] .
- ***(
-             EQUATIONS
- )
- op eq_=_. : @Bubble@ @Bubble@ -> @Def@ [ctor] .
- op ceq_=_if_. : @Bubble@ @Bubble@ @Condition@ -> @Def@ [ctor] .
-
- ***(
-             CONDITIONS
- )
- op _/\_ : @Condition@ @Condition@ -> @Condition@ [ctor assoc prec 20] .
- op _=_ : @Bubble@ @Bubble@ -> @Condition@ [ctor prec 15] .
-
- ***(
-             ATTRIBUTES
- )
- op __ : @AttrList@ @AttrList@ -> @AttrList@ [ctor assoc] .
- ops idem comm assoc : -> @Attr@ [ctor].
- op  id:_ : @Bubble@ -> @Attr@ .
- op  left`id:_ : @Bubble@ -> @Attr@ .
- op  right`id:_ : @Bubble@ -> @Attr@ .
- ops frozen`(_`) poly`(_`) strat`(_`) : @NeTokenList@ -> @AttrList@ .
- op  memo : -> @Attr@ [ctor] .
- op  prec_ : @Token@ -> @Attr@ .
- op  gather`(_`) : @NeTokenList@ -> @Attr@ .
- op  format`(_`) : @NeTokenList@ -> @Attr@ .
- ops ctor frozen ditto iter : -> @Attr@ [ctor] .
- op  metadata_ : @Token@ -> @Attr@ .
-
-
- ***(
-              SOFTSET OPERATORS
- )
- op dish_. : @NeTokenList@ -> @Def@ [ctor] .   --- añadido por nosotros
- op attributes_. : @NeTokenList@ -> @Def@ [ctor] .   --- añadido por nosotros
- op kkk :  -> @Def@ [ctor] .   --- añadido por nosotros
-
+ *** SOFTSET OPERATORS
+ op type_. : @Token@ -> @Def@ [ctor] .
+ op operator dish_:attributes_. : @Token@ @Token@ -> @Def@ [ctor] .
 endfm
 
 
@@ -134,11 +31,10 @@ fmod COMMAND-SIGN is
  op softrew_ : @Bubble@ -> @Command@ [ctor] .
  op exit : -> @Command@ [ctor] .
  op q : -> @Command@ [ctor] .
- op softdishselect_>>_ : @Token@ @DefSet@ -> @Command@ [ctor] .    --- personalizar para SS ¿?
---- op softdishselect_>>_ : @Token@ @Token@ -> @Command@ [ctor] .  --- personalizar para SS ¿?
- op specsoftrew : -> @Command@ [ctor] .    --- personalizar para SS ¿?
+ op load-spec_ : @Token@ -> @Command@ [ctor] .
+ op select-spec_ : @Token@ -> @Command@ [ctor] .
+ op softrew-spec_ : @Bubble@ -> @Command@ [ctor] .
 endfm
-
 
 
 fmod PLSS-SIGN is
@@ -146,12 +42,10 @@ fmod PLSS-SIGN is
  pr SPEC-SIGN .
 
  sort @Input@ .
-
  subsort @Command@ @Spec@ < @Input@ .
 
  op __ : @Input@ @Input@ -> @Input@ [ctor assoc] .
 endfm
-
 
 
 fmod META-PLSS-SIGN is
@@ -175,17 +69,16 @@ fmod META-PLSS-SIGN is
                 op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList)
                 op-hook('qidSymbol, '<Qids>, nil, 'Qid)
                 id-hook('Exclude, 'eq 'ceq 'rl 'crl 'mb 'cmb 'sd 'csd
-                                  'var 'vars 'forall 'exists
-                                  'dish 'attribute 'attributes
+                                  'var 'vars
                                   'sorts 'subsort 'subsorts 'op 'ops
                                   'protecting 'pr 'including 'inc 'extending
-                                  'ctor 'assoc 'comm '== '/\ 'spec* 'spec!)))] .
+                                  'ctor 'assoc 'comm '== '/\ 'spec )))] .
         op 'neTokenList : 'QidList -> '@NeTokenList@
              [special(
                (id-hook('Bubble, '1 '-1 '`( '`))
                 op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList)
                 op-hook('qidSymbol, '<Qids>, nil, 'Qid)
-                id-hook('Exclude, '. ': '`[ 'forall 'exists 'dish 'attribute 'attributes)))] .
+                id-hook('Exclude, '. ': '`[ 'dish 'attributes)))] .
         none
         none
      endfm) .

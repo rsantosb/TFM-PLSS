@@ -1,0 +1,22 @@
+--- softdishspec1.plss
+
+--- ---------------------------------------------------
+--- Spec   -> spec Id = SenSet
+--- SenSet -> Sen |
+---           Sen SenSet
+--- Sen    -> sort Id |
+---           op dish Dish :attributes Atts -> Softdish
+--- Id, Dish, Atts, Softdish     -> <built-in>
+--- Term   -> <something built with spec syntax>
+
+--- operator choicevalue????
+--- ---------------------------------------------------
+
+spec SOFTDISHSPEC1 =
+ type Softdish .
+ type Dish .
+ type Attributes .
+ operator dish_:attributes_. : Dish Attributes -> Softdish .
+end
+
+--- softrew-spec SOFTDISHSPEC1 |- dish PD({NUc | empty}) :attributes ([cdc6 = 1])

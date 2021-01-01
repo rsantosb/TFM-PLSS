@@ -79,8 +79,6 @@ fmod PREDEF-VALUE-FUNCTIONS is
   if N := (addUndefZero(R) + addUndefOne(R)) quo 2 .
 endfm
 
---- load ops/theops.maude
-
 fmod SOFTSET is
  pr META-LEVEL .
  pr VALUE .
@@ -108,8 +106,8 @@ op atts : SoftDish -> AttSet .
 eq dish(DSH ATTS) =  DSH .
 eq atts(DSH ATTS) =  ATTS .
 
-
 endfm
+
 
 fth SOFT-SET-FUN is
  pr MATRIX .
@@ -117,6 +115,7 @@ fth SOFT-SET-FUN is
 
  op computeValue : SoftSet -> Nat .
 endfth
+
 
 fmod SS-STRAT{X :: SOFT-SET-FUN} is
  pr META-LEVEL .

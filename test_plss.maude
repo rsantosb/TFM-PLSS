@@ -25,6 +25,8 @@ load softsetfile1.txt
 
 load softsetfile2.txt
 
+-------------------------------
+
 softdishselect MySoftdish >> dish PD({NUc | empty}) . attributes ([cdc6 = 0], [cdkn1a = 0]) .
 
 softdishselect MySoftdish >> (kkk) (kkk)
