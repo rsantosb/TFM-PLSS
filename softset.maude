@@ -77,7 +77,13 @@ fmod PREDEF-VALUE-FUNCTIONS is
                else compSemi(M, s(C), BV, S)
                fi
   if N := (addUndefZero(R) + addUndefOne(R)) quo 2 .
+
+
+ *** FUNCTION WEIGHTED BY ROWS/COLS
+ op undefWRow : SoftSet -> Nat .
+ op undefWCol : SoftSet -> Nat .
 endfm
+
 
 fmod SOFTSET is
  pr META-LEVEL .
@@ -108,18 +114,13 @@ eq atts(DSH ATTS) =  ATTS .
 
 endfm
 
-
-fth SOFT-SET-FUN is
- pr MATRIX .
- pr NAT .
-
- op computeValue : SoftSet -> Nat .
-endfth
-
-
-fmod SS-STRAT{X :: SOFT-SET-FUN} is
+*******************************************************
+fmod SOFT-SET-FUN is
  pr META-LEVEL .
  pr MATRIX .
+ pr NAT .
+ pr SOFTSET .
+ pr PREDEF-VALUE-FUNCTIONS .   --- comprobar si hacen falta???
 
  sort ApplyCell ApplyCellList .
  subsort ApplyCell < ApplyCellList .
@@ -134,18 +135,26 @@ fmod SS-STRAT{X :: SOFT-SET-FUN} is
  var  M : Module .
  var  Ty : Type .
  var  N : Nat .
+ var  Q : Qid .
 
- op rewStrat : Module Term TermList -> Term .
- ceq rewStrat(M, T, ATTS) = rewStrat(M, T', ATTS)
-  if T' := next(M, T, ATTS) .
- eq rewStrat(M, T, ATTS) = T [owise] .
+ op computeValue : SoftSet Qid -> Nat .
+ eq computeValue(MX,'undefZero) = undefZero(MX) .
+ eq computeValue(MX,'undefOne)  = undefOne(MX) .
+ eq computeValue(MX,'undefSemi) = undefSemi(MX) .
+ eq computeValue(MX,'undefWRow) = undefWRow(MX) .
+ eq computeValue(MX,'undefWCol) = undefWCol(MX) .
 
- op next : Module Term TermList ~> Term .
- ceq next(M, T, ATTS) = T'
+ op rewStrat : Module Term TermList Qid -> Term .
+ ceq rewStrat(M, T, ATTS, Q) = rewStrat(M, T', ATTS, Q)
+  if T' := next(M, T, ATTS, Q) .
+ eq rewStrat(M, T, ATTS, Q) = T [owise] .
+
+ op next : Module Term TermList Qid ~> Term .
+ ceq next(M, T, ATTS, Q) = T'
   if TL := allReachableTerms(M, T) /\
      TL =/= empty /\
      MX := matrixFromTerms(TL, ATTS) /\
-     N := computeValue(MX) /\
+     N := computeValue(MX, Q) /\
      T' := TL [N] .
 
  op allReachableTerms : Module Term -> TermList .
@@ -189,30 +198,6 @@ fmod SS-STRAT{X :: SOFT-SET-FUN} is
  op _[_] : TermList Nat ~> Term .
  eq (T, TL) [0] = T .
  eq (T, TL) [s(N)] = TL [N] .
+
 endfm
-
-view UndefToZero from SOFT-SET-FUN to PREDEF-VALUE-FUNCTIONS is
- op computeValue to undefZero .
-endv
-
-view UndefToOne from SOFT-SET-FUN to PREDEF-VALUE-FUNCTIONS is
- op computeValue to undefOne .
-endv
-
-view UndefSemi from SOFT-SET-FUN to PREDEF-VALUE-FUNCTIONS is
- op computeValue to undefSemi .
-endv
-
-fmod UNDEF-TO-ZERO is
- pr SS-STRAT{UndefToZero} .
-endfm
-
-fmod UNDEF-TO-ONE is
- pr SS-STRAT{UndefToOne} .
-endfm
-
-fmod UNDEF-TO-SEMI is
- pr SS-STRAT{UndefSemi} .
-endfm
-
 

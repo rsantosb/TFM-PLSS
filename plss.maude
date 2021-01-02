@@ -19,7 +19,7 @@ mod PLSS is
  pr ERROR-MSGS .
  pr DATABASE .
  pr SOFTDISH-PARSING .
- pr UNDEF-TO-SEMI .     --- QQ UNDEF-TO-SEMI
+ pr SOFT-SET-FUN .    --- UNDEF-TO-SEMI .  --- QQ UNDEF-TO-SEMI
  inc FILE .
 
  vars Text Original Read Source STR MSG : String .
@@ -99,6 +99,7 @@ mod PLSS is
  op out:_ : String -> Attribute [ctor] .
  op umi:_ : Oid -> Attribute [ctor] .
  op mi:_ : Oid -> Attribute [ctor] .
+ op strat:_ : Maybe{Qid} -> Attribute [ctor] .
 
  *** Initial value for loading into the parsing metainterpreter
  op modList : -> List{Preload} .
@@ -166,6 +167,7 @@ mod PLSS is
     openFile(fileManager, plss, STR, "r")
   if STR := string(downQid(T)) .
 
+
  ***        OPENFILE         ***
 
  rl [openedFile] : openedFile(plss, fileManager, FHIn)
@@ -229,6 +231,7 @@ mod PLSS is
  ***         SOFTREW         ***
  ***                         ***
 
+ ***(  OLD VERSION
  crl [softrewComm] :
      < plss : PLSS | state: executeComm, input: ('softrew_['bubble[T]], INPLST), module: M, AtS >
   => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
@@ -237,26 +240,65 @@ mod PLSS is
      T' := rewStrat(M, DISH, ATTS) /\
      QIL := metaPrettyPrint(M, T') /\
      STR := "\nResult: " + printTokens(QIL) + "\n" .
-
+ )
 
 
 ********  ZONA DE TRABAJO: BEGIN ******************
 ********  ZONA DE TRABAJO: BEGIN ******************
 ********  ZONA DE TRABAJO: BEGIN ******************
 
+ ***                         ***
+ ***       LOADSTRAT         ***
+ ***                         ***
+
+ crl [loadstratComm] :
+    < plss : PLSS | state: executeComm, input: ('loadstrat_['token[T]], INPLST), strat: MQ, AtS >
+ => < plss : PLSS | state: print&executeComm, input: INPLST, strat: downQid(T), AtS >
+     write(stdout, plss, STR)
+  if STR := "\nLoaded strategy function ( " +  string(downQid(T)) + " )\n" .
+
+
+ ***                         ***
+ ***     SOFTREW (STRAT)     ***
+ ***                         ***
+
+ crl [softrewstratComm] :
+     < plss : PLSS | state: executeComm, input: ('softrew_['bubble[T]], INPLST), module: M, strat: MQ, AtS >
+  => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, strat: MQ, AtS >
+     write(stdout, plss, STR)
+  if {'__[DISH, ATTS], 'SoftDish} := metaParse(M, downQidList(T), 'SoftDish) /\
+     T' := rewStrat(M, DISH, ATTS, MQ) /\
+     QIL := metaPrettyPrint(M, T') /\
+     STR := "\nResult: " + printTokens(QIL) + "\n" .
+
+
+
+
+
+
+
+*********************************************************************
+
+
+ ***                         ***
+ ***        LOAD-SPEC        ***
+ ***                         ***
 
  op moduleQIL : -> QidList .
  eq moduleQIL = 'spec 'SOFTDISHSPEC1 '= 
-                   'type 'Softdish '. 'type 'Dish '. 'type 'Attributes '.
-                   'operator 'dish_:attributes_.
-                   ': 'Dish 'Attributes '-> 'Softdish '.
-                   'end .
+    'type 'Input '. 'type 'Dish '. 'type 'Attributes '. 'type 'Softdish '. 
+    'type 'Choicevalue '. 
+    'operator 'dish_. ': 'Input '-> 'Dish '.
+    'operator 'attributes_. ': 'Input '-> 'Attributes '.
+    'operator 'softdish__. ': 'Input '-> 'Softdish '.
+    'operator 'choicevalue_. ': 'Input '-> 'Choicevalue '.
+    'end .
 
  crl [loadComm] :
     < plss : PLSS | state: executeComm, input: ('load-spec_['token[T]], INPLST), 
                     spec: SDL, select-spec: MQ, AtS >
  => < plss : PLSS | state: foo, input: INPLST, 
-                    spec: moduleQIL, select-spec: 'SOFTDISHSPEC1, AtS >
+                    spec: moduleQIL, select-spec: moduleName(moduleQIL), AtS >
     write(stdout, plss, STR) 
   if STR := "\nResult: " + printTokens(moduleQIL) + "\n" .
 
@@ -266,25 +308,81 @@ mod PLSS is
      write(stdout, plss, "\n ESTUPENDO, LOAD-SPEC CARGO LA ESPECIFICACION.\n") .
 
 
-***(
  ***                         ***
  ***      SOFTREW-SPEC       ***
  ***                         ***
 
+***(
  crl [softrewSpecComm] :
      < plss : PLSS | state: executeComm, input: ('softrew-spec_['bubble[T]], INPLST), module: M, 
                      spec: SDL, select-spec: MQ, AtS >
   => < plss : PLSS | state: print&executeComm, input: INPLST, module: M,
                      spec: SDL, select-spec: MQ, AtS >
      write(stdout, plss, STR)
----  if {'__[DISH, ATTS], 'SoftDish} := metaParse(M, downQidList(T), 'SoftDish) /\
-  if {'______['SOFTDISHSPEC1, '|-, 'dish, DISH, ':attributes, ATTS], 'SoftDish} := metaParse(M, downQidList(T), 'SoftDish) /\
+if   {DISH, 'Dish}   := metaParse(M, extractDish(MQ, T), 'Dish)   /\ 
+     {ATTS, 'AttSet} := metaParse(M, extractAtts(MQ, T), 'AttSet) /\ 
      T' := rewStrat(M, DISH, ATTS) /\
      QIL := metaPrettyPrint(M, T') /\
      STR := "\nResult: " + printTokens(QIL) + "\n" .
-
---- softrew-spec SOFTDISHSPEC1 |- dish PD({NUc | empty}) :attributes ([cdc6 = 1])
+--- extractDish y extractAtts no están bien definidas todavía
+ops extractDish extractAtts : Maybe{Qid} Term -> QidList .
+--- eq extractDish(MQ, T) = 'Tfgb1Dish .
+--- eq extractAtts(MQ, T) = '([cdc6 = 1]) .
 )
+
+
+ ***                         ***
+ ***         OTROS           ***
+ ***                         ***
+
+***(
+--- if {QIL, 'SoftDish} := metaParse(M, downQidList(T), 'SoftDish) /\
+---  if {'__[DISH, ATTS], 'SoftDish} := metaParse(M, downQidList(T), 'SoftDish) /\
+  if {'____['dish, DISH, ':attributes, ATTS], 'SoftDish} := metaParse(M, downQidList(T), 'SoftDish) /\
+
+QIL 'spec NAME
+
+--- NOOOO softrew-spec SOFTDISHSPEC1 >> dish PD({NUc | empty}) :attributes ([cdc6 = 1])
+--- softrew-spec dish PD({NUc | empty}) :attributes ([cdc6 = 1])
+)
+
+
+ crl [READ-TOKEN] :
+    < plss : PLSS | state: executeComm, input: ('readtoken_['token[T]], INPLST), 
+                    spec: SDL, select-spec: MQ, AtS >
+ => < plss : PLSS | state: foo, input: INPLST, 
+                    spec: moduleQIL, select-spec: MQ, AtS >
+    write(stdout, plss, STR) 
+  if STR := "\nResult: " + printTokens(T) + "\n" .
+---  if STR := string(downQid(T)) .
+
+--- PLSS> readtoken kkkk (con printTokens)
+--- Result: 'kkkk.Qid
+--- PLSS> readtoken kkkk (con string)
+--- kkkk
+
+ crl [READ-BUBBLE] :
+    < plss : PLSS | state: executeComm, input: ('readbubble_['bubble[T]], INPLST), 
+                    spec: SDL, select-spec: MQ, module: M, AtS >
+ => < plss : PLSS | state: foo, input: INPLST, 
+                    spec: moduleQIL, select-spec: MQ, module: M, AtS >
+    write(stdout, plss, STR) 
+ if QIL := metaPrettyPrint(M, T) /\
+    STR := "\nResult: " + printTokens(QIL) + "\n" .
+
+--- PLSS> readbubble dish(Tgfb1Dish  ([cdc6 = 0]))
+--- Result: 'dish '`( 'Tgfb1Dish '`( '`[ 'cdc6 '= '0 '`] '`) '`)
+
+
+ crl [READ-QIDLIST] :
+    < plss : PLSS | state: executeComm, input: ('readtokenlist_['NeTokenList[TL]], INPLST), 
+                    spec: SDL, select-spec: MQ, AtS >
+ => < plss : PLSS | state: foo, input: INPLST, 
+                    spec: moduleQIL, select-spec: MQ, AtS >
+    write(stdout, plss, STR) 
+  if STR := string(downQid(TL)) .
+---  if STR := "\nResult: " + printTokens(TL) + "\n" .
+
 
 ********  ZONA DE TRABAJO: END ******************
 ********  ZONA DE TRABAJO: END ******************
@@ -292,7 +390,7 @@ mod PLSS is
 
 
  ***                         ***
- ***          EXIT           ***
+ ***     EXIT QUIT HELP      ***
  ***                         ***
 
  rl [exit] :
@@ -302,6 +400,22 @@ mod PLSS is
  rl [quit] :
     < plss : PLSS | state: executeComm, input: ('q.@Command@), AtS >
  => write(stdout, plss, "Thanks for using PLSS!\n") .
+
+ rl [help] :
+    < plss : PLSS | state: executeComm, input: ('help.@Command@, INPLST), AtS >
+ => < plss : PLSS | state: print&executeComm, input: INPLST, AtS >
+    write(stdout, plss, help + "\n") .
+
+
+op help : -> String .
+eq help = 
+  "\n   ======================== \n" +
+  "   AYUDA DEL PROGRAMA: PLSS\n" +
+  "   ========================\n\n" +
+  "   1. \n" +
+  "   2. \n" +
+  "   3. \n"  .
+
 
  ***          ERROR          ***
 
@@ -390,7 +504,8 @@ mod PLSS is
     <> < plss : PLSS | file: null, out: "", state: init, db: empty,
               load: modList, uload: umodList, current: noQid,
               parsModName: noQid, bubbles: empty, top: noMod,
-              input: empty, module: userModule, spec: noSpec, select-spec: noQid >
+              input: empty, module: userModule, strat: 'undefZero,
+              spec: noSpec, select-spec: noQid >
     createInterpreter(interpreterManager, plss, none) .
 endm
 

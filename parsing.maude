@@ -92,6 +92,7 @@ fmod PRELOAD-LIST is
  pr LIST{Preload} .
 endfm
 
+
 fmod AUX-MODULE-OPS is
  pr META-LEVEL .
  pr DATABASE .
@@ -280,7 +281,7 @@ fmod ERROR-MSGS is
  op [_,_,_] : QidList Qid QidList -> ErrorPrintTuple [ctor] .
 
  vars QIL PRE PRE' POST POST' : QidList .
- vars Q NAME : Qid .
+ vars Q NAME DISH ATTRIBUTES : Qid .
  var  N : Nat .
 
  op showMsg : QidList Nat -> QidList .
@@ -314,6 +315,7 @@ fmod ERROR-MSGS is
      fi .
 
  op initialQid : Qid -> Bool .
+ eq initialQid('spec) = true .
  eq initialQid('spec!) = true .
  eq initialQid('spec*) = true .
  eq initialQid('pr) = true .
@@ -342,8 +344,18 @@ fmod ERROR-MSGS is
  eq $divide(Q QIL, s(N), PRE) = $divide(QIL, N, PRE Q) .
 
  op moduleName : QidList ~> Qid .
+ eq moduleName(QIL 'spec NAME) = NAME .
  eq moduleName(QIL 'spec! NAME) = NAME .
  eq moduleName(QIL 'spec* NAME) = NAME .
  eq moduleName(QIL Q) = moduleName(QIL) [owise] .
+
+ op moduleDish : QidList ~> Qid .
+ eq moduleDish(QIL 'dish DISH) = DISH .
+ eq moduleDish(QIL Q) = moduleDish(QIL) [owise] .
+
+ op moduleAttributes : QidList ~> Qid .
+ eq moduleAttributes(QIL 'attributes ATTRIBUTES) = ATTRIBUTES .
+ eq moduleAttributes(QIL Q) = moduleAttributes(QIL) [owise] .
+
 endfm
 

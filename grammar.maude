@@ -34,10 +34,12 @@ fmod COMMAND-SIGN is
  op softrew_ : @Bubble@ -> @Command@ [ctor] .
  op exit : -> @Command@ [ctor] .
  op q : -> @Command@ [ctor] .
+ op help : -> @Command@ [ctor] .
+ op loadstrat_ : @Token@ -> @Command@ [ctor] .
+--- eliminar los opeardores de abajo...
  op load-spec_ : @Token@ -> @Command@ [ctor] .
  op select-spec_ : @Token@ -> @Command@ [ctor] .
  op softrew-spec_ : @Bubble@ -> @Command@ [ctor] .
---- eliminar los opeardores de abajo...
  op goal_>>_ : @Token@ @DefSet@ -> @Command@ [ctor] .
  op readtoken_ : @Token@ -> @Command@ [ctor] .
  op readbubble_ : @Bubble@ -> @Command@ [ctor] .
