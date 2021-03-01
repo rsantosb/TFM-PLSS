@@ -3,31 +3,106 @@
 \chapter{Introducción}
 \label{cap:introduccion}
 
-\chapterquote{Frase célebre dicha por alguien inteligente}{Autor}
+\chapterquote{Bueno, algunas veces yo he creído hasta \\seis cosas imposibles antes del desayuno}{Lewis Carroll, Alicia en el País de las Maravillas}
+
+Este capítulo comienza con una breve introducción al tema de este proyecto. A continuación se dedica una sección a los objetivos y al plan de trabajo. Por último, se describe la organización de la memoria.
 
 
-El estudiante elaborará una memoria descriptiva del trabajo realizado, con una \textbf{extensión mínima recomendada de 50 páginas} incluyendo al menos una introducción, objetivos y plan de trabajo, resultados con una discusión crítica y razonada de los mismos, conclusiones y bibliografía empleada en la elaboración de la memoria.
+% *****************************************************************************************
+\section{Motivación}
+% Introducción al tema del TFM.
 
-Además del cuerpo principal describiendo el trabajo realizado, la memoria contendrá los siguientes elementos, que no computarán para el cálculo de la extensión mínima del trabajo:
+Muchos problemas de la vida real requieren el uso de datos imprecisos o desconocidos. Su análisis debe implicar la aplicación de principios matemáticos capaces de captar estas características. 
+En el campo de la Inteligencia Artificial, la teoría de soft sets proporciona un marco de trabajo apropiado para la toma de decisiones en las situaciones de falta de información.
 
+Pathway Logic es una herramienta diseñada para tratar con sistemas biológicos simbólicos.
+Con esta plataforma se han desarrollado numerosos modelos de rutas de señalización celular.
+Esta herramienta facilita la comprensión de los sistemas biológicos complejos y la verificación de hipótesis en el diseño de experimentos.
+
+Una de las características del lenguaje Maude es su capacidad de poder expresar de forma natural una amplia gama de aplicaciones, por ejemplo, Pathway Logic.
+Las nuevas funcionalidades en el metaintérprete y la gestión de entradas/salidas de las nuevas versiones permiten manejar de forma eficiente un entorno de ejecución dentro de Maude.
+
+El sistema de reescritura estándar de Maude ofrece todos los términos alcanzables del árbol de búsqueda. 
+En algunas aplicaciones es deseable elegir únicamente una opción entre todas las posibles.
+A partir de esta situación, este proyecto se propone implementar un entorno de ejecución con diferentes estrategias en el sistema de reescritura que permitan escoger el mejor término reescrito.
+Teniendo en cuenta que la información disponible puede ser incompleta, se han definido las estrategias mediante la teoría de soft sets.
+
+Con la intención de proporcionar una aplicación con utilidad real, la implementación de este sistema de reescritura se ha desarrollado con los modelos biológicos de Pathway Logic.
+
+
+
+% *****************************************************************************************
+\section{Objetivos}
+% Descripción de los objetivos del trabajo.
+
+El objetivo principal de este proyecto consiste en desarrollar e implementar nuevas variantes de reescrituras basadas en soft sets en el contexto de Pathway Logic.
+\smallskip
+
+Las metas intermedias para alcanzar este objetivo se pueden especificar en:
+\begin{enumerate}
+\item Implementar una aplicación en Maude con sus sistema de comandos propios.
+\item Integrar con Pathway Logic.
+\item Definir estrategias de reescritura para guiar la reescritura.
+\end{enumerate}
+
+Las trabajos realizados se clasifican en los siguientes áreas:
 \begin{itemize}
-\item un resumen en inglés de media página, incluyendo el título en inglés,
-\item ese mismo resumen en castellano, incluyendo el título en castellano,
-\item una lista de no más de 10 palabras clave en inglés, y esa misma lista en castellano,
-\item un índice de contenidos, y una bibliografía.
+\item Lógica de reescritura.
+\item Soft computing, en especial la toma de decisiones bajo incertidumbre con soft sets.
+\item Modelización de sistemas biológicos basados en reglas.
 \end{itemize}
 
-Todo el material no original, ya sea texto o figuras, deberá ser convenientemente citado y referenciado. En el caso de material complementario se deben respetar las licencias y copyrights asociados al software y hardware que se emplee.
 
-
-\section{Motivación}
-Introducción al tema del TFM.
-
-
-\section{Objetivos}
-Descripción de los objetivos del trabajo.
-
-
+% *****************************************************************************************
 \section{Plan de trabajo}
-Aquí se describe el plan de trabajo a seguir para la consecución de los objetivos descritos en el apartado anterior.
+% Aquí se describe el plan de trabajo a seguir para la consecución de los objetivos descritos en el apartado anterior.
+
+La realización del proyecto se ha apoyado en el plan de trabajo con el director. 
+%
+Las primeras reuniones se dedicaron a la concreción del tema y objetivos del proyecto.
+Después, cada dos semanas hemos tenido reuniones en las que se repasaban las tareas definidas en la reunión anterior.
+Por parte del director se realizaban correcciones y se proponían mejoras.
+En cada reunión se concretaba el trabajo a realizar durante las dos semanas siguientes.
+
+Aparte de las reuniones ordinarias, las dudas puntuales sobre cualquier aspecto del trabajo se han resuelto por parte del director por correo electrónico.
+En todo momento, las respuestas han sido acertadas y las orientaciones valiosas.
+\smallskip
+
+Los hitos que se establecieron para alcanzar los objetivos son:
+\begin{enumerate}
+\item Búsqueda y definición inicial del tema del trabajo.
+\item Profundizar en lenguaje Maude.
+\item Investigación sobre Pathway Logic y soft sets.
+\item Diseño e implementación de un prototipo básico de la aplicación.
+\item Ampliación progresiva de las funcionalidades (tanto en los comandos como en las estrategias).
+\item Realización de pruebas. 
+\item Redacción de la memoria del proyecto.
+\end{enumerate}
+
+
+% *****************************************************************************************
+\section{Organización de la memoria}
+
+La memoria está dividida en los siguientes capítulos:
+
+\begin{itemize}
+\item \textbf{Capítulo~\ref{cap:introduccion}}: Introducción. 
+Se introduce el tema del TFM, se describen los objetivos del trabajo y se detalla el plan de trabajo seguido para la consecución de los objetivos.
+
+\item \textbf{Capítulo~\ref{cap:estadoDeLaCuestion}}: Estado de la Cuestión. 
+En este capítulo se introducen las áreas en las que se fundamenta el trabajo: el lenguaje de programación Maude, el metaintérprete de Maude, la teoría de soft sets y Pathway Logic.
+
+\item \textbf{Capítulo~\ref{cap:descripcionTrabajo}}: Descripción del Trabajo.
+En este capítulo se describe el trabajo realizado en el proyecto \textbf{PLSS}: \textbf{P}athway \textbf{L}ogic con \textbf{S}oft \textbf{S}ets.
+
+\item \textbf{Capítulo~\ref{cap:analisis}}: Análisis de Resultados.
+En este capítulo se incluyen algunos comentarios sobre el rendimiento de la aplicación y se realiza un análisis comparativo de los resultados obtenidos con los del uso estándar de la reescritura.
+
+\item \textbf{Capítulo~\ref{cap:conclusiones}}: Conclusiones y Trabajo Futuro.
+Por último, se han expuesto las conclusiones y las líneas para un trabajo futuro.
+\end{itemize}
+\medskip
+
+El código elaborado para este proyecto está disponible en el repositorio de GitHub
+\url{https://github.com/rsantosb/TFM-PLSS}, bajo la licencia MIT (\url{https://opensource.org/licenses/MIT}).
 

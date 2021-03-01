@@ -3,24 +3,74 @@
 \chapter{Conclusions and Future Work}
 \label{cap:conclusions}
 
-Conclusions and future lines of work. This chapter contains the translation of Chapter~\ref{cap:conclusiones}.
+% Conclusions and future lines of work. This chapter contains the translation of Chapter~\ref{cap:conclusiones}.
 
+\chapterquote{Begin at the beginning,'' the King said, very gravely, \\``and go on till you come to the end: then stop}{Lewis Carroll, Alice in Wonderland}
+
+This chapter presents the conclusions of this project. It also includes the difficulties encountered in the development of the work. The second section lists possible improvements to the project for future work.
+
+
+% *****************************************************
+\section{Conclusions of the work}
+
+Once the project is closed, it is time to present the conclusions.
+
+Firstly, on the basis of the tests carried out on the final programme, the essential objective set in the planning and specification phases of the project has been successfully achieved.
+The fundamental objective is to develop and implement new variants of rewrites based on soft sets in the context of Pathway Logic.
+\smallskip
+
+The intermediate objectives of the project can be specified as:
+(1) implementation of an application in Maude with its own command system; 
+(2) integration with Pathway Logic; and
+(3) definition of rewriting strategies to guide the rewrite.
+
+Each of them has posed the challenges of researching that particular area and integrating that knowledge into the Maude language.
+During the execution of the project, the effort in the study of the meta-interpreter and the modelling of biological systems based on Pathway Logic rules is noteworthy.
+\smallskip
+
+Moreover, by specifying the partial objectives, the PLSS application allows you to execute your own commands within Maude (e.g. simplification, rewriting, etc.). This is a new feature of the latest versions of Maude through its meta-interpreter.
+
+In addition, the TGFB1 (transforming growth factor beta 1) cell signalling pathway model developed in Pathway Logic has been adapted.
+The integration of its structure and knowledge base has been possible thanks to the fact that the design of Pathway Logic is based on the Maude language.
+
+The definition of new rewriting strategies to guide rewriting has been based on the proposals in the recent \citet{santos2019soft}.
+In fact, those described in that article have also been implemented in PLSS (\texttt{undefZero}, \texttt{undefOne} and \texttt{undefSemi}).
+
+Finally, the results have been validated by making a comparative analysis with other rewriting systems. 
+The differences between the various strategy functions are shown depending on the value of the attributes.
+
+The performance of the programme in terms of execution time has also been analysed. It was found that all functions, except \texttt{undefWCol}, run at a similar time to Maude's standard rewrite.
+\medskip
+
+
+The main difficulties encountered in the development of the project have been:
+(1) the learning of the new technologies involved in the project, especially the handling of the soft sets and Pathway Logic; and 
+(2) the conceptual difficulty of reflecting on Maude and handling the meta-interpreter.
+\medskip
+
+
+The code developed for this project is available in the GitHub repository
+\url{https://github.com/rsantosb/TFM-PLSS}, under the MIT license (\url{https://opensource.org/licenses/MIT}).
+
+
+
+% *****************************************************
+\section{Lines of Future Work}
+
+During the elaboration of the work, numerous points of improvement and ideas have appeared that would be interesting to carry out in the future. 
+Some of these lines of future work are:
 \begin{itemize}
-\item
-\LaTeX:
-\cite{latexCompanion,LaTeXLamport,BibTeXPracTex}
-\cite{TeXShop}
+\item Implement new strategy functions for decision making, which can be better adjusted to other types of problems.
 
-\item
-Maude:
-\cite{maude30,DBLP:conf/birthday/ClavelDEELMT15,maude2007,CDELMM98}
+\item Incorporate a specification language that allows program users to develop their own functions.
 
-\cite{DBLP:journals/jlp/Meseguer12}
+\item Work with other fuzzy set extensions or soft sets.
 
-\item
-IEEE Access:
-\cite{santos2019soft}
+\item Develop new commands and functionalities in PLSS.
 
+\item Allow you to select the Pathway Logic model to work with in PLSS.
+
+\item Research on the attributes that can be significant in the dynamics of cell modelling.
 \end{itemize}
 
 

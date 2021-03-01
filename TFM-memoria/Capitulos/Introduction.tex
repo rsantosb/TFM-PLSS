@@ -3,13 +3,112 @@
 \chapter{Introduction}
 \label{cap:introduction}
 
-Introduction to the subject area. This chapter contains the translation of Chapter \ref{cap:introduccion}.
+%Introduction to the subject area. This chapter contains the translation of Chapter \ref{cap:introduccion}.
+
+\chapterquote{Why, sometimes I've believed as many as \\six impossible things before breakfast}{Lewis Carroll, Alice in Wonderland}
+
+
+This chapter begins with a brief introduction to the topic of this project. It is followed by a section on the objectives and work plan. Finally, the organization of the dissertation is described.
+
+
+% *****************************************************************************************
+\section{Motivation}
+% Introducción al tema del TFM.
+
+Many real-life problems require the use of inaccurate or unknown data. Their analysis must involve the application of mathematical principles capable of capturing these characteristics. 
+In the field of Artificial Intelligence, the theory of soft sets provides an appropriate framework for decision making in situations of lack of information.
+
+Pathway Logic is a tool designed to deal with symbolic biological systems.
+Numerous cellular signaling pathway models have been developed with this platform.
+This tool facilitates the understanding of complex biological systems and the verification of hypotheses in the design of experiments.
+
+One of the characteristics of the Maude language is its ability to naturally express a wide range of applications, for example, Pathway Logic.
+The new features in the meta-interpreter and input/output management of the new versions allow for efficient management of a runtime environment within Maude.
+
+Maude's standard rewrite system provides all search tree terms that are attainable. 
+In some applications, it is desirable to choose only one option from all the possible ones.
+Based on this situation, this project aims to implement an execution environment with different strategies in the rewriting system that allows choosing the best rewritten term.
+Taking into account that the available information may be incomplete, the strategies have been defined through the theory of soft sets.
+
+With the intention of providing an application with real utility, the implementation of this rewriting system has been developed with Pathway Logic's biological models.
 
 
 
+% *****************************************************************************************
+\section{Objectives}
+% Descripción de los objetivos del trabajo.
+
+The main objective of this project is to develop and implement new variants of rewrites based on soft sets in the context of Pathway Logic.
+\smallskip
+
+Intermediate goals for achieving this objective can be specified at:
+\begin{enumerate}
+\item Implement an application in Maude with its own command system.
+\item Integrate with Pathway Logic.
+\item Define rewriting strategies to guide rewriting.
+\end{enumerate}
+
+The work done is classified into the following areas:
+\begin{itemize}
+\item Rewriting logic.
+\item Soft computing, especially decision making under uncertainty with soft sets.
+\item Modeling of biological systems based on rules.
+\end{itemize}
 
 
+% *****************************************************************************************
+\section{Work plan}
+% Aquí se describe el plan de trabajo a seguir para la consecución de los objetivos descritos en el apartado anterior.
 
+The realization of the project has been supported by the work plan with the director.
+%
+The first meetings were dedicated to the concretion of the theme and objectives of the project.
+Afterwards, every two weeks we had meetings in which the tasks defined in the previous meeting were reviewed.
+On the part of the director, corrections were made and improvements proposed.
+In each meeting the work to be done during the following two weeks was specified.
+
+Apart from the regular meetings, occasional doubts about any aspect of the work have been resolved by the director by e-mail.
+At all times, the answers have been accurate and the guidance valuable.
+\smallskip
+
+The milestones that were established to achieve the objectives are:
+\begin{enumerate}
+\item Search and initial definition of the subject of the work.
+\item Going deeper into the Maude language.
+\item Research on Pathway Logic and soft sets.
+\item Design and implementation of a basic prototype of the application.
+\item Progressive extension of the functionalities (both in the commands and in the strategies).
+\item Testing. 
+\item Drafting of the project report.
+\end{enumerate}
+
+
+% *****************************************************************************************
+\section{Organization of the dissertation}
+
+The dissertation is divided into the following chapters:
+
+\begin{itemize}
+\item \textbf{Chapter~\ref{cap:introduccion}}: Introduction. 
+The theme of the TFM is introduced, the objectives of the work are described and the work plan followed to achieve the objectives is detailed. 
+
+\item \textbf{Chapter~\ref{cap:estadoDeLaCuestion}}: State of the art. 
+This chapter introduces the areas on which the work is based: the Maude programming language, the Maude meta-interpreter, soft set theory and Pathway Logic.
+
+\item \textbf{Chapter~\ref{cap:descripcionTrabajo}}: Description of the work.
+This chapter describes the work done in the project \textbf{PLSS}: \textbf{P}athway \textbf{L}ogic with \textbf{S}oft \textbf{S}ets.
+
+\item \textbf{Chapter~\ref{cap:analisis}}: Results Analysis.
+This chapter includes some comments on the performance of the application and a comparative analysis of the results obtained with those of the standard use of rewriting.
+
+\item \textbf{Chapter~\ref{cap:conclusiones}}: Conclusions and Future Work.
+Finally, the conclusions and lines for future work have been set out.
+\end{itemize}
+\medskip
+
+
+The code developed for this project is available in the GitHub repository
+\url{https://github.com/rsantosb/TFM-PLSS}, under the MIT license (\url{https://opensource.org/licenses/MIT}).
 
 
 

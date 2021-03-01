@@ -7,8 +7,7 @@ En este capítulo se introducen las cuatro áreas en las que se fundamenta el tr
 La sección~\ref{Maude} trata del lenguaje de programación Maude.
 La sección~\ref{MI} se refiere al metaintérprete de Maude.
 La sección~\ref{SS} trata sobre la teoría de soft sets.
-Por último, la sección~\ref{SS} introduce a Pathway Logic, el entorno de trabajo que se ha utilizado en la modelización de los sistemas biológicos.
-En cada una de las secciones se estudia y presenta el conocimiento actual sobre estas áreas acompañado por referencias de publicaciones científicas relevantes.
+Por último, la sección~\ref{SS} introduce Pathway Logic, el entorno de trabajo que se ha utilizado en la modelización de los sistemas biológicos.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -263,7 +262,7 @@ El identificador de objeto \texttt{interpreterManager} se refiere a un objeto ex
 
 
 
-\subsection{Ejemplo de las muñecas rusas}
+\subsection{Ejemplo de las Muñecas Rusas}
 
 Con este breve ejemplo del módulo \texttt{RUSSIAN-DOLLS} tomado de ~\citet{maude30} se comprueba la flexibilidad y generalidad de los metaintérpretes. Este realiza un cálculo en un metaintérprete que a su vez existe en una torre de metaintérpretes anidada a una profundidad definible por el usuario. Tan solo requiere dos ecuaciones y dos reglas.
  
@@ -364,11 +363,11 @@ Muchos problemas de la vida real requieren el uso de datos imprecisos o incierto
 
 De las generalizaciones de los fuzzy sets nos interesa especialmente la aplicación de la teoría de los conjuntos blandos (soft sets) y sus extensiones a los problemas de la toma de decisiones.
 Los soft sets fueron introducidos por \citep{Molodtsov99}. 
-Algunas referencias relevantes del desarrollo de su teoría se deben a: \citet{AktasCagman}, \citet{Alcantud2016IJAR}, \citet{AliFengLiuMinShabir} y \citet{MajiBR03}.
+Algunas referencias relevantes del desarrollo de su teoría se deben a: \citet{AktasCagman}, \citet{alcantud2016novel,Alcantud2016IJAR}, \citet{AliFengLiuMinShabir} y \citet{MajiBR03}.
 \citet{AliMahmood} definen soft sets ordenados en red para situaciones en las que existe algún orden entre los elementos del conjunto de parámetros. \citet{QinMengPeiXu} combinan los conjuntos de intervalos y los soft sets y \citet{Zhang} estudia los interval soft sets y sus aplicaciones. \citet{MajiBR01} introducen los fuzzy soft sets. \citet{WangLiChen} introducen los hesitant fuzzy soft sets. \citet{Hanetal}, \citet{QinMaHerawanZain}, y \citet{ZouXiao} se ocupan de los soft sets incompletos. También hay interesantes modelos híbridos en la literatura reciente.
 
 
-\subsection{Soft sets incompletos}
+\subsection{Soft Sets Incompletos}
 
 Se adopta la descripción y terminología habitual para los soft sets y sus extensiones: el conjunto $U$ denota el universo de objetos y el conjunto $E$ denota el conjunto universal de parámetros.
 
@@ -378,7 +377,6 @@ Un par $(F,A)$ es un soft set sobre $U$ cuando $A\subseteq E$ y $F: A \longright
 
 Un soft set sobre $U$ es considerado como una familia de subconjuntos parametrizados del universo $U$, siendo el conjunto $A$ los parámetros. Para cada parámetro $e\in A$, $F(e)$ es el subconjunto de $U$ aproximado por $e$ o el conjunto de elementos $e$-aproximados del soft set. Muchos investigadores han desarrollado esta noción y definen otros conceptos relacionados~\citep{MajiBR03,FengLi}.
 Para modelar situaciones cada vez más generales, se ha propuesto la siguiente definición de soft sets incompletos.
-
 
 
 \begin{definition}[\citet{Hanetal}]\label{def:SSincompl}
@@ -426,7 +424,7 @@ De esta forma, se obtiene la representación tabular del soft set incompleto $(F
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Toma de decisiones con soft sets}
+\subsection{Toma de Decisiones con Soft Sets}
 
 \citet{MajiBR02} fueron pioneros en la toma de decisiones basadas en soft sets. Establecieron el criterio de que un objeto puede ser seleccionado si maximiza el valor de elección del problema. En relación con esto, \citet{ZouXiao} argumentaron que en el proceso de recopilación de datos puede haber datos desconocidos, imprecisos o inexistentes. Por lo tanto, se deben tener en cuenta los soft sets estándar bajo formación incompleta, lo que exige la inspección de soft sets incompletos. 
 
@@ -506,7 +504,7 @@ Como no sabemos cuál será la correcta, debemos asumir que todas estas tablas s
 
 El investigador puede llevar a cabo una operación de cribado antes de seleccionar una opción final. En primer lugar, calculamos el valor máximo $c_0$ de todos los valores de elección $c_{j(0)}$ a través de las opciones $u_j$. Si este valor es estrictamente mayor que el valor de elección $c_{k(1)}$ de una alternativa $u_k$, esta alternativa puede ser eliminada de la matriz/tabla inicial. La razón es que si se supone que todos los datos que faltan para el $u_k$ son $1$, hay otra opción~$i$ que verifica que cuando todos los datos que faltan para $u_i$ se suponen que son~$0$, la opción~$i$ sigue teniendo un valor de elección mayor que la opción $k$. Este argumento sugiere la siguiente definición de dominancia entre opciones.
 
-\begin{definition}\label{dDom}
+\begin{definition}[\citet{AlcantudSantos17}]\label{dDom}
 Sea $(F,A)$ un soft set incompleto sobre $U$. Una opción $i$ domina una opción $k$ cuando $c_{k(1)} < c_{i(0)}$. 
 \end{definition}
 
@@ -563,7 +561,7 @@ Pathway Logic es una técnica de análisis cualitativo basada en la lógica de r
 \end{enumerate}
 
 
-\subsection{Modelos en Pathway Logic: ecuaciones}
+\subsection{Modelos en Pathway Logic: Ecuaciones}
 Para ilustrar cómo Pathway Logic puede tratar las rutas de señalización, se muestra a continuación un modelo abreviado de transducción de señales intracelulares.
 Una base de conocimiento formal contendrá la información sobre los cambios que ocurren en las proteínas dentro de una célula en respuesta a la exposición a ligandos receptores, sustancias químicas y otros elementos.
 
@@ -714,7 +712,7 @@ En este dish se define un estado inicial (llamado \texttt{Tgfb1Dish}) con varias
 \end{itemize}
 
 
-\subsection{Modelos en Pathway Logic: reglas de reescritura}
+\subsection{Modelos en Pathway Logic: Reglas de Reescritura}
 
 Las reglas de reescritura describen el comportamiento de las proteínas y otros componentes dependiendo de los estados de modificación y los contextos biológicos. Cada regla representa un paso en un proceso biológico como las reacciones metabólicas o las reacciones de señalización intracelular o intercelular~\citep{psb/EkerKLLMS02,DBLP:conf/cmsb/EkerLLST03,DBLP:conf/pacbb/Santos-Buitrago17,DBLP:conf/wsc/Talcott06}. 
 
