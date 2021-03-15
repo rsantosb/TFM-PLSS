@@ -1,0 +1,90 @@
+mod NARROWING-VENDING-MACHINE is
+	sorts Coin Item Marking Money State .
+	subsort Coin < Money .
+
+	op empty : -> Money .
+	op __ : Money Money -> Money [assoc comm id: empty] .
+
+	subsort Money Item < Marking .
+
+	op __ : Marking Marking -> Marking [assoc comm id: empty] .
+	op <_> : Marking -> State .
+	ops $ q : -> Coin .
+	ops a c : -> Item .
+
+	var M : Marking .
+
+	rl [buy-c] : < M $ > => < M c > [narrowing] .
+	rl [buy-a] : < M $ > => < M a q > [narrowing] .
+	eq [change] : q q q q M = $ M [variant] .
+
+	
+	eq run = reduce in META-LEVEL :
+		metaNarrowingSearch(
+			upModule('NARROWING-VENDING-MACHINE, false),
+			'<_>['M:Money], '<_>['__['a.Item,'c.Item]], '*, unbounded, 'match, 0) .
+		
+endm
+
+erew run .
+
+eof
+
+*** metaNarrowingSearch :
+*** 	Module Term Term Qid Bound Qid Nat -> NarrowingSearchResult?
+
+--- Module Term Term Qid Bound Qid Nat
+Module:	upModule('NARROWING-VENDING-MACHINE, false)
+Term:		'<_>['M:Money]
+Term:		'<_>['__['a.Item,'c.Item]]
+
+Qid:			'*
+Bound:	unbounded
+
+Qid:			'match
+Nat:			0
+
+-----------------------------------------------------------------------------------------------------------------------
+
+Donde:
+	- Module: 	es la meta-representación del módulo donde está definida la teoría.
+	- Term:		es la meta-representación del término inicial.
+	- Term:		es la meta-representación del término final.
+
+	- Qid: meta-representa la búsqueda adecuada, en número de pasos
+		(normalmente *, es decir, indeterminado).
+	- Bound: indica el número de soluciones computadas (normalmente unbounded).
+
+
+	- Qid: ????
+	- Bound: indica el número máximo de soluciones que se desean (profundidad del árbol de narrowing).
+
+-----------------------------------------------------------------------------------------------------------------------
+
+
+==========================================
+Maude> load narr.maude 
+==========================================
+reduce in META-LEVEL : metaNarrowingSearch(upModule('NARROWING-VENDING-MACHINE,
+    false), '<_>['M:Money], '<_>['__['a.Item,'c.Item]], '*, unbounded, 'match,
+    0) .
+rewrites: 15 in 12ms cpu (10ms real) (1250 rewrites/second)
+==========================================
+
+--- Term Type Substitution Qid Substitution Qid
+'<_>['__['a.Item,'c.Item,'#1:Money]]
+'State
+'M:Money <- '__['$.Coin,'q.Coin,'q.Coin,'q.Coin,'#1:Money]
+'#
+'#1:Money <- 'empty.Money
+'@
+
+==========================================
+result NarrowingSearchResult: {
+  '<_>['__['a.Item,'c.Item,'#1:Money]],'State,
+    'M:Money <- '__['$.Coin,'q.Coin,'q.Coin,'q.Coin,'#1:Money],
+  '#,
+    '#1:Money <- 'empty.Money,
+  '@
+}
+==========================================
