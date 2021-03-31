@@ -11,6 +11,7 @@ view Module from TRIV to META-MODULE is
  sort Elt to Module .
 endv
 
+
 fmod MAYBE{X :: TRIV} is
  sort Maybe{X} .
  subsort X$Elt < Maybe{X} .
@@ -25,7 +26,7 @@ fmod MODULE-ENTRY is
 
   sorts Entry ModuleInfo SortInfo .
 
- ***(          Rigid  Nominal Flexible             )
+ ***   Rigid  Nominal Flexible   ***
  op <_,_,_> : SortSet SortSet SortSet -> SortInfo [ctor] .
  op <_,_,_|_> : SortSet SortSet SortSet VariableSet -> ModuleInfo [ctor] .
 
@@ -101,13 +102,13 @@ fmod AUX-MODULE-OPS is
  vars EqS EqS' : EquationSet .
  vars ODS ODS' : OpDeclSet .
  vars IL IL' : ImportList .
- var  PL : ParameterList .
+*** var  PL : ParameterList .
  vars TL TL' : TermList .
  vars SS SS' : SortSet .
  vars RS RS' : RuleSet .
  var  MAS : MembAxSet .
  var  TyL : TypeList .
- var  DB : Database .
+*** var  DB : Database .
  var  Ct : Constant .
  var  M : Module .
  var  H : Header .
@@ -238,41 +239,6 @@ fmod AUX-MODULE-OPS is
 endfm
 
 
-fmod QUANTIFICATION-OPS is
- pr AUX-MODULE-OPS .
-
- vars VS UV UV' EV EV' : VariableSet .
- var  TL : TermList .
- var  V : Variable .
- var  T : Term .
- var  Q : Qid .
-
- sort QuantificationPair .
- *** Universal Existencial
- op <_,_> : VariableSet VariableSet -> QuantificationPair [ctor] .
-
- op extractQuantVars : Term VariableSet ~> QuantificationPair .
- eq extractQuantVars('__[TL], VS) = extractQuantVars*(TL, VS) .
- ceq extractQuantVars('forall_['neTokenList[TL]], VS) = < UV, none >
-  if UV := getVars(TL, VS) .
- ceq extractQuantVars('exists_['neTokenList[TL]], VS) = < none, EV >
-  if EV := getVars(TL, VS) .
-
- op extractQuantVars* : TermList VariableSet ~> QuantificationPair .
- eq extractQuantVars*(empty, VS) = < none, none > .
- ceq extractQuantVars*((T, TL), VS) = < UV ; UV', EV ; EV' >
-  if < UV, EV > := extractQuantVars(T, VS) /\
-     < UV', EV' > := extractQuantVars*(TL, VS) .
-
- op getVars : TermList VariableSet ~> VariableSet .
- eq getVars('__[TL], VS) = getVars(TL, VS) .
- ceq getVars((T, TL), V ; VS) = V ; getVars(TL, V ; VS)
-  if Q := downQid(T) /\
-     Q := getName(V) [owise] .
- eq getVars(empty, VS) = none .
-endfm
-
-
 fmod ERROR-MSGS is
  pr QID-LIST .
 
@@ -281,7 +247,8 @@ fmod ERROR-MSGS is
  op [_,_,_] : QidList Qid QidList -> ErrorPrintTuple [ctor] .
 
  vars QIL PRE PRE' POST POST' : QidList .
- vars Q NAME DISH ATTRIBUTES : Qid .
+ vars Q NAME : Qid .
+*** DISH ATTRIBUTES : Qid
  var  N : Nat .
 
  op showMsg : QidList Nat -> QidList .
@@ -315,21 +282,12 @@ fmod ERROR-MSGS is
      fi .
 
  op initialQid : Qid -> Bool .
- eq initialQid('spec) = true .
- eq initialQid('spec!) = true .
- eq initialQid('spec*) = true .
  eq initialQid('pr) = true .
  eq initialQid('ex) = true .
  eq initialQid('inc) = true .
- eq initialQid('rigid) = true .
- eq initialQid('nominal) = true .
  eq initialQid('sort) = true .
  eq initialQid('subsort) = true .
  eq initialQid('op) = true .
- eq initialQid('flexible) = true .
- eq initialQid('pred) = true .
- eq initialQid('dish) = true .  --- añadido por nosotros
- eq initialQid('attributes) = true .  --- añadido por nosotros
  eq initialQid('var) = true .
  eq initialQid('vars) = true .
  eq initialQid('eq) = true .
@@ -344,18 +302,6 @@ fmod ERROR-MSGS is
  eq $divide(Q QIL, s(N), PRE) = $divide(QIL, N, PRE Q) .
 
  op moduleName : QidList ~> Qid .
- eq moduleName(QIL 'spec NAME) = NAME .
- eq moduleName(QIL 'spec! NAME) = NAME .
- eq moduleName(QIL 'spec* NAME) = NAME .
- eq moduleName(QIL Q) = moduleName(QIL) [owise] .
-
- op moduleDish : QidList ~> Qid .
- eq moduleDish(QIL 'dish DISH) = DISH .
- eq moduleDish(QIL Q) = moduleDish(QIL) [owise] .
-
- op moduleAttributes : QidList ~> Qid .
- eq moduleAttributes(QIL 'attributes ATTRIBUTES) = ATTRIBUTES .
- eq moduleAttributes(QIL Q) = moduleAttributes(QIL) [owise] .
-
+ eq moduleName(QIL Q) = moduleName(QIL) .
 endfm
 

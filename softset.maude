@@ -4,8 +4,10 @@ fmod VALUE is
  ops 0 1 * : -> Value [ctor] .
 endfm
 
+*******************************************************
 fmod MATRIX is
  pr VALUE .
+
  sorts Row SoftSet .
  subsort Value < Row < SoftSet .
 
@@ -16,14 +18,122 @@ fmod MATRIX is
  op __ : SoftSet SoftSet -> SoftSet [ctor assoc id: mt] .
 endfm
 
+*******************************************************
 fmod PREDEF-VALUE-FUNCTIONS is
  pr MATRIX .
- pr NAT .
+ pr RAT .
 
- vars C BV S N : Nat .
- var  M : SoftSet .
+ vars C BV S L N N0 N1 N* : Nat .
+ vars Q BVQ BVQ' : Rat .
+ vars M M' : SoftSet .
  var  R : Row .
+ var  V V' : Value .
 
+ *** Factorial
+ op fact : Nat -> Nat .
+ eq fact(0) = 1 .
+ eq fact(N) = N * fact(N - 1) .
+
+ *** Combinatorial number
+ op over : Nat Nat -> Rat .
+ eq over(N, S) = fact(N)/(fact(N - S) * fact(S)) .
+
+ *** MAX CHOICE VALUE FUNCTION WEIGHTED BY ROWS
+ op undefWRow : SoftSet -> Rat .
+ eq undefWRow(M) = compUndefWRow(M, 0, 0, 0) .
+
+ *** Matrix - Current - Best value - Selected Row
+ op compUndefWRow : SoftSet Nat Rat Nat -> Rat .
+ eq compUndefWRow(mt, C, BVQ, S) = S .
+ ceq compUndefWRow(R M, C, BVQ, S) =
+               if BVQ' >= BVQ
+               then compUndefWRow(M, s(C), BVQ', C)
+               else compUndefWRow(M, s(C), BVQ, S)
+               fi
+  if BVQ' := addUndefWRow(R) .
+
+ *** NeqValue: number of V's (0, 1 or *) in a row R
+ op NeqValue : Row Value -> Nat .
+ eq NeqValue(R, V) = addNeqValue(R, V, 0) .
+ 
+ op addNeqValue : Row Value Nat -> Nat .
+ eq addNeqValue((V', R), V, N) =
+  if V' == V
+  then addNeqValue(R, V, s(N))
+  else addNeqValue(R, V, N)
+  fi .
+ eq addNeqValue(mtRow, V, N) = N .
+
+ --- N -> sumatory_i=0^i=N  [i * (N over i)]
+ op sumUndefWRow : Nat -> Rat .
+ eq sumUndefWRow(N) = addSumUndefWRow(N, N, 0) .
+
+ --- Down-counter - Limit - Partial sum -> sumatory
+ op addSumUndefWRow : Nat Nat Rat -> Rat . 
+ eq addSumUndefWRow(0, L, Q) = Q .
+ eq addSumUndefWRow(s(N), L, Q) = 
+    addSumUndefWRow(N, L, Q + s(N) * over(L, s(N))) .
+
+ *** Choice value for a row
+ op addUndefWRow : Row -> Rat .
+ eq addUndefWRow(mtRow) = 0 .
+ ceq addUndefWRow(R) = 
+  N1 + sumUndefWRow(N*) / 2 ^ N*
+  if N1 := NeqValue(R, 1) /\ N* := NeqValue(R, *) .
+
+
+ *** MAX CHOICE VALUE FUNCTION WEIGHTED BY COLS
+ op undefWCol : SoftSet -> Rat .
+ eq undefWCol(M) = compUndefWCol(M, 0, 0, 0, M) .
+
+ *** Current - Best value - Selected Row
+ op compUndefWCol : SoftSet Nat Rat Nat SoftSet -> Rat .
+ eq compUndefWCol(mt, C, BVQ, S, M') = S .
+ ceq compUndefWCol(R M, C, BVQ, S, M') = 
+               if BVQ' >= BVQ
+               then compUndefWCol(M, s(C), BVQ', C, M')
+               else compUndefWCol(M, s(C), BVQ, S, M')
+               fi
+  if BVQ' := addUndefWCol(R, 0, M') .
+
+ *** Choice value for a row
+ op addUndefWCol : Row Nat SoftSet -> Rat .
+ eq addUndefWCol(mtRow, N, M) = 0 .
+ eq addUndefWCol((0, R), N, M) = addUndefWCol(R, s(N), M) .
+ eq addUndefWCol((1, R), N, M) = s(addUndefWCol(R, s(N), M)) .
+ ceq addUndefWCol((*, R), N, M) = 
+  if Q == 0
+  then 1/2
+  else addUndefWCol(R, s(N), M) + (fMV(M, 1, N, 0) / Q)
+  fi 
+ if Q := nrow(M) - fMV(M, *, N, 0) .
+
+ *** Number of rows of a matrix
+ op nrow : SoftSet -> Nat .
+ eq nrow(mt) = 0 .
+ eq nrow(R M) = s(nrow(M)) .
+
+ *** Number of columns of a row
+ op ncol : Row -> Nat .
+ eq ncol(mtRow) = 0 .
+ eq ncol((V, R)) = s(ncol(R)) .
+
+ *** Element of a Row in column C
+ op frowcol : Row Nat -> Value .
+ eq frowcol((V, R), 0) = V .
+ eq frowcol((V, R), s(C)) = frowcol(R, C) .
+
+ *** Compute number of V's in a column C of a matrix
+ op fMV : SoftSet Value Nat Nat -> Nat .
+ eq fMV(mt, V, C, N) = N .
+ eq fMV(R M, V, C, N) =  
+  if frowcol(R, C) == V 
+  then fMV(M, V, C, s(N))
+  else fMV(M, V, C, N)
+  fi .
+
+
+ *** MAX CHOICE VALUE FUNCTION BY ZEROS
  *** Replaces * by 0 and adds up all values
  op undefZero : SoftSet -> Nat .
  eq undefZero(M) = compUndefZero(M, 0, 0, 0) .
@@ -44,6 +154,8 @@ fmod PREDEF-VALUE-FUNCTIONS is
  eq addUndefZero((1, R)) = s(addUndefZero(R)) .
  eq addUndefZero((*, R)) = addUndefZero(R) .
 
+
+ *** MAX CHOICE VALUE FUNCTION BY ONES
  *** Replaces * by 1 and adds up all values
  op undefOne : SoftSet -> Nat .
  eq undefOne(M) = compUndefOne(M, 0, 0, 0) .
@@ -60,10 +172,12 @@ fmod PREDEF-VALUE-FUNCTIONS is
 
  op addUndefOne : Row -> Nat .
  eq addUndefOne(mtRow) = 0 .
- eq addUndefOne((0, R)) = addUndefZero(R) .
- eq addUndefOne((1, R)) = s(addUndefZero(R)) .
- eq addUndefOne((*, R)) = s(addUndefZero(R)) .
+ eq addUndefOne((0, R)) = addUndefOne(R) .
+ eq addUndefOne((1, R)) = s(addUndefOne(R)) .
+ eq addUndefOne((*, R)) = s(addUndefOne(R)) .
 
+
+ *** MAX CHOICE VALUE FUNCTION BY ZEROS/ONES
  *** Replaces * by 1 and adds up all values
  op undefSemi : SoftSet -> Nat .
  eq undefSemi(M) = compSemi(M, 0, 0, 0) .
@@ -77,19 +191,14 @@ fmod PREDEF-VALUE-FUNCTIONS is
                else compSemi(M, s(C), BV, S)
                fi
   if N := (addUndefZero(R) + addUndefOne(R)) quo 2 .
-
-
- *** FUNCTION WEIGHTED BY ROWS/COLS
- op undefWRow : SoftSet -> Nat .
- op undefWCol : SoftSet -> Nat .
 endfm
 
 
+*******************************************************
 fmod SOFTSET is
  pr META-LEVEL .
  pr VALUE .
  pr DISH .
- pr QID .
 
  sort AttId Att AttSet SoftDish .
  subsort Qid < AttId .
@@ -101,26 +210,22 @@ fmod SOFTSET is
 
  op __ : Dish AttSet -> SoftDish [ctor] .
 
+ *** Select dish/atts of a SoftDish T: dish(T), atts(T)
+ var DSH : Dish .
+ var ATTS : AttSet .
 
-*** Seleccinar dish/atts de un SoftDish T: dish(T), atts(T)
-var DSH : Dish .
-var ATTS : AttSet .
+ op dish : SoftDish -> Dish .
+ eq dish(DSH ATTS) =  DSH .
 
-op dish : SoftDish -> Dish .
-op atts : SoftDish -> AttSet .
-
-eq dish(DSH ATTS) =  DSH .
-eq atts(DSH ATTS) =  ATTS .
-
+ op atts : SoftDish -> AttSet .
+ eq atts(DSH ATTS) =  ATTS .
 endfm
+
 
 *******************************************************
 fmod SOFT-SET-FUN is
- pr META-LEVEL .
- pr MATRIX .
- pr NAT .
  pr SOFTSET .
- pr PREDEF-VALUE-FUNCTIONS .   --- comprobar si hacen falta???
+ pr PREDEF-VALUE-FUNCTIONS .
 
  sort ApplyCell ApplyCellList .
  subsort ApplyCell < ApplyCellList .
@@ -198,6 +303,5 @@ fmod SOFT-SET-FUN is
  op _[_] : TermList Nat ~> Term .
  eq (T, TL) [0] = T .
  eq (T, TL) [s(N)] = TL [N] .
-
 endfm
 

@@ -1,26 +1,11 @@
 set include BOOL off .
 
 fmod COMMON-SIGN is
- sorts @Def@ @DefSet@ @Token@ @Bubble@ @NeTokenList@ .
- subsort @Def@ < @DefSet@ .
- op __ : @DefSet@ @DefSet@ -> @DefSet@ [ctor assoc comm] .
-endfm
+*** sorts @Def@ @DefSet@ @Token@ @Bubble@ @NeTokenList@ .
+*** subsort @Def@ < @DefSet@ .
 
-
-fmod SPEC-SIGN is
- ex COMMON-SIGN .
-
- sort @Spec@ .
-
- *** SPECIFICATIONS
- op spec_=_end : @Token@ @DefSet@ -> @Spec@ [ctor] .
-
- *** SOFTSET OPERATORS
- op type_. : @Token@ -> @Def@ [ctor] .
- op operator dish_. : @NeTokenList@ -> @Def@ [ctor] .
- op operator attributes_. : @NeTokenList@ -> @Def@ [ctor] .
- op operator choicevalue_. : @Token@ -> @Def@ [ctor] .
- op operator softdish__. : @Token@ @Token@ -> @Def@ [ctor] .
+ sorts @Token@ @Bubble@ @NeTokenList@ . 
+*** op __ : @DefSet@ @DefSet@ -> @DefSet@ [ctor assoc comm] .
 endfm
 
 
@@ -35,24 +20,18 @@ fmod COMMAND-SIGN is
  op exit : -> @Command@ [ctor] .
  op q : -> @Command@ [ctor] .
  op help : -> @Command@ [ctor] .
- op loadstrat_ : @Token@ -> @Command@ [ctor] .
---- eliminar los opeardores de abajo...
- op load-spec_ : @Token@ -> @Command@ [ctor] .
- op select-spec_ : @Token@ -> @Command@ [ctor] .
- op softrew-spec_ : @Bubble@ -> @Command@ [ctor] .
- op goal_>>_ : @Token@ @DefSet@ -> @Command@ [ctor] .
- op readtoken_ : @Token@ -> @Command@ [ctor] .
- op readbubble_ : @Bubble@ -> @Command@ [ctor] .
- op readtokenlist_ : @NeTokenList@ -> @Command@ [ctor] .
+ op loadstrat_ : @Token@ -> @Command@ [ctor] . 
+
+*** new
+ op softnarrow_ : @Bubble@ -> @Command@ [ctor] .
 endfm
 
 
 fmod PLSS-SIGN is
  pr COMMAND-SIGN .
- pr SPEC-SIGN .
 
  sort @Input@ .
- subsort @Command@ @Spec@ < @Input@ .
+ subsort @Command@ < @Input@ .
 
  op __ : @Input@ @Input@ -> @Input@ [ctor assoc] .
 endfm
@@ -88,7 +67,7 @@ fmod META-PLSS-SIGN is
                (id-hook('Bubble, '1 '-1 '`( '`))
                 op-hook('qidListSymbol, '__, 'QidList 'QidList, 'QidList)
                 op-hook('qidSymbol, '<Qids>, nil, 'Qid)
-                id-hook('Exclude, '. ': '`[ 'dish 'attributes)))] .
+                id-hook('Exclude, '. ': '`[ )))] .
         none
         none
      endfm) .

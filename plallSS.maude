@@ -5,7 +5,8 @@ load plops/chemicalops
 load plops/proteinops
 load plops/geneops
 
-******************************
+*********************************
+
 fmod ALLOPS is
  inc CHEMICALOPS .
  inc GENEOPS .
@@ -15,25 +16,26 @@ fmod ALLOPS is
  inc THEOPS .
 endfm
 
-******************************
+*********************************
+
 load softset.maude
-
-******************************
 load plrules/Tgfb1RulesSS
-
-******************************
-mod ALLRULES is
-inc TGFB1RULES .
-endm
-
-******************************
 load pldishes/Tgfb1Dish
 
-******************************
+*********************************
+
+mod ALLRULES is
+ inc TGFB1RULES .
+endm
+
+*********************************
+
+*********************************
+
 mod QQ is
  inc ALLRULES .
  inc ALLOPS .
- inc SOFT-SET-FUN .    --- UNDEF-TO-SEMI .
+ inc SOFT-SET-FUN .
  inc TGFB1DISH .
 endm
 
