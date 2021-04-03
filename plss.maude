@@ -264,10 +264,7 @@ mod PLSS is
  ************************************************
  ***    INICIO ZONA DE TRABAJO     	***
  ************************************************
- 
-
-*** Crear softnarrow_:
- 
+  
  ***		 			                         ***
  ***	SOFT-NARROWING     ***
  ***		 			                         ***
@@ -277,17 +274,22 @@ mod PLSS is
   => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
      write(stdout, plss, STR)
   if {T', Ty} := metaParse(M, downQidList(T), anyType) /\
-     {T'', Ty'} := metaReduce(M, T') /\
+***     {T'', Ty'} := metaReduce(M, T') /\
+     {T'', 'SoftDish, VSubs:Substitution, VQid:Qid, VSubs2:Substitution, VQid2:Qid } :=
+		metaNarrowingSearch(M, T', T', '*, unbounded, 'match, 0) /\
      QIL := metaPrettyPrint(M, T'') /\
      STR := "\nResult: " + printTokens(QIL) + "\n" .
- 
+
+
+
+
+
+
+
  ************************************************
  ***    FIN ZONA DE TRABAJO     		***
  ************************************************
  ************************************************
-
-
-
 
 
  ***		 			                         ***
@@ -470,6 +472,18 @@ erew run .
 **************************************
 
 eof
+
+
+Línea X:
+ crl [softNarrowComm] :
+     < plss : PLSS | state: executeComm, input: ('softnarrow_['bubble[T]], INPLST), module: M, AtS >
+  => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
+     write(stdout, plss, STR)
+  if {T', Ty} := metaParse(M, downQidList(T), anyType) /\
+     {T'', Ty'} := metaReduce(M, T') /\
+     QIL := metaPrettyPrint(M, T'') /\
+     STR := "\nResult: " + printTokens(QIL) + "\n" .
+
 
 **************************************
 **************************************
