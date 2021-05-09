@@ -30,7 +30,7 @@ mod PLSS is
  ***vars DB DB' : Database .
  ***vars QIL ERR : QidList .
  var QIL : QidList .
- vars QIL1 QIL2 QIL3 : QidList .
+ vars QIL1 QIL2 QIL3 QIL4 : QidList .
 *** vars M M' TOP : Module .
  var M : Module .
 *** var  VS : VariableSet .
@@ -122,6 +122,7 @@ mod PLSS is
  eq qModule = 'QQ .
  op userModule : -> FModule .
  eq userModule = upModule(qModule, true) .
+ 
 
  *** Run command
  op run : -> Configuration [ctor] .
@@ -265,28 +266,60 @@ mod PLSS is
  ************************************************
  ***    INICIO ZONA DE TRABAJO     	***
  ************************************************
-  
+
  ***		 			                         ***
  ***	SOFT-NARROWING     ***
  ***		 			                         ***
 
- crl [softNarrowComm] :
-     < plss : PLSS | state: executeComm, input: ('softnarrow__['bubble[T], 'bubble[T1]], INPLST), module: M, AtS >
-  => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
-     write(stdout, plss, STR)
-  if {T', Ty} := metaParse(M, downQidList(T), anyType) /\
-	 {T1', T1y} := metaParse(M, downQidList(T1), anyType) /\
-	 {T'', 'SoftDish, VSubs:Substitution, VQid:Qid, VSubs2:Substitution, VQid2:Qid } :=
-		metaNarrowingSearch(M, T', T1', '*, unbounded, 'match, 0) /\
-	 QIL := metaPrettyPrint(M, T'') /\
-	 QIL1 := upTerm(VSubs:Substitution) /\
-	 QIL2 := upTerm(VSubs2:Substitution) /\
-     STR := "\nResult (SoftDish-term): " + printTokens(QIL) + 
-		"\n\nSubstitution1: " + printTokens(QIL1) + 
-		"\n\nSubstitution2: " + printTokens(QIL2) + "\n" .
+*** Función auxiliar que imprime (QidList) sustituciones:
+ op printSB : Module Substitution -> QidList .
+ eq printSB (M, none) = 'none .
+ eq printSB (M, V:Variable <- T:Term) = getName(V:Variable)    '<-    metaPrettyPrint(M, T:Term) .
+ eq printSB (M, V:Variable <- T:Term ; S:Substitution) =  printSB (M, V:Variable <- T:Term)  printSB(M, S:Substitution) .
+
+ *** Caso de error de parseo en los argumentos de entrada del metaNarrowingSearch
+	crl [softNarrowComm] :
+		< plss : PLSS | state: executeComm, input: ('softnarrow__['bubble[T], 'bubble[T1]], INPLST), module: M, AtS >
+	=> < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
+		write(stdout, plss, STR)
+	if (not (metaParse(M, downQidList(T), 'SoftDish) :: ResultPair) or 
+	   not (metaParse(M, downQidList(T1), 'SoftDish) :: ResultPair)) /\
+	   STR := "\nError en los términos parseados para MetaNarrowingSearch.\n\n" .
+
+ *** Caso de no encontrar solucion con metaNarrowingSearch
+	crl [softNarrowComm] :
+		< plss : PLSS | state: executeComm, input: ('softnarrow__['bubble[T], 'bubble[T1]], INPLST), module: M, AtS >
+	=> < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
+		write(stdout, plss, STR)
+	if  {T', Ty} := metaParse(M, downQidList(T), 'SoftDish) /\  *** SoftDish, anyType
+		{T1', T1y} := metaParse(M, downQidList(T1), 'SoftDish) /\
+		not (metaNarrowingSearch(M, T', T1', '*, unbounded, 'none, 0) :: NarrowingSearchResult) /\
+		STR := "\nNo solución en la búsqueda con MetaNarrowingSearch.\n\n" .
+
+ *** Caso de encontrar solucion con metaNarrowingSearch
+	crl [softNarrowComm] :
+		< plss : PLSS | state: executeComm, input: ('softnarrow__['bubble[T], 'bubble[T1]], INPLST), module: M, AtS >
+	=> < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
+		write(stdout, plss, STR)
+	if  {T', Ty} := metaParse(M, downQidList(T), 'SoftDish) /\
+		{T1', T1y} := metaParse(M, downQidList(T1), 'SoftDish) /\
+		metaNarrowingSearch(M, T', T1', '*, unbounded, 'none, 0) :: NarrowingSearchResult /\
+		{T'', 'SoftDish, VSubs:Substitution, VQid:Qid, VSubs2:Substitution, VQid2:Qid } :=
+			metaNarrowingSearch(M, T', T1', '*, unbounded, 'none, 0) /\
+		QIL := metaPrettyPrint(M, T'') /\
+		QIL1 := printSB(M, VSubs:Substitution) /\
+		QIL2 := printSB(M, VSubs2:Substitution) /\
+		QIL3 := metaPrettyPrint(M, T') /\
+		QIL4 := metaPrettyPrint(M, T1') /\
+		STR := "\nResult (SoftDish-term): " + printTokens(QIL) +
+			"\n\nSubstitution1: " + printTokens(QIL1) +
+			"\nSubstitution2: " + printTokens(QIL2) +
+			"\n\nTerm-ini (T): " + printTokens(QIL3) +
+			"\n\nTerm-patron (T1): " + printTokens(QIL4) + "\n" .
 
 
 
+ 
  ************************************************
  ***    FIN ZONA DE TRABAJO     		***
  ************************************************
@@ -476,106 +509,3 @@ eof
 
 **************************************
 **************************************
-
-*** No Solution???
-
-***	 QIL := metaPrettyPrint(M, T'') /\
-***	 QIL2 := metaPrettyPrint(M, T1') /\
-***	 STR := "\nResult: Tini: " + printTokens(QIL) +
-***		"\n\nT2: " + printTokens(QIL2) + "\n" .
-
-***	 QIL := metaPrettyPrint(M, T'') /\
-***	 QIL2 := upTerm(VSubs:Substitution) /\
-***	 QIL3 := upTerm(VSubs2:Substitution) /\
-***     STR := "\nResult (SoftDish-term): " + printTokens(QIL) + 
-***		"\n\nSubstitution1: " + printTokens(QIL2) + 
-***		"\n\nSubstitution2: " + printTokens(QIL3) + "\n" .
-
-
-
-*** Poniendo el sgte cmd:
-*** (softnarrow (TinyDish1  ([cdc6 = 0]))  (TinyDish1  ([cdc6 = 0])) )
-
-	*** Con esto:
-		*** QIL := metaPrettyPrint(M, T'') /\
-		*** QIL2 := upTerm(VSubs:Substitution) /\
-		*** QIL3 := upTerm(VSubs2:Substitution) /\
-    	*** STR := "\nResult (SoftDish-term): " + printTokens(QIL) + 
-		***	"\n\nSubstitution1: " + printTokens(QIL2) + 
-		***	"\n\nSubstitution2: " + printTokens(QIL3) + "\n" .
-
-	*** Se imprime:
-		***Result (SoftDish-term): PD(
-		***{Tgfb1RC | TgfbR1 TgfbR2}
-		***{XOut | Tgfb1})[cdc6 = 0]
-		***Substitution1: none.Substitution
-		***Substitution2: none.Substitution
-
-
-	*** Con esto:
-		*** ...
-		*** QIL := metaPrettyPrint(M, T') /\
-		*** QIL2 := metaPrettyPrint(M, T1') /\
-		*** STR := "\nResult (SoftDish-term): " + printTokens(QIL) + "\n" +
-		***	"\nResult (SoftDish-term1): " + printTokens(QIL2) + "\n" .
-
-	*** Se imprime:
-		***Result (SoftDish-term): TinyDish1[cdc6 = 0]
-		***Result (SoftDish-term1): TinyDish1[cdc6 = 0]
-
-
-**************************************
-**************************************
-
- crl [softNarrowComm] :
-     < plss : PLSS | state: executeComm, input: ('softnarrow__['bubble[T], 'bubble[T1]], INPLST), module: M, AtS >
-  => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
-     write(stdout, plss, STR)
-  if {T', Ty} := metaParse(M, downQidList(T), anyType) /\
-	 ***{T1', T1y} := metaParse(M, downQidList(T1), anyType) /\
-     {T'', 'SoftDish, VSubs:Substitution, VQid:Qid, VSubs2:Substitution, VQid2:Qid } :=
-		metaNarrowingSearch(M, T', T', '*, unbounded, 'match, 0) /\
-     QIL := metaPrettyPrint(M, T'') /\
-	 QIL2 := upTerm(VSubs:Substitution) /\
-	 QIL3 := upTerm(VSubs2:Substitution) /\
-     STR := "\nResult (SoftDish-term): " + printTokens(QIL) + 
-		"\n\nSubstitution1: " + printTokens(QIL2) + 
-		"\n\nSubstitution2: " + printTokens(QIL3) + "\n" .
-
-**************************************
-**************************************
-
- crl [softNarrowComm] :
-     < plss : PLSS | state: executeComm, input: ('softnarrow_['bubble[T]], INPLST), module: M, AtS >
-  => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
-     write(stdout, plss, STR)
-  if {T', Ty} := metaParse(M, downQidList(T), anyType) /\
-     {T'', 'SoftDish, VSubs:Substitution, VQid:Qid, VSubs2:Substitution, VQid2:Qid } :=
-		metaNarrowingSearch(M, T', T', '*, unbounded, 'match, 0) /\
-     QIL := metaPrettyPrint(M, T'') /\
-	 QIL2 := upTerm(VSubs:Substitution) /\
-	 QIL3 := upTerm(VSubs2:Substitution) /\
-     STR := "\nResult (SoftDish-term): " + printTokens(QIL) + 
-		"\n\nSubstitution1: " + printTokens(QIL2) + 
-		"\n\nSubstitution2: " + printTokens(QIL3) + "\n" .
-
- crl [softNarComm] : 
-     < plss : PLSS | state: executeComm, input: ('softnar__['bubble[T], 'bubble[T1]], INPLST), module: M, AtS >
-  => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
-     write(stdout, plss, STR)
-  if {T', Ty} := metaParse(M, downQidList(T), anyType) /\
-	 ***{T1', T1y} := metaParse(M, downQidList(T1), anyType) /\
-     {T'', 'SoftDish, VSubs:Substitution, VQid:Qid, VSubs2:Substitution, VQid2:Qid } :=
-		metaNarrowingSearch(M, T', T', '*, unbounded, 'match, 0) /\
-     QIL := metaPrettyPrint(M, T'') /\
-     STR := "\nResult: " + printTokens(QIL) + "\n" .
-
-**************************************
-**************************************
-
- eq run =
-    <> < plss : PLSS | file: null, out: "", state: init, db: empty,
-              load: modList, uload: umodList,
-              input: empty, module: userModule, strat: 'undefZero >
-    createInterpreter(interpreterManager, plss, none) .
-

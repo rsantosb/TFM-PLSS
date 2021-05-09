@@ -1,0 +1,23 @@
+(softnarrow (manolito)  (pepito) )
+
+(softnarrow (TinyDish1)  (TinyDish1  ([cdc6 = 0])) )
+
+(softnarrow (TinyDish6)  (TinyDish1  ([cdc6 = 0])) )
+
+
+
+(softnarrow (  SSSS:SoftDish)   (PD({XOut    | Tgfb1  }  ) ([cdc6 = 1])) )
+
+(softnarrow (  DDDD:Dish AAAA:AttSet)   (PD({XOut    | Tgfb1  }  ) ([cdc6 = 1])) )
+
+(softnarrow (  DDDD:Dish ([cdc6 = 1], AAAA:AttSet))   (PD({XOut    | Tgfb1  }  ) ([cdc6 = 1])) )
+
+(softnarrow (  DDDD:Dish ([cdc6 = VVVV:Value], AAAA:AttSet))   (PD({XOut    | Tgfb1  }  ) ([cdc6 = 1])) )
+
+
+
+(softnarrow (  DDDD:Dish ([cdc6 = *]) )   (PD({XOut    | Tgfb1  }  ) ([cdc6 = 1])) )
+
+
+
+(softnarrow (  DDDD:Dish ([cdc6 = 0]))   (PD({XOut    | Tgfb1  }  ) ([cdc6 = 1])) )

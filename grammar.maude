@@ -23,7 +23,7 @@ fmod COMMAND-SIGN is
  op loadstrat_ : @Token@ -> @Command@ [ctor] . 
 
 *** new
- op softnarrow_ : @Bubble@ -> @Command@ [ctor] .
+ op softnarrow__ : @Bubble@ @Bubble@ -> @Command@ [ctor] .
 endfm
 
 
