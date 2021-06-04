@@ -1,0 +1,29 @@
+mod HGFDISH is
+
+ inc ALLOPS .
+
+ op HgfDish : -> Dish .
+ op TinyDish : -> Dish .
+ op SmallDish : -> Dish .
+ op KKK : -> Dish .
+
+eq KKK = PD(
+ {XOut	|	Hgf}
+ {HgfRC |	HgfR}
+ {CLm	|	empty}
+ {CLi	|	[Cdc42 - GDP] [Hras - GDP] [Mras - GDP] [Rac1 - GDP] [Rala - GDP] [Rap1a - GDP] Src}
+ {CLc	|	[Gsk3s - act] Akt1 Bad Cbl Crk CrkL Ctnnb1 Eif4ebp1 Erks Fak1 Fak2 Gab1 Gab2 Grb2 Jnks Lkb1
+				P38s Pak1 Pi3k Plcg1 Pxn Raf1 Rps6 Rsk1 S6k1 Smad2 Smad3 Stat3}
+ {NUc	|	Creb1 Elk1 Ets1 Fos-gene Foxo1 IL6-gene Mmp1-gene Mmp9-gene Myc-gene Pai1-gene}) .
+
+
+eq HgfDish = PD(
+ {XOut	|	Hgf}
+ {HgfRC |	HgfR}
+ {CLm 	|	empty}
+ {CLi 	|	[Cdc42 - GDP] [Hras - GDP] [Mras - GDP] [Rac1 - GDP] [Rala - GDP] [Rap1a - GDP] Src}
+ {CLc 	|	[Gsk3s - act] Akt1 Bad Cbl Crk CrkL Ctnnb1 Eif4ebp1 Erks Fak1 Fak2 Gab1 Gab2 Grb2
+				Jnks Lkb1 P38s Pak1 Pi3k Plcg1 Pxn Raf1 Rps6 Rsk1 S6k1 Smad2 Smad3 Stat3}
+ {NUc	|	Creb1 Elk1 Ets1 Fos-gene Foxo1 IL6-gene Mmp1-gene Mmp9-gene Myc-gene Pai1-gene}) .
+
+endm

@@ -1,0 +1,28 @@
+mod IL6DISH is
+
+ inc ALLOPS .
+
+ op IL6Dish : -> Dish .
+ op TinyDish : -> Dish .
+ op SmallDish : -> Dish .
+ op KKK : -> Dish .
+
+eq KKK = PD(
+ {XOut	|	IL6}
+ {GP130C |	Gp130}
+ {CLm	|	IL6R}
+ {CLi	|	[Rac1 - GDP]}
+ {CLc	|	Stat1 Stat3 Akt1 Erks Hck Gab1 Gab2 Jak1 Jak2 Mkk4 Pkcd Shp2 Tyk2 Vav1 Vav2 Vav3}
+ {NUc	|	Foxo1 Lmo4 Irf1-gene RankL-gene Socs3-gene A2m-gene}) .
+
+
+eq IL6Dish = PD(
+ {XOut	|	IL6}
+ {GP130C |	Gp130}
+ {CLm	|	IL6R}
+ {CLi	|	[Rac1 - GDP]}
+ {CLc	|	Stat1 Stat3 Akt1 Erks Hck Gab1 Gab2 Jak1 Jak2 Mkk4 Pkcd Shp2 Tyk2 Vav1 Vav2 Vav3}
+ {NUc 	|	Foxo1 Lmo4 Irf1-gene RankL-gene Socs3-gene A2m-gene}) .
+
+endm
+

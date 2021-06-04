@@ -1,3 +1,11 @@
-red (Tgfb1Dish  ([cdc6 = 0])) 
+(softnarrowsearch (TinyDish6)
+								(TinyDish1 ([cdc6 = 0])))
 
+(softnarrowsearch (TinyDish ([cdc6 = *]))
+								(TinyDish1 ([cdc6 = 1])))
 
+(softnarrowsearch (SSSS:SoftDish)
+								(PD( { XOut | Tgfb1 } ) ([cdc6 = 1])))
+
+(softnarrowsearch (PD( {XOut | Tgfb1 } SOUP:Soup) ([cdc6 = VVVV:Value], AAAA:AttSet))
+								(PD( {XOut | empty } SOUP2:Soup) ([cdc6 = 1])))

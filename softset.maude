@@ -195,6 +195,7 @@ endfm
 
 
 *******************************************************
+
 fmod SOFTSET is
  pr META-LEVEL .
  pr VALUE .
@@ -219,10 +220,12 @@ fmod SOFTSET is
 
  op atts : SoftDish -> AttSet .
  eq atts(DSH ATTS) =  ATTS .
+
 endfm
 
 
 *******************************************************
+
 fmod SOFT-SET-FUN is
  pr SOFTSET .
  pr PREDEF-VALUE-FUNCTIONS .
@@ -232,7 +235,7 @@ fmod SOFT-SET-FUN is
 
  op [_,_] : Qid Nat -> ApplyCell [ctor] .
 
- vars TL TL' ATTS : TermList .
+ vars TL TL' ATTS ATTS' : TermList .
  var  SB : Substitution .
  var  V : Variable .
  var  MX : SoftSet .
@@ -249,10 +252,28 @@ fmod SOFT-SET-FUN is
  eq computeValue(MX,'undefWRow) = undefWRow(MX) .
  eq computeValue(MX,'undefWCol) = undefWCol(MX) .
 
+
+
+ ************************************************
+ ************************************************
+ ***    INICIO ZONA DE TRABAJO     	***
+ ************************************************
+
  op rewStrat : Module Term TermList Qid -> Term .
  ceq rewStrat(M, T, ATTS, Q) = rewStrat(M, T', ATTS, Q)
   if T' := next(M, T, ATTS, Q) .
  eq rewStrat(M, T, ATTS, Q) = T [owise] .
+
+***(
+op getAtts : Term -> TermList .
+eq getAtts(T TL) = TL .
+
+ op rewStrat : Module Term TermList Qid -> Term .
+ ceq rewStrat(M, T, ATTS, Q) = rewStrat(M, T', ATTS', Q)
+   if T' := next(M, T, ATTS, Q)  /\
+      ATTS' := getAtts(T') .
+ eq rewStrat(M, T, ATTS, Q) = T [owise] .
+)
 
  op next : Module Term TermList Qid ~> Term .
  ceq next(M, T, ATTS, Q) = T'
@@ -272,6 +293,101 @@ fmod SOFT-SET-FUN is
   if metaSearch(M, T, V, nil, '+, 1, N) == failure .
  ceq allReachableTerms(M, T, V, N, TL) = allReachableTerms(M, T, V, s(N), (TL, T'))
   if {T', Ty, SB} := metaSearch(M, T, V, nil, '+, 1, N) .
+
+ ************************************************
+ ************************************************
+ ***    FIN ZONA DE TRABAJO     	***
+ ************************************************
+
+
+
+ ************************************************
+ ************************************************
+ ***    INICIO ZONA DE TRABAJO     	***
+ ************************************************
+
+ op rewNStrat : Module Term TermList Qid -> Term .
+ ceq rewNStrat(M, T, ATTS, Q) = rewNStrat(M, T', ATTS, Q)
+  if T' := nextN(M, T, ATTS, Q) .
+ eq rewNStrat(M, T, ATTS, Q) = T [owise] .
+
+ op nextN : Module Term TermList Qid ~> Term .
+ ceq nextN(M, T, ATTS, Q) = T'
+  if TL := allReachableNTerms(M, T) /\
+     TL =/= empty /\
+     MX := matrixFromTerms(TL, ATTS) /\
+     N := computeValue(MX, Q) /\
+     T' := TL [N] .
+
+ op allReachableNTerms : Module Term -> TermList .
+ ceq allReachableNTerms(M, T) = allReachableNTerms(M, T, V, 0, empty)
+  if Ty := getType(metaReduce(M, T)) /\
+     V := qid("V:" + string(Ty)) .
+
+ op allReachableNTerms : Module Term Variable Nat TermList -> TermList .
+ ceq allReachableNTerms(M, T, V, N, TL) = TL
+  if metaNarrowingSearch(putNarrowingAtt(M), T, V, '+, unbounded, 'none, N) == failure .
+ ceq allReachableNTerms(M, T, V, N, TL) = allReachableNTerms(M, T, V, s(N), (TL, T'))
+  if {T', Ty, SB, VQid:Qid, VSubs2:Substitution, VQid2:Qid} := metaNarrowingSearch(putNarrowingAtt(M), T, V, '+, unbounded, 'none, N) .
+
+
+
+*** Función auxiliar que imprime (QidList) sustituciones:
+ op printSB : Module Substitution -> QidList .
+ eq printSB (M, none) = 'none .
+ eq printSB (M, V:Variable <- T:Term) = getName(V:Variable)    '<-    metaPrettyPrint(M, T:Term) .
+ eq printSB (M, V:Variable <- T:Term ; S:Substitution) =  printSB (M, V:Variable <- T:Term)  printSB(M, S:Substitution) .
+
+
+*** Función auxiliar putNarrowingAtt que modifica un modulo añadiendo el atributo narrowing a cada regla:
+vars L R : Term .
+var  C : Condition .
+var  AtS : AttrSet .
+*** var M : Module .
+var  H : Header .
+var  IL : ImportList .
+var  SS : SortSet .
+var  SSDS : SubsortDeclSet .
+var ODS : OpDeclSet .
+var  MAS : MembAxSet .
+var  EqS : EquationSet .
+vars RS RS' : RuleSet .
+
+op putNarrowingAtt : Module -> Module .
+ceq putNarrowingAtt(M) = setRules(M, RS')
+ if RS' := putNarrowingAtt(getRules(M)) .
+
+op putNarrowingAtt : RuleSet -> RuleSet .
+eq putNarrowingAtt(none) = none .
+ceq putNarrowingAtt(rl L => R [AtS] . RS) = rl L => R [AtS] . putNarrowingAtt(RS)
+ if hasNarrowing(AtS) .
+ceq putNarrowingAtt(crl L => R if C [AtS] . RS) = crl L => R if C [AtS] . putNarrowingAtt(RS)
+ if hasNarrowing(AtS) .
+ceq putNarrowingAtt(rl L => R [AtS] . RS) = rl L => R [narrowing AtS] . putNarrowingAtt(RS)
+ if not hasNarrowing(AtS) .
+ceq putNarrowingAtt(crl L => R if C [AtS] . RS) = crl L => R if C [narrowing AtS] . putNarrowingAtt(RS)
+ if not hasNarrowing(AtS) .
+
+op hasNarrowing : AttrSet -> Bool .
+eq hasNarrowing(narrowing AtS) = true .
+eq hasNarrowing(AtS) = false [owise] .
+
+op setRules : SModule RuleSet -> SModule .
+eq setRules(mod H is IL sorts SS . SSDS ODS MAS EqS RS endm, RS') =  
+                      mod H is IL sorts SS . SSDS ODS MAS EqS RS' endm .
+
+op getRules : SModule -> RuleSet .
+eq getRules(mod H is IL sorts SS . SSDS ODS MAS EqS RS endm)  =  RS .
+*** fin de funciones auxiliares
+
+
+
+
+ ************************************************
+ ***    FIN ZONA DE TRABAJO     		***
+ ************************************************
+ ************************************************
+
 
  op matrixFromTerms : TermList TermList -> SoftSet .
  eq matrixFromTerms(empty, ATTS) = mt .
@@ -303,5 +419,8 @@ fmod SOFT-SET-FUN is
  op _[_] : TermList Nat ~> Term .
  eq (T, TL) [0] = T .
  eq (T, TL) [s(N)] = TL [N] .
+ 
+ *** op rewNarrow : Module Term TermList Qid -> Term .
+  
 endfm
 

@@ -1,0 +1,32 @@
+mod NGFDISH is
+
+ inc ALLOPS .
+
+ op NgfDish : -> Dish .
+ op TinyDish : -> Dish .
+ op SmallDish : -> Dish .
+ op KKK : -> Dish .
+
+eq KKK = PD(
+ {XOut	|	Ngf}
+ {TrkaC |	Trka}
+ {NgfRC |	NgfR}
+ {CLm 	|	empty}
+ {CLi	|	[Hras - GDP] [Rap1a - GDP] [Rit1 - GDP]}
+ {CLc 	|	Akt1 Aps Araf Arms Braf Crk CrkI CrkL Erk5 Erks Frs2 Gab1 Gab2 Ikba Ikk1 Ikk2 Irak1 Jnks Matk Mek1 Mek2 Myd88
+				P38s Pi3k Pkcd Plcg1 Pxn Raf1 RapGef1 Rela Ripk2 Sh2b1 Shc1 Sqstm1 Traf6 Znf274}
+ {NUc 	|	Egr1-gene Elk1 Fos-gene Foxo1 Foxo3}) .
+
+
+eq NgfDish = PD(
+ {XOut	|	Ngf}
+ {TrkaC |	Trka}
+ {NgfRC |	NgfR}
+ {CLm	|	empty}
+ {CLi 	|	[Hras - GDP] [Rap1a - GDP] [Rit1 - GDP]}
+ {CLc	|	Akt1 Aps Araf Arms Braf Crk CrkI CrkL Erk5 Erks Frs2 Gab1 Gab2 Ikba Ikk1 Ikk2 Irak1 Jnks Matk Mek1 Mek2 Myd88
+				P38s Pi3k Pkcd Plcg1 Pxn Raf1 RapGef1 Rela Ripk2 Sh2b1 Shc1 Sqstm1 Traf6 Znf274}
+ {NUc 	|	Egr1-gene Elk1 Fos-gene Foxo1 Foxo3}) .
+
+endm
+

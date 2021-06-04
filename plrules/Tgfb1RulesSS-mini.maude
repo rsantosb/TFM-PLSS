@@ -1,0 +1,53 @@
+*********1*********2*********3*********4*********5*********6*********7****
+***
+***  Tgfb1Rules.maude
+***
+**************************************************************************
+mod TGFB1RULES is inc ALLOPS .
+
+  pr SOFTSET .
+
+var xout : Soup .
+vars clo clm clr cli clc nuo num nui nuc : Soup .
+vars moo mom moi moc mio mim mii mic : Soup .
+vars ero erm eri erc pxo pxm pxi pxc : Soup .
+vars gao gam gai gac lyo lym lyi lyc : Soup .
+vars eeo eem eei eec leo lem lei lec : Soup .
+vars cpo cpm cpi cpc ct ptc sig : Soup .
+vars tgfb1rc : Soup .
+var  SOUP : Soup .
+vars fak1mods smad2mods smad3mods tak1mods : ModSet .
+var  Atts : AttSet .
+var  V : Value .
+
+ops cdc6 cdkn1a cdkn2b col1a1 col3a1 timp1 csrp2 cst6 ctgf dst fn1
+    gfi1 mmp2 mmp9 myc mylk pai1 pthlh rorc smad6 smad7 tgfb1
+    timp1 : -> AttId [ctor] .
+
+
+*** ~/evidence/Tgfb1-Evidence/00Tgfb1evidence.txt
+
+
+***rl[XXXXXX]:
+***PD({XOut    | Tgfb1 }  SOUP ) ([cdc6 = 0])
+***  =>
+***PD({XOut    | Tgfb1 }  SOUP ) ([cdc6 = 1]) [narrowing] .
+
+rl[XXXXXX]:
+PD({XOut    | Tgfb1 }  SOUP ) ([cdc6 = 0])
+  =>
+PD({XOut    | Tgfb1 }  SOUP ) ([cdc6 = 1])  [narrowing]  .
+
+
+rl[931.TgfbR1.TgfbR2.by.Tgfb1]:
+  {XOut    | xout Tgfb1                                        }
+  {Tgfb1RC | tgfb1rc  TgfbR1 TgfbR2                            }
+  =>
+  {XOut    | xout                                              }
+  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) } .
+  ----------------------------------------------------------------
+  *** ~/evidence/Tgfb1-Evidence/TgfbR1.TgfbR2.by.Tgfb1.931.txt
+
+
+endm
+

@@ -83,8 +83,6 @@ mod PLSS is
  *** foo state
  op foo : -> State [ctor] .
 
-
-
  *** Object and class definition
  op PLSS : -> Cid .
  op plss : -> Oid .
@@ -101,6 +99,8 @@ mod PLSS is
  op umi:_ : Oid -> Attribute [ctor] .
  op mi:_ : Oid -> Attribute [ctor] .
  op strat:_ : Maybe{Qid} -> Attribute [ctor] .
+ op foo:_ : Maybe{Qid} -> Attribute [ctor] .
+
 
  *** Initial value for loading into the parsing metainterpreter
  op modList : -> List{Preload} .
@@ -112,16 +112,24 @@ mod PLSS is
               module('LIST) module('QID-LIST) 
               module('COMMON-SIGN) module('COMMAND-SIGN) module('PLSS-SIGN) .
 
+
  *** Initial value for loading into the user metainterpreter
  op umodList : -> List{Preload} .
  eq umodList = module('TRUTH-VALUE) module('BOOL-OPS) module('TRUTH) module('BOOL)
                module('NAT) module('TRIV) module('@NOMINAL@) .
 
+
  *** Initial value for loading into the user module
  op qModule : -> Qid .
- eq qModule = 'QQ .
+*** eq qModule = 'QQ2 .
+ eq qModule = 'QQ1 .
  op userModule : -> FModule .
+*** op userModule : -> Module .
  eq userModule = upModule(qModule, true) .
+
+**** PRUEBAS
+*** op userModuleNarrowing : -> Module .
+*** eq userModuleNarrowing = putNarrowingAtt(userModule) .
  
 
  *** Run command
@@ -171,6 +179,7 @@ mod PLSS is
  => < plss : PLSS | state: readFile, input: INPLST, AtS >
     openFile(fileManager, plss, STR, "r")
   if STR := string(downQid(T)) .
+*** PLSS> load softsetfile.txt
 
 
  ***        OPENFILE         ***
@@ -229,7 +238,7 @@ mod PLSS is
      < plss : PLSS | state: executeComm, input: ('red_['bubble[T]], INPLST), module: M, AtS >
   => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
      write(stdout, plss, STR)
-  if {T', Ty} := metaParse(M, downQidList(T), anyType) /\
+  if {T', Ty} := metaParse(M, downQidList(T), anyType) /\   *** 'SoftDish
      {T'', Ty'} := metaReduce(M, T') /\
      QIL := metaPrettyPrint(M, T'') /\
      STR := "\nResult: " + printTokens(QIL) + "\n" .
@@ -244,6 +253,7 @@ mod PLSS is
  => < plss : PLSS | state: print&executeComm, input: INPLST, strat: downQid(T), AtS >
      write(stdout, plss, STR)
   if STR := "\nLoaded strategy function ( " +  string(downQid(T)) + " )\n" .
+*** PLSS> loadstrat undefZero
 
 
  ***		 			                         ***
@@ -255,11 +265,69 @@ mod PLSS is
   => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, strat: MQ, AtS >
      write(stdout, plss, STR)
   if {'__[DISH, ATTS], 'SoftDish} := metaParse(M, downQidList(T), 'SoftDish) /\
+***     T' := rewStrat(M, (DISH ATTS), ATTS, MQ) /\
      T' := rewStrat(M, DISH, ATTS, MQ) /\
      QIL := metaPrettyPrint(M, T') /\
+     STR := "\nResult: " + printTokens(QIL) + "\n"  [print ATTS DISH]  .
+
+
+ ***		 			                         					***
+ ***	SOFT-NARROWING-SEARCH     	***
+ ***		 			                         					***
+
+ *** Caso de error de parseo en los argumentos de entrada del metaNarrowingSearch
+	crl [softNarrowSearchComm] :
+		< plss : PLSS | state: executeComm, input: ('softnarrowsearch__['bubble[T], 'bubble[T1]], INPLST), module: M, AtS >
+	=> < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
+		write(stdout, plss, STR)
+	if (not (metaParse(M, downQidList(T), 'SoftDish) :: ResultPair) or 
+	   not (metaParse(M, downQidList(T1), 'SoftDish) :: ResultPair)) /\
+	   STR := "\nError en los términos parseados para MetaNarrowingSearch.\n\n" .
+
+ *** Caso de no encontrar solucion con metaNarrowingSearch
+	crl [softNarrowSearchComm] :
+		< plss : PLSS | state: executeComm, input: ('softnarrowsearch__['bubble[T], 'bubble[T1]], INPLST), module: M, AtS >
+	=> < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
+		write(stdout, plss, STR)
+	if  {T', Ty} := metaParse(M, downQidList(T), 'SoftDish) /\  *** SoftDish, anyType
+		{T1', T1y} := metaParse(M, downQidList(T1), 'SoftDish) /\
+		not (metaNarrowingSearch(putNarrowingAtt(M), T', T1', '*, unbounded, 'none, 0) :: NarrowingSearchResult) /\
+		STR := "\nNo solución en la búsqueda con MetaNarrowingSearch.\n\n" .
+
+ *** Caso de encontrar solucion con metaNarrowingSearch
+	crl [softNarrowSearchComm] :
+		< plss : PLSS | state: executeComm, input: ('softnarrowsearch__['bubble[T], 'bubble[T1]], INPLST), module: M, AtS >
+	=> < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
+		write(stdout, plss, STR)
+	if  {T', Ty} := metaParse(M, downQidList(T), 'SoftDish) /\
+		{T1', T1y} := metaParse(M, downQidList(T1), 'SoftDish) /\
+		metaNarrowingSearch(putNarrowingAtt(M), T', T1', '*, unbounded, 'none, 0) :: NarrowingSearchResult /\
+		{T'', 'SoftDish, VSubs:Substitution, VQid:Qid, VSubs2:Substitution, VQid2:Qid } :=
+			metaNarrowingSearch(putNarrowingAtt(M), T', T1', '*, unbounded, 'none, 0) /\
+		QIL := metaPrettyPrint(M, T'') /\
+		QIL1 := printSB(M, VSubs:Substitution) /\
+		QIL2 := printSB(M, VSubs2:Substitution) /\
+		QIL3 := metaPrettyPrint(M, T') /\
+		QIL4 := metaPrettyPrint(M, T1') /\
+		STR := "\nResult (SoftDish-term): " + printTokens(QIL) +
+			"\nSubstitution1: " + printTokens(QIL1) +
+			"\nSubstitution2: " + printTokens(QIL2) +
+			"\nTerm-ini (T): " + printTokens(QIL3) +
+			"\nTerm-patron (T1): " + printTokens(QIL4) + "\n\n" .
+
+
+ ***							 			                        ***
+ ***	  SOFTNARROWREW (STRAT)   	***
+ ***		 			                        					***
+
+ crl [softnarrowrewstratComm] :
+     < plss : PLSS | state: executeComm, input: ('softnarrowrew_['bubble[T]], INPLST), module: M, strat: MQ, AtS >
+  => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, strat: MQ, AtS >
+     write(stdout, plss, STR)
+  if {'__[DISH, ATTS], 'SoftDish} := metaParse(M, downQidList(T), 'SoftDish) /\
+     T' := rewNStrat(M, DISH, ATTS, MQ) /\
+     QIL := metaPrettyPrint(M, T') /\
      STR := "\nResult: " + printTokens(QIL) + "\n" .
-
-
 
 
  ************************************************
@@ -268,56 +336,31 @@ mod PLSS is
  ************************************************
 
  ***		 			                         ***
- ***	SOFT-NARROWING     ***
+ ***		 			FOO	             ***
  ***		 			                         ***
 
-*** Función auxiliar que imprime (QidList) sustituciones:
- op printSB : Module Substitution -> QidList .
- eq printSB (M, none) = 'none .
- eq printSB (M, V:Variable <- T:Term) = getName(V:Variable)    '<-    metaPrettyPrint(M, T:Term) .
- eq printSB (M, V:Variable <- T:Term ; S:Substitution) =  printSB (M, V:Variable <- T:Term)  printSB(M, S:Substitution) .
-
- *** Caso de error de parseo en los argumentos de entrada del metaNarrowingSearch
-	crl [softNarrowComm] :
-		< plss : PLSS | state: executeComm, input: ('softnarrow__['bubble[T], 'bubble[T1]], INPLST), module: M, AtS >
-	=> < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
-		write(stdout, plss, STR)
-	if (not (metaParse(M, downQidList(T), 'SoftDish) :: ResultPair) or 
-	   not (metaParse(M, downQidList(T1), 'SoftDish) :: ResultPair)) /\
-	   STR := "\nError en los términos parseados para MetaNarrowingSearch.\n\n" .
-
- *** Caso de no encontrar solucion con metaNarrowingSearch
-	crl [softNarrowComm] :
-		< plss : PLSS | state: executeComm, input: ('softnarrow__['bubble[T], 'bubble[T1]], INPLST), module: M, AtS >
-	=> < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
-		write(stdout, plss, STR)
-	if  {T', Ty} := metaParse(M, downQidList(T), 'SoftDish) /\  *** SoftDish, anyType
-		{T1', T1y} := metaParse(M, downQidList(T1), 'SoftDish) /\
-		not (metaNarrowingSearch(M, T', T1', '*, unbounded, 'none, 0) :: NarrowingSearchResult) /\
-		STR := "\nNo solución en la búsqueda con MetaNarrowingSearch.\n\n" .
-
- *** Caso de encontrar solucion con metaNarrowingSearch
-	crl [softNarrowComm] :
-		< plss : PLSS | state: executeComm, input: ('softnarrow__['bubble[T], 'bubble[T1]], INPLST), module: M, AtS >
-	=> < plss : PLSS | state: print&executeComm, input: INPLST, module: M, AtS >
-		write(stdout, plss, STR)
-	if  {T', Ty} := metaParse(M, downQidList(T), 'SoftDish) /\
-		{T1', T1y} := metaParse(M, downQidList(T1), 'SoftDish) /\
-		metaNarrowingSearch(M, T', T1', '*, unbounded, 'none, 0) :: NarrowingSearchResult /\
-		{T'', 'SoftDish, VSubs:Substitution, VQid:Qid, VSubs2:Substitution, VQid2:Qid } :=
-			metaNarrowingSearch(M, T', T1', '*, unbounded, 'none, 0) /\
-		QIL := metaPrettyPrint(M, T'') /\
-		QIL1 := printSB(M, VSubs:Substitution) /\
-		QIL2 := printSB(M, VSubs2:Substitution) /\
-		QIL3 := metaPrettyPrint(M, T') /\
-		QIL4 := metaPrettyPrint(M, T1') /\
-		STR := "\nResult (SoftDish-term): " + printTokens(QIL) +
-			"\n\nSubstitution1: " + printTokens(QIL1) +
-			"\nSubstitution2: " + printTokens(QIL2) +
-			"\n\nTerm-ini (T): " + printTokens(QIL3) +
-			"\n\nTerm-patron (T1): " + printTokens(QIL4) + "\n" .
+ crl [foo] :
+    < plss : PLSS | state: executeComm, input: ('foo_['token[T]], INPLST), module: M, foo: Q, AtS >
+ => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, foo: 'manolo, AtS >
+     write(stdout, plss, STR)
+  if M':Module := putNarrowingAtt(M) /\
+     RS':RuleSet := putNarrowingAtt(getRules(M)) /\
+     STR := "\nFoo output ( " +  string(downQid(T)) + " )\n" [print M':Module RS':RuleSet M AtS] .
+***  if STR := "\nFoo output ( " +  string(downQid(T)) + " )\n" [print M AtS] .
+***  if STR := "\nFoo output ( " +  string(downQid(T)) + " )\n" [print putNarrowingAtt(M)] .
 
 
+ ***		 			                         ***
+ ***		 LOADMODULE	 	 ***
+ ***		 			                         ***
+
+ crl [loadmoduleComm] :
+    < plss : PLSS | state: executeComm, input: ('loadmodule_['token[T]], INPLST), module: M, AtS >
+*** => < plss : PLSS | state: print&executeComm, input: INPLST, module: upModule(downQid(T), true), AtS >
+ => < plss : PLSS | state: print&executeComm, input: INPLST, module: putNarrowingAtt(upModule(downQid(T), true)), AtS >
+     write(stdout, plss, STR)
+  if STR := "\nLoaded Pathway Logic module ( " +  string(downQid(T)) + " )\n" .
+*** PLSS> loadmodule QQ1
 
  
  ************************************************
@@ -332,12 +375,12 @@ mod PLSS is
 
  rl [exit] :
     < plss : PLSS | state: executeComm, input: ('exit.@Command@), AtS >
- => write(stdout, plss, "Thanks for using PLSS!\n") [print AtS] .
-
+ => write(stdout, plss, "Thanks for using PLSS!\n") .
+ 
  rl [quit] :
     < plss : PLSS | state: executeComm, input: ('q.@Command@), AtS >
  => write(stdout, plss, "Thanks for using PLSS!\n") .
-
+ 
  rl [help] :
     < plss : PLSS | state: executeComm, input: ('help.@Command@, INPLST), AtS >
  => < plss : PLSS | state: print&executeComm, input: INPLST, AtS >
@@ -349,49 +392,69 @@ eq help =
   "\n   ======================== \n" +
   "   AYUDA DEL PROGRAMA: PLSS\n" +
   "   ========================\n\n" +
-  "   1. red + término: \n" +
-  "      Reduce el término para la simplificación ecuacional. \n" +
-  "      Ejemplos: \n" +
-  "      PLSS> red Tgfb1Dish \n" +
-  "      PLSS> red (Tgfb1Dish  ([cdkn2b = *])) \n" +
-  "      PLSS> red (PD({CLc | empty })  ([cdc6 = 0])) \n" +
-  "      PLSS> red (atts(Tgfb1Dish  ([cdc6 = 0]))) \n" +
-  "       \n" +
-  "   2. softrew + soft dish: \n" +
-  "      Reescribe el término con soft reglas. \n" +
-  "      Ejemplos: \n" +
-  "      PLSS> softrew (Tgfb1Dish  ([cdc6 = 0], [cdkn2b = *])) \n" +
-  "      PLSS> softrew (PD({CLc | empty })  ([cdc6 = 0])) \n" +
-  "       \n" +
-  "   3. loadstrat + estrategia: \n" +
-  "      Permite cargar una función de estrategia para el comando softrew.\n" +
-  "      Ejemplos: \n" +
-  "      PLSS> loadstrat undefSemi \n" +
-  "      PLSS> loadstrat undefWRow \n" +
-  "      PLSS> loadstrat undefOne \n" +
-  "       \n" +
-  "   4. softnarrow + soft dish: \n" +
-  "      EXPLICACION \n" +
-  "      Ejemplos: \n" +
-  "      PLSS> softnarrow (CAMBIAR) \n" +
-  "       \n" +
-  "   5. load + fichero de texto: \n" +
+
+  "   1. load + ( Fichero de texto ): \n" +
   "      Carga el fichero y ejecuta los comandos incluidos en el fichero. \n" +
   "      Cuando exista más de una instrucción, cada una deberá estar \n" +
   "      entre paréntesis. \n" +
   "      Ejemplo: \n" +
   "      PLSS> load softsetfile.txt \n" +
   "       \n" +
-  "   6. help: \n" +
-  "      Ayuda del programa. \n" +
-  "      Ejemplo: \n" +
-  "      PLSS> help \n" +
+  "   2. loadstrat + ( Estrategia ): \n" +
+  "      Permite cargar una función de estrategia para los comandos de simplificación.\n" +
+  "      Entre ellas se encuentran las funciones:\n" +
+  "      - undefZero, undefOne, undefSemi, undefWRow y undefWCol. \n" +
+  "      Ejemplos: \n" +
+  "      PLSS> loadstrat undefSemi \n" +
+  "      PLSS> loadstrat undefWRow \n" +
+  "      PLSS> loadstrat undefOne \n" +
   "       \n" +
-  "   7. exit / q: \n" +
+  "   3. loadmodule + ( Modelo biológico ): \n" +
+  "      Permite cargar un modelo biológico para los comandos de simplificación y búsqueda.\n" +
+  "      Entre ellos se encuentran:\n" +
+  "      - QQ1: Modelo TGFB1, QQ2: Modelo EGF, QQ3: Modelo HGF, QQ4: Modelo IL6 y QQ5: Modelo NGF. \n" +
+  "      Ejemplos: \n" +
+  "      PLSS> loadmodule QQ1 \n" +
+  "      PLSS> loadmodule QQ2 \n" +
+  "      PLSS> loadmodule QQ5 \n" +
+  "       \n" +
+  "   4. red + ( Término ): \n" +
+  "      Reduce el término para la simplificación ecuacional. \n" +
+  "      Ejemplos: \n" +
+  "      PLSS> red Tgfb1Dish \n" +
+  "      PLSS> red (Tgfb1Dish  ([cdkn2b = *])) \n" +
+  "      PLSS> red (PD({CLc | empty})  ([cdc6 = 0])) \n" +
+  "      PLSS> red (atts(Tgfb1Dish  ([cdc6 = 0]))) \n" +
+  "       \n" +
+  "   5. softrew + ( Término SoftDish ): \n" +
+  "      Reescribe el término con soft reglas. \n" +
+  "      Ejemplos: \n" +
+  "      PLSS> softrew (Tgfb1Dish  ([cdc6 = 0], [cdkn2b = *])) \n" +
+  "      PLSS> softrew (PD({CLc | empty})  ([cdc6 = 0])) \n" +
+  "       \n" +
+  "   6. softnarrowrew + ( Término SoftDish ): \n" +
+  "      Reescribe el término para la simplificación de la búsqueda mediante narrowing. \n" +
+  "      Ejemplos: \n" +
+  "      PLSS> softnarrowrew (Tgfb1Dish  ([cdc6 = 0], [cdkn2b = *])) \n" +
+  "      PLSS> softnarrowrew (PD({CLc | empty})  ([cdc6 = 0])) \n" +
+  "       \n" +
+  "   7. softnarrowsearch + ( Término SoftDish inicial ) ( Término SoftDish patrón ): \n" +
+  "      Se encarga de realizar el análisis con narrowing (estrechamiento).\n" +
+  "      Ejemplos: \n" +
+  "      PLSS> softnarrowsearch ( manolito ) ( pepito ) \n" +
+  "      PLSS> softnarrowsearch (DD:Dish([cdc6 = 0]))(PD({XOut|Tgfb1})([cdc6=1])) \n" +
+  "      PLSS> softnarrowsearch (SD:SoftDish) (PD({XOut | Tgfb1}) ([cdc6 = 1])) \n" +
+  "       \n" +
+  "   8. exit / q: \n" +
   "      Abandona la ejecución del programa. \n" +
   "      Ejemplos: \n" +
   "      PLSS> exit \n" +
-  "      PLSS> q \n" .
+  "      PLSS> q \n" +
+  "       \n" +
+  "   9. help: \n" +
+  "      Ayuda del programa. \n" +
+  "      Ejemplo: \n" +
+  "      PLSS> help \n" .
 
 
  ***          ERROR          ***
@@ -401,7 +464,6 @@ eq help =
     < plss : PLSS | mi: MI, state: parseComm, AtS >
  => < plss : PLSS | mi: MI, state: print&idle, AtS >
     write(stdout, plss, "The introduced command does not exit.\n") .
-
 
 
  ***		 			                         ***
@@ -420,7 +482,6 @@ eq help =
     < plss : PLSS | state: init, load: view(Q) LP, AtS >
  => < plss : PLSS | state: load-std-db, mi: MI, load: LP, AtS >
     insertView(MI, plss, upView(Q)) .
-
 
  rl [load-predef-module-from-module] :
     insertedModule(plss, MI)
@@ -452,7 +513,6 @@ eq help =
  => < plss : PLSS | state: load-grammar, load: nil, AtS >
     insertModule(MI, plss, GRAMMAR) .
 
-
  rl [load-grammar-finished] :
     insertedModule(plss, MI)
     < plss : PLSS | state: load-grammar, AtS >
@@ -464,7 +524,6 @@ eq help =
     < plss : PLSS | state: load-user-mi, uload: module(Q) LP, AtS >
  => < plss : PLSS | state: load-user-mods, umi: MI, uload: LP, AtS >
     insertModule(MI, plss, upModule(Q, false)) .
-
 
  rl [load-user-predef-module-metainterpreter] :
     insertedModule(plss, MI)
@@ -486,7 +545,7 @@ eq help =
  eq run =
     <> < plss : PLSS | file: null, out: "", state: init,
               load: modList, uload: umodList,
-              input: empty, module: userModule, strat: 'undefZero >
+              input: empty, module: putNarrowingAtt(userModule), strat: 'undefZero, foo: 'empty >
     createInterpreter(interpreterManager, plss, none) .
 
 endm

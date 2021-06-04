@@ -1,10 +1,14 @@
-(red (Tgfb1Dish  ([cdc6 = 0])) )
-
+(red (Tgfb1Dish ([cdc6 = 0])))
 
 (loadstrat undefWRow)
 
+(softrew (Tgfb1Dish ([cdc6 = 0])))
 
-(softrew (Tgfb1Dish ([cdc6 = 0])) )
+(softnarrowrew (Tgfb1Dish ([cdc6 = 0])))
 
+(softnarrowsearch (SD:SoftDish)
+								(PD({XOut | Tgfb1}) ([cdc6 = 1])))
 
-(softnarrow (Tgfb1Dish ([cdc6 = 0])) )
+(softnarrowsearch (DDDD:Dish ([cdc6 = 0])) (PD({XOut    | Tgfb1  }) ([cdc6 = 1])) )
+
+(exit)

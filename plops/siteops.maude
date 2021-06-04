@@ -1,0 +1,53 @@
+fmod SITEOPS is
+     inc MODIFICATION .
+
+op SrcSite : -> Site [ctor] .
+op Tnk2Site : -> Site [ctor] .
+op PkcSite : -> Site [ctor] .
+
+op sitenr : -> Site [ctor] .
+op SSite : -> Site [ctor] .
+op TSite : -> Site [ctor] .
+op STSite : -> Site [ctor] .
+op YSite : -> Site [ctor] .
+
+op CTSFV : -> Site [ctor] .      *** for Ikk1(S180),Ikk2(S181)
+op CTWPL  : -> Site [ctor] .     *** for Foxo1(T24),Foxo3a(T32)
+op DGYV  : -> Site [ctor] .      *** for Stat5a(Y694),Stat5b(Y699) 
+op FSF-Y  : -> Site [ctor] .     *** for Pkcs phosed by Pdpk1
+op FSFV  : -> Site [ctor] .      *** for Rsk1(S380),Rsk2(S377)
+op FSY :  -> Site [ctor] .       *** for Akts (Akt1 S473)
+op FTYV :  -> Site [ctor] .      *** for S6k1(T412akaT389),S6k2(T388akaT401)
+op KTF :  -> Site [ctor] .       *** for Akts (Akt1 T308)
+op LRTSC :  -> Site [ctor] .     *** for Ampka1(cstT174=T183),Ampka2(T172)
+op MSGLH :  -> Site [ctor] .     *** for Accs (Acc1 S80 = CST S79)
+op PTSP  : -> Site [ctor] .      *** for Polr2a YSPTSPS repeat S5
+op RXRXXS-T :  -> Site [ctor] .  *** for Tsc2 phos site
+op SFAE  : -> Site [ctor] .      *** for Gsk3a(S21),Gsk3b(S9)
+op SLCTS : -> Site [ctor] .      *** for Ikk1(S176/S180),Ikk2(S177/S181)
+op SPS   : -> Site [ctor] .      *** for Erk1(S246/S258),Erk2(S246/S258),Smad3(S416/S418)
+op SQ-TQ :  -> Site [ctor] .     *** for Atm substrate site
+op SVAKT : -> Site [ctor] .      *** for Mkk36s
+op SXYTRS  : -> Site [ctor] .    *** for Pak12s
+op TEY   : -> Site [ctor] .      *** for Erk1(S202/S204),Erk2(S185/S187)
+op TFCG  : -> Site [ctor] .      *** for Pkcs
+op TGY   : -> Site [ctor] .      *** for P38s
+op TPELTT  : -> Site [ctor] .    *** for Mnk1(T250/T257),Mnk2(T244/T249)
+op TPY   : -> Site [ctor] .      *** for Jnks
+op TQXF :  -> Site [ctor] .      *** for Mdc1 TQXF motif (T699/T719/T752/T765)
+op YSPT  : -> Site [ctor] .      *** for Polr2a YSPTSPS repeat S2
+
+
+op SMANS  : -> Site [ctor metadata "(\
+  (epitopes \"Mek1 phos(S218/S222)\"\
+            \"Mek2 phos(S222/S226)\"))"] .
+
+op TPXDS  : -> Site [ctor metadata "(\
+  (epitopes \"Rsk1 phos(T359/S363)\"\
+            \"Rsk2 phos(T355/S360)\"\
+            \"Rsk3 phos(T365/S369)\"\
+            \"Rsk6 phos(T368/S372)\"))"] .
+
+
+endfm
+

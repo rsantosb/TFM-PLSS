@@ -1,0 +1,113 @@
+fmod LOCATIONOPS is
+ inc LOCATION .
+
+ op Sig : -> LocName [ctor] .  *** a place for signatures
+
+ op CLm : -> LocName [ctor metadata "(\
+   (celltype Animal)\
+   (definition \"Plasma Membrane\"))"] .
+
+ op CLi : -> LocName [ctor metadata "(\
+   (celltype Animal)\
+   (definition \"Stuck to the inside of the plasma membrane or\"\
+               \"bound to another protein which is in the CLi or\"\
+               \"bound to the inner side of a protein in the CLm\"))"] .
+
+ op CLo : -> LocName [ctor metadata "(\
+   (celltype Animal)\
+   (definition \"Stuck to the outside of the plasma membrane or\"\
+               \"bound to another protein which is in the CLo or\"\
+               \"bound to the outer side of a protein in the CLm\"))"] .
+
+ op XOut : -> LocName [ctor metadata "(\
+   (celltype any)\
+   (definition \"Outside of and not stuck to any cell\"))"] .
+
+ op CLc : -> LocName [ctor metadata "(\
+   (celltype Animal)\
+   (definition \"Cytoplasm\"))"] .
+
+ op NUc : -> LocName [ctor metadata "(\
+   (celltype Animal)\
+   (definition \"Nucleus\"))"] .
+
+ op CVc : -> LocName [ctor metadata "(\
+   (celltype Animal)\
+   (definition \"Stuck to the cytoplasmic side of the membrane of a \"\
+               \"cytoplasmic vesicle or bound to another protein which \"\
+               \"is in the CVc or bound to the cytoplasmic side of a protein \"\
+               \"in the CVm\"))"] .
+
+ op CVm : -> LocName [ctor metadata "(\
+   (celltype Animal)\
+   (definition \"Cytoplasmic Vesicle Membrane\"))"] .
+
+ op CVl : -> LocName [ctor metadata "(\
+   (celltype Animal)\
+   (definition \"Stuck to the luminal side of the membrane of a \"\
+               \"cytoplasmic vesicle or bound to another protein which \"\
+               \"is in the CVl or bound to the luminal side of a protein \"\
+               \"in the CVm\"))"] .
+
+ op CHR : -> LocName [ctor metadata "(\
+   (definition \"Chromatin\"))"] .
+
+ op ERl : -> LocName [ctor metadata "(\
+   (definition \"Endoplasmic Reticulum lumen\"))"] .
+
+ op ERc : ->  LocName [ctor metadata "(\
+   (definition \"Endoplasmic Reticulum cytoplasmic side\"))"] .
+
+ op ERm : ->  LocName [ctor metadata "(\
+   (definition \"Endoplasmic Reticulum membrane\"))"] .
+
+ op GOl : -> LocName [ctor metadata "(\
+   (definition \"Golgi Apparatus lumen\"))"] .
+
+ op GOc : ->  LocName [ctor metadata "(\
+   (definition \"Golgi Apparatus cytoplasmic side\"))"] .
+
+ op GOm : ->  LocName [ctor metadata "(\
+   (definition \"Golgi Apparatus membrane\"))"] .
+
+ op LSl : -> LocName [ctor metadata "(\
+   (definition \"Lysosome lumen\"))"] .
+
+*** Receptor Complexes
+ op Cd40C : -> CompName [ctor] .    *** Csf1R complex
+ op Csf1RC : -> CompName [ctor] .    *** Csf1R complex
+ op EgfRC : -> CompName [ctor] .    *** EgfR complex
+ op GP130C : -> CompName [ctor] .    *** Gp130 complex
+ op FzdC : -> CompName [ctor] .    *** Any Fzd complex
+ op HgfRC : -> CompName [ctor] .    *** HgfR complex
+ op Igf1RC : -> CompName [ctor] .    *** Igf1R complex
+ op IfnaRC : -> CompName [ctor] .      *** IfnaR complex
+ op IfngRC : -> CompName [ctor] .      *** IfngR complex
+ op IL1R1C : -> CompName [ctor] .    *** IL1R complex
+ op IL2RC : -> CompName [ctor] .    *** IL2R complex
+ op IL4RC : -> CompName [ctor] .    *** IL4R complex
+ op IL10RC : -> CompName [ctor] .    *** IL10R complex
+ op IL12Rb1C : -> CompName [ctor] .
+ op IL12Rb2C : -> CompName [ctor] .
+ op IL12RC : -> CompName [ctor] .
+ op IL22RC : -> CompName [ctor] .
+ op InsRC : -> CompName [ctor] .
+ op NgfRC : -> CompName [ctor] .
+ op TrkaC : -> CompName [ctor] .
+ op PdgfRC : -> CompName [ctor] .
+ op Tgfb1RC : -> CompName [ctor] .
+ op TLR2C : -> CompName [ctor] .
+ op TLR3C : -> CompName [ctor] .
+ op TLR4C : -> CompName [ctor] .
+ op TLR9C : -> CompName [ctor] .
+ op TnfR1C : -> CompName [ctor] .
+ op VegfR2C : -> CompName [ctor] .
+
+*** nonReceptor Complexes
+ op AxinC : -> CompName [ctor] .  *** Axin1 or Axin2 complex
+ op DNAC : -> CompName [ctor] .  *** DNA complex
+ op PxnC : -> CompName [ctor] .  *** Pxn complex
+ op RNAC : -> CompName [ctor] .  *** capped mRNA complex
+ op Tak1C : -> CompName [ctor] .  *** Tak1 complex
+
+endfm

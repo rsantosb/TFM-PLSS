@@ -3,9 +3,9 @@ set include BOOL off .
 fmod COMMON-SIGN is
 *** sorts @Def@ @DefSet@ @Token@ @Bubble@ @NeTokenList@ .
 *** subsort @Def@ < @DefSet@ .
+*** op __ : @DefSet@ @DefSet@ -> @DefSet@ [ctor assoc comm] .
 
  sorts @Token@ @Bubble@ @NeTokenList@ . 
-*** op __ : @DefSet@ @DefSet@ -> @DefSet@ [ctor assoc comm] .
 endfm
 
 
@@ -15,15 +15,16 @@ fmod COMMAND-SIGN is
  sort @Command@ .
 
  op load_ : @Token@ -> @Command@ [ctor] .
+ op loadstrat_ : @Token@ -> @Command@ [ctor] .
+ op loadmodule_ : @Token@ -> @Command@ [ctor] .
  op red_ : @Bubble@ -> @Command@ [ctor] .
  op softrew_ : @Bubble@ -> @Command@ [ctor] .
+ op softnarrowrew_ : @Bubble@ -> @Command@ [ctor] .
+ op softnarrowsearch__ : @Bubble@ @Bubble@ -> @Command@ [ctor] .
  op exit : -> @Command@ [ctor] .
  op q : -> @Command@ [ctor] .
  op help : -> @Command@ [ctor] .
- op loadstrat_ : @Token@ -> @Command@ [ctor] . 
-
-*** new
- op softnarrow__ : @Bubble@ @Bubble@ -> @Command@ [ctor] .
+ op foo_ : @Token@ -> @Command@ [ctor] .
 endfm
 
 

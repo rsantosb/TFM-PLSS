@@ -1,13 +1,18 @@
+
+*********************************
+
 load plops/theops
 load plops/modificationops
 load plops/locationops
 load plops/chemicalops
 load plops/proteinops
 load plops/geneops
+load plops/siteops
 
 *********************************
 
 fmod ALLOPS is
+ inc SITEOPS .
  inc CHEMICALOPS .
  inc GENEOPS .
  inc LOCATIONOPS .
@@ -20,22 +25,77 @@ endfm
 
 load softset.maude
 load plrules/Tgfb1RulesSS
+load plrules/EgfRulesSS
+load plrules/HgfRulesSS
+load plrules/IL6RulesSS
+load plrules/NgfRulesSS
 load pldishes/Tgfb1Dish
+load pldishes/EgfDish
+load pldishes/HgfDish
+load pldishes/IL6Dish
+load pldishes/NgfDish
 
 *********************************
 
-mod ALLRULES is
+mod ALLRULES-TGFB1 is
  inc TGFB1RULES .
+endm
+
+mod ALLRULES-EGF is
+ inc EGFRULES .
+endm
+
+mod ALLRULES-HGF is
+ inc HGFRULES .
+endm
+
+mod ALLRULES-IL6 is
+ inc IL6RULES .
+endm
+
+mod ALLRULES-NGF is
+ inc NGFRULES .
 endm
 
 *********************************
 
 *********************************
 
-mod QQ is
- inc ALLRULES .
+mod QQ1 is
+ inc ALLRULES-TGFB1 .
  inc ALLOPS .
  inc SOFT-SET-FUN .
  inc TGFB1DISH .
 endm
+
+mod QQ2 is
+ inc ALLRULES-EGF .
+ inc ALLOPS .
+ inc SOFT-SET-FUN .
+ inc EGFDISH .
+endm
+
+mod QQ3 is
+ inc ALLRULES-HGF .
+ inc ALLOPS .
+ inc SOFT-SET-FUN .
+ inc HGFDISH .
+endm
+
+mod QQ4 is
+ inc ALLRULES-IL6 .
+ inc ALLOPS .
+ inc SOFT-SET-FUN .
+ inc IL6DISH .
+endm
+
+mod QQ5 is
+ inc ALLRULES-NGF .
+ inc ALLOPS .
+ inc SOFT-SET-FUN .
+ inc NGFDISH .
+endm
+
+
+*********************************
 

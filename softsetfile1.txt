@@ -1,8 +1,9 @@
-(softrew (Tgfb1Dish 
-  ([cdc6 = 0])) )
+(softrew (Tgfb1Dish ([cdc6 = 0])))
 
+(softnarrowrew (Tgfb1Dish ([cdc6 = 0])))
 
-(red (Tgfb1Dish  ([cdc6 = 0])) )
+(softrew (TinyDish1 ([cdc6 = 0])))
 
+(softnarrowrew (TinyDish1 ([cdc6 = 0])))
 
 (q)
