@@ -1,3 +1,6 @@
+
+**************************************
+
 load metaInterpreter.maude
 load parsing.maude
 load grammar.maude
@@ -5,6 +8,7 @@ load file.maude
 load plallSS.maude
 load parsing-command.maude
 
+**************************************
 
 mod PLSS is
  pr (MAYBE * (op maybe to noMod)){Module} .
@@ -16,7 +20,6 @@ mod PLSS is
  pr PRELOAD-LIST .
  inc STD-STREAM .
  pr ERROR-MSGS .
- pr DATABASE .
  pr SOFT-SET-FUN .
  inc FILE .
 
@@ -24,18 +27,12 @@ mod PLSS is
  vars TL IN INPLST ATTS : TermList .
  vars T T' T'' DISH T1 T1' : Term .
  vars FHIn MI : Oid .
- ***var  MM : Maybe{Module} .
  var  AtS : AttributeSet .
  var  LP : List{Preload} .
- ***vars DB DB' : Database .
- ***vars QIL ERR : QidList .
  var QIL : QidList .
  vars QIL1 QIL2 QIL3 QIL4 : QidList .
-*** vars M M' TOP : Module .
  var M : Module .
-*** var  VS : VariableSet .
  var  MQ : Maybe{Qid} .
-*** var  SI : SortInfo .
  vars Ty Ty' T1y : Type .
  var  Q : Qid .
  var  N : Nat .
@@ -58,19 +55,7 @@ mod PLSS is
  *** Parsing Module - metaparse
  op parseModMetaparse : -> State [ctor] .
  *** Parsing - create module list
- op parseList : -> State [ctor] .
- 
- *****************************************
- *** Parsing Module
- *** op parseModBubbles : -> State [ctor] .
-
- *** Parsing Module
- *** op parseModule : -> State [ctor] .
-
- *** Get parsed module
- *** op getModule : -> State [ctor] .
- *****************************************
-
+ op parseList : -> State [ctor] . 
  *** Parsing command
  op parseComm : -> State [ctor] .
  *** Execute command
@@ -80,12 +65,11 @@ mod PLSS is
  *** Waits for a wrote msg and keeps executing commands.
  op print&executeComm : -> State [ctor] .
 
- *** foo state
- op foo : -> State [ctor] .
 
  *** Object and class definition
  op PLSS : -> Cid .
  op plss : -> Oid .
+
 
  *** Attributes
  op uload:_ : List{Preload} -> Attribute [ctor gather (&)] .
@@ -93,47 +77,33 @@ mod PLSS is
  op module:_ : Maybe{Module} -> Attribute [ctor] .
  op file:_ : Maybe{Oid} -> Attribute [ctor] .
  op input:_ : TermList -> Attribute [ctor] .
- ***op db:_ : Database -> Attribute [ctor] .
  op state:_ : State -> Attribute [ctor] .
  op out:_ : String -> Attribute [ctor] .
  op umi:_ : Oid -> Attribute [ctor] .
  op mi:_ : Oid -> Attribute [ctor] .
  op strat:_ : Maybe{Qid} -> Attribute [ctor] .
- op foo:_ : Maybe{Qid} -> Attribute [ctor] .
 
 
  *** Initial value for loading into the parsing metainterpreter
  op modList : -> List{Preload} .
  eq modList = module('TRUTH-VALUE) module('BOOL-OPS) module('TRUTH)
-              module('BOOL) module('EXT-BOOL) module('NAT) module('RANDOM)
-              module('COUNTER) module('INT) module('RAT) module('FLOAT)
-              module('STRING) module('CONVERSION) module('BOUND) 
-              module('QID) view('Qid) module('TRIV) view('TRIV)
-              module('LIST) module('QID-LIST) 
-              module('COMMON-SIGN) module('COMMAND-SIGN) module('PLSS-SIGN) .
-
+					    module('BOOL) module('EXT-BOOL) module('NAT) module('RANDOM)
+					    module('COUNTER) module('INT) module('RAT) module('FLOAT)
+					    module('STRING) module('CONVERSION) module('BOUND) module('QID)
+					    view('Qid) module('TRIV) view('TRIV) module('LIST) module('QID-LIST)
+					    module('COMMON-SIGN) module('COMMAND-SIGN) module('PLSS-SIGN) .
 
  *** Initial value for loading into the user metainterpreter
  op umodList : -> List{Preload} .
  eq umodList = module('TRUTH-VALUE) module('BOOL-OPS) module('TRUTH) module('BOOL)
-               module('NAT) module('TRIV) module('@NOMINAL@) .
+						  module('NAT) module('TRIV)  .
 
 
  *** Initial value for loading into the user module
  op qModule : -> Qid .
-*** eq qModule = 'QQ2 .
- eq qModule = 'QQ1 .
+ eq qModule = 'QQ1 .					*** eq qModule = 'QQ2 .
  op userModule : -> FModule .
-*** op userModule : -> Module .
- eq userModule = upModule(qModule, true) .
-
-**** PRUEBAS
-*** op userModuleNarrowing : -> Module .
-*** eq userModuleNarrowing = putNarrowingAtt(userModule) .
- 
-
- *** Run command
- op run : -> Configuration [ctor] .
+ eq userModule = putNarrowingAtt(upModule(qModule, true)) .
 
 
  ***      PARSE COMMAND      ***
@@ -179,7 +149,6 @@ mod PLSS is
  => < plss : PLSS | state: readFile, input: INPLST, AtS >
     openFile(fileManager, plss, STR, "r")
   if STR := string(downQid(T)) .
-*** PLSS> load softsetfile.txt
 
 
  ***        OPENFILE         ***
@@ -198,13 +167,11 @@ mod PLSS is
          getLine(FHIn, plss)
     fi .
 
-
  ***       CLOSE FILE        ***
 
  rl [closedFile] : closedFile(plss, FHIn)
     < plss : PLSS | file: FHIn, state: readFile, AtS >
  => < plss : PLSS | file: null, state: parseModMetaparse, AtS > .
-
 
  ***       FILE PARSED       ***
 
@@ -218,7 +185,6 @@ mod PLSS is
      < plss : PLSS | out: Read, state: parseList, mi: MI, input: INPLST, AtS >
   => < plss : PLSS | out: "", state: executeComm, mi: MI, input: (TL, INPLST), AtS >
   if TL := extractTerms(T) .
-
 
  ***    FILE PARSE ERROR     ***
 
@@ -253,7 +219,6 @@ mod PLSS is
  => < plss : PLSS | state: print&executeComm, input: INPLST, strat: downQid(T), AtS >
      write(stdout, plss, STR)
   if STR := "\nLoaded strategy function ( " +  string(downQid(T)) + " )\n" .
-*** PLSS> loadstrat undefZero
 
 
  ***		 			                         ***
@@ -265,10 +230,9 @@ mod PLSS is
   => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, strat: MQ, AtS >
      write(stdout, plss, STR)
   if {'__[DISH, ATTS], 'SoftDish} := metaParse(M, downQidList(T), 'SoftDish) /\
-***     T' := rewStrat(M, (DISH ATTS), ATTS, MQ) /\
-     T' := rewStrat(M, DISH, ATTS, MQ) /\
+     T' := rewStrat(M, '__[DISH, ATTS], ATTS, MQ) /\
      QIL := metaPrettyPrint(M, T') /\
-     STR := "\nResult: " + printTokens(QIL) + "\n"  [print ATTS DISH]  .
+     STR := "\nResult softrew: " + printTokens(QIL) + "\n" .
 
 
  ***		 			                         					***
@@ -309,7 +273,7 @@ mod PLSS is
 		QIL2 := printSB(M, VSubs2:Substitution) /\
 		QIL3 := metaPrettyPrint(M, T') /\
 		QIL4 := metaPrettyPrint(M, T1') /\
-		STR := "\nResult (SoftDish-term): " + printTokens(QIL) +
+		STR := "\nResult softnarrowsearch (SoftDish-term): " + printTokens(QIL) +
 			"\nSubstitution1: " + printTokens(QIL1) +
 			"\nSubstitution2: " + printTokens(QIL2) +
 			"\nTerm-ini (T): " + printTokens(QIL3) +
@@ -325,29 +289,9 @@ mod PLSS is
   => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, strat: MQ, AtS >
      write(stdout, plss, STR)
   if {'__[DISH, ATTS], 'SoftDish} := metaParse(M, downQidList(T), 'SoftDish) /\
-     T' := rewNStrat(M, DISH, ATTS, MQ) /\
+     T' := rewNStrat(M, '__[DISH, ATTS], ATTS, MQ) /\
      QIL := metaPrettyPrint(M, T') /\
-     STR := "\nResult: " + printTokens(QIL) + "\n" .
-
-
- ************************************************
- ************************************************
- ***    INICIO ZONA DE TRABAJO     	***
- ************************************************
-
- ***		 			                         ***
- ***		 			FOO	             ***
- ***		 			                         ***
-
- crl [foo] :
-    < plss : PLSS | state: executeComm, input: ('foo_['token[T]], INPLST), module: M, foo: Q, AtS >
- => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, foo: 'manolo, AtS >
-     write(stdout, plss, STR)
-  if M':Module := putNarrowingAtt(M) /\
-     RS':RuleSet := putNarrowingAtt(getRules(M)) /\
-     STR := "\nFoo output ( " +  string(downQid(T)) + " )\n" [print M':Module RS':RuleSet M AtS] .
-***  if STR := "\nFoo output ( " +  string(downQid(T)) + " )\n" [print M AtS] .
-***  if STR := "\nFoo output ( " +  string(downQid(T)) + " )\n" [print putNarrowingAtt(M)] .
+     STR := "\nResult softnarrowrew: " + printTokens(QIL) + "\n" .
 
 
  ***		 			                         ***
@@ -356,17 +300,9 @@ mod PLSS is
 
  crl [loadmoduleComm] :
     < plss : PLSS | state: executeComm, input: ('loadmodule_['token[T]], INPLST), module: M, AtS >
-*** => < plss : PLSS | state: print&executeComm, input: INPLST, module: upModule(downQid(T), true), AtS >
  => < plss : PLSS | state: print&executeComm, input: INPLST, module: putNarrowingAtt(upModule(downQid(T), true)), AtS >
      write(stdout, plss, STR)
   if STR := "\nLoaded Pathway Logic module ( " +  string(downQid(T)) + " )\n" .
-*** PLSS> loadmodule QQ1
-
- 
- ************************************************
- ***    FIN ZONA DE TRABAJO     		***
- ************************************************
- ************************************************
 
 
  ***		 			                         ***
@@ -375,11 +311,11 @@ mod PLSS is
 
  rl [exit] :
     < plss : PLSS | state: executeComm, input: ('exit.@Command@), AtS >
- => write(stdout, plss, "Thanks for using PLSS!\n") .
+ => write(stdout, plss, "\nThanks for using PLSS!\n") .
  
  rl [quit] :
     < plss : PLSS | state: executeComm, input: ('q.@Command@), AtS >
- => write(stdout, plss, "Thanks for using PLSS!\n") .
+ => write(stdout, plss, "\nThanks for using PLSS!\n") .
  
  rl [help] :
     < plss : PLSS | state: executeComm, input: ('help.@Command@, INPLST), AtS >
@@ -387,8 +323,8 @@ mod PLSS is
     write(stdout, plss, help + "\n") .
 
 
-op help : -> String .
-eq help = 
+ op help : -> String .
+ eq help = 
   "\n   ======================== \n" +
   "   AYUDA DEL PROGRAMA: PLSS\n" +
   "   ========================\n\n" +
@@ -435,14 +371,14 @@ eq help =
   "   6. softnarrowrew + ( Término SoftDish ): \n" +
   "      Reescribe el término para la simplificación de la búsqueda mediante narrowing. \n" +
   "      Ejemplos: \n" +
-  "      PLSS> softnarrowrew (Tgfb1Dish  ([cdc6 = 0], [cdkn2b = *])) \n" +
+  "      PLSS> softnarrowrew (TinyDish1  ([cdc6 = 0])) \n" +
   "      PLSS> softnarrowrew (PD({CLc | empty})  ([cdc6 = 0])) \n" +
   "       \n" +
   "   7. softnarrowsearch + ( Término SoftDish inicial ) ( Término SoftDish patrón ): \n" +
   "      Se encarga de realizar el análisis con narrowing (estrechamiento).\n" +
   "      Ejemplos: \n" +
   "      PLSS> softnarrowsearch ( manolito ) ( pepito ) \n" +
-  "      PLSS> softnarrowsearch (DD:Dish([cdc6 = 0]))(PD({XOut|Tgfb1})([cdc6=1])) \n" +
+  "      PLSS> softnarrowsearch (TinyDish1 ([cdc6 = 0])) (TinyDish2 ([cdc6 = 0])) \n" +
   "      PLSS> softnarrowsearch (SD:SoftDish) (PD({XOut | Tgfb1}) ([cdc6 = 1])) \n" +
   "       \n" +
   "   8. exit / q: \n" +
@@ -538,14 +474,14 @@ eq help =
     getLine(stdin, plss, "PLSS> ") .
 
 
- ***		 			                         ***
- ***		 			 RUN                ***
- ***		 			                         ***
+ ***		 			                     ***
+ ***		 		RUN                 ***
+ ***		 			                     ***
 
+ *** Run command
+ op run : -> Configuration [ctor] .
  eq run =
-    <> < plss : PLSS | file: null, out: "", state: init,
-              load: modList, uload: umodList,
-              input: empty, module: putNarrowingAtt(userModule), strat: 'undefZero, foo: 'empty >
+    <> < plss : PLSS | file: null, out: "", state: init, input: empty, load: modList, uload: umodList, module: userModule, strat: 'undefZero >
     createInterpreter(interpreterManager, plss, none) .
 
 endm

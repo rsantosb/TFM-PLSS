@@ -1,22 +1,25 @@
-fmod @NOMINAL@ is
- sort @Nominal@ .
-endfm
 
+**************************************
 
 view Oid from TRIV to CONFIGURATION is
  sort Elt to Oid .
 endv
 
+**************************************
+
 view Module from TRIV to META-MODULE is
  sort Elt to Module .
 endv
 
+**************************************
 
 fmod MAYBE{X :: TRIV} is
  sort Maybe{X} .
  subsort X$Elt < Maybe{X} .
  op maybe : -> Maybe{X} [ctor] .
 endfm
+
+**************************************
 
 fmod MODULE-ENTRY is
   pr META-LEVEL .
@@ -36,9 +39,13 @@ fmod MODULE-ENTRY is
  op _->_ : Qid ModuleInfo -> Entry [ctor] .
 endfm
 
+**************************************
+
 view Entry from TRIV to MODULE-ENTRY is
  sort Elt to Entry .
 endv
+
+**************************************
 
 fmod DATABASE is
  pr SET{Entry} * (sort Set{Entry} to Database) .
@@ -64,57 +71,62 @@ fmod DATABASE is
  eq DB[Q |-> VS] = (DB, Q -> < none, none, none | VS >) [owise] .
 endfm
 
+**************************************
+
 fmod PARSING-RESULT is
  inc DATABASE .
 
  sort ParsingRes Database? .
  subsort Database < Database? .
-
+ 
  op parsingError : -> Database? [ctor] .
-
  op [_,_,_,_] : Module TermList SortInfo QidList -> ParsingRes [ctor] .
  op [_,_,_] : Module VariableSet QidList -> ParsingRes [ctor] .
 endfm
 
+**************************************
+
 fmod PRELOAD is
  pr QID .
-
  sort Preload .
-
  op module : Qid -> Preload [ctor] .
  op view : Qid -> Preload [ctor] .
 endfm
+
+**************************************
 
 view Preload from TRIV to PRELOAD is
  sort Elt to Preload .
 endv
 
+**************************************
+
 fmod PRELOAD-LIST is
  pr LIST{Preload} .
 endfm
 
+**************************************
 
 fmod AUX-MODULE-OPS is
  pr META-LEVEL .
  pr DATABASE .
 
- vars SSDS SSDS' : SubsortDeclSet .
+ var SSDS : SubsortDeclSet .
  vars EqS EqS' : EquationSet .
  vars ODS ODS' : OpDeclSet .
  vars IL IL' : ImportList .
-*** var  PL : ParameterList .
  vars TL TL' : TermList .
  vars SS SS' : SortSet .
- vars RS RS' : RuleSet .
+ var RS : RuleSet .
  var  MAS : MembAxSet .
  var  TyL : TypeList .
-*** var  DB : Database .
  var  Ct : Constant .
  var  M : Module .
  var  H : Header .
  var  Ty : Type .
  var  T : Term .
  var  Q : Qid .
+
 
  op setImports : Module ImportList -> Module .
  eq setImports(fmod H is IL sorts SS . SSDS ODS MAS EqS endfm, IL')
@@ -125,26 +137,6 @@ fmod AUX-MODULE-OPS is
     = fth H is IL' sorts SS . SSDS ODS MAS EqS endfth .
  eq setImports(th H is IL sorts SS . SSDS ODS MAS EqS RS endth, IL')
     = th H is IL' sorts SS . SSDS ODS MAS EqS RS endth .
-
- op setSorts : Module SortSet -> Module .
- eq setSorts(fmod H is IL sorts SS . SSDS ODS MAS EqS endfm, SS')
-    = fmod H is IL sorts SS' . SSDS ODS MAS EqS endfm .
- eq setSorts(mod H is IL sorts SS . SSDS ODS MAS EqS RS endm, SS')
-    = mod H is IL sorts SS' . SSDS ODS MAS EqS RS endm .
- eq setSorts(fth H is IL sorts SS . SSDS ODS MAS EqS endfth, SS')
-    = fth H is IL sorts SS' . SSDS ODS MAS EqS endfth .
- eq setSorts(th H is IL sorts SS . SSDS ODS MAS EqS RS endth, SS')
-    = th H is IL sorts SS' . SSDS ODS MAS EqS RS endth .
-
- op setSubsorts : Module SubsortDeclSet -> Module .
- eq setSubsorts(fmod H is IL sorts SS . SSDS ODS MAS EqS endfm, SSDS')
-    = fmod H is IL sorts SS . SSDS' ODS MAS EqS endfm .
- eq setSubsorts(mod H is IL sorts SS . SSDS ODS MAS EqS RS endm, SSDS')
-    = mod H is IL sorts SS . SSDS' ODS MAS EqS RS endm .
- eq setSubsorts(fth H is IL sorts SS . SSDS ODS MAS EqS endfth, SSDS')
-    = fth H is IL sorts SS . SSDS' ODS MAS EqS endfth .
- eq setSubsorts(th H is IL sorts SS . SSDS ODS MAS EqS RS endth, SSDS')
-    = th H is IL sorts SS . SSDS' ODS MAS EqS RS endth .
 
  op setOps : Module OpDeclSet -> Module .
  eq setOps(fmod H is IL sorts SS . SSDS ODS MAS EqS endfm, ODS')
@@ -166,24 +158,9 @@ fmod AUX-MODULE-OPS is
  eq setEqs(th H is IL sorts SS . SSDS ODS MAS EqS RS endth, EqS')
     = th H is IL sorts SS . SSDS ODS MAS EqS' RS endth .
 
- op setRls : Module RuleSet -> Module .
- eq setRls(fmod H is IL sorts SS . SSDS ODS MAS EqS endfm, RS')
-    = fmod H is IL sorts SS . SSDS ODS MAS EqS endfm .
- eq setRls(mod H is IL sorts SS . SSDS ODS MAS EqS RS endm, RS')
-    = mod H is IL sorts SS . SSDS ODS MAS EqS RS' endm .
- eq setRls(fth H is IL sorts SS . SSDS ODS MAS EqS endfth, RS')
-    = fth H is IL sorts SS . SSDS ODS MAS EqS endfth .
- eq setRls(th H is IL sorts SS . SSDS ODS MAS EqS RS endth, RS')
-    = th H is IL sorts SS . SSDS ODS MAS EqS RS' endth .
 
  op addImports : Module ImportList -> Module .
  eq addImports(M, IL) = setImports(M, (getImports(M) IL)) .
-
- op addSorts : Module SortSet -> Module .
- eq addSorts(M, SS) = setSorts(M, getSorts(M) ; SS) .
-
- op addSubsorts : Module SubsortDeclSet -> Module .
- eq addSubsorts(M, SSDS) = setSubsorts(M, getSubsorts(M) SSDS) .
 
  op addOps : Module OpDeclSet -> Module .
  eq addOps(M, ODS) = setOps(M, getOps(M) ODS) .
@@ -191,8 +168,6 @@ fmod AUX-MODULE-OPS is
  op addEqs : Module EquationSet -> Module .
  eq addEqs(M, EqS) = setEqs(M, getEqs(M) EqS) .
 
- op addRls : Module RuleSet -> Module .
- eq addRls(M, RS) = setRls(M, getRls(M) RS) .
 
  op downQid : Term -> [Qid] [memo] .
  eq downQid(Ct) = qid(substr(string(getName(Ct)), 1, length(string(getName(Ct))))) .
@@ -212,32 +187,9 @@ fmod AUX-MODULE-OPS is
  op toKind : Module TypeList -> TypeList .
  eq toKind(M, nil) = nil .
  eq toKind(M, Ty TyL) = getKind(M, Ty) toKind(M, TyL) .
-
- op emptyModule : Header -> SModule .
- eq emptyModule(H) = mod H is
-                      (protecting '@NOMINAL@ .
-                       including 'TRUTH-VALUE .)
-                      sorts none .
-                      none
-                      none
-                      none
-                      none
-                      none
-                    endm .
-
- op emptyTheory : Header -> STheory .
- eq emptyTheory(H) = th H is
-                      (protecting '@NOMINAL@ .
-                       including 'TRUTH-VALUE .)
-                      sorts none .
-                      none
-                      none
-                      none
-                      none
-                      none
-                     endth .
 endfm
 
+**************************************
 
 fmod ERROR-MSGS is
  pr QID-LIST .
@@ -248,7 +200,6 @@ fmod ERROR-MSGS is
 
  vars QIL PRE PRE' POST POST' : QidList .
  vars Q NAME : Qid .
-*** DISH ATTRIBUTES : Qid
  var  N : Nat .
 
  op showMsg : QidList Nat -> QidList .
@@ -304,4 +255,13 @@ fmod ERROR-MSGS is
  op moduleName : QidList ~> Qid .
  eq moduleName(QIL Q) = moduleName(QIL) .
 endfm
+
+**************************************
+**************************************
+
+eof
+
+**************************************
+**************************************
+
 

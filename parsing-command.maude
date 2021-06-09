@@ -1,3 +1,6 @@
+
+**************************************
+
 fmod COMMAND-PROCESSING is
  pr AUX-MODULE-OPS .
  pr PARSING-RESULT .
@@ -7,31 +10,18 @@ fmod COMMAND-PROCESSING is
  vars RIG RIG' NOM NOM' FLE FLE' SS : SortSet .
  vars M M' M'' TOP TOP' FLAT FLAT' : Module .
  vars VS VS' : VariableSet .
-*** vars VS VS' UV UV' EV EV' : VariableSet .
  vars T T' T'' T1 T2 T3 T4 : Term .
-*** vars T T' T'' T1 T2 T3 T4 TQ : Term .
  vars QIL QIL' ERR ERR' : QidList .
- vars PL PL' : ParameterDeclList .
  vars TL TL' ACC : TermList .
-*** var  SSDS : SubsortDeclSet .
-*** var  RP? : [ResultPair] .
-*** var  COND : Condition .
-*** var  PR : ParsingRes .
-*** var  ODS : OpDeclSet .
  var  TyL : TypeList .
  vars Ty Ty' : Type .
  var  AtS : AttrSet .
-*** var  DB : Database .
-*** vars S S' : String .
  var  Eq : Equation .
  vars Q Q' : Qid .
-*** vars Q Q' FQ : Qid .
  var  V : Variable .
  var  OP : OpDecl .
  var  I : Import .
-*** var  Srt : Sort .
-*** var  H : Header .
-*** var  N : Nat .
+
 
  op parseNoBubbles : Module Term -> ParsingRes .
  ceq parseNoBubbles(M, '__[T, T']) = [M'', (TL, TL'),
@@ -40,10 +30,9 @@ fmod COMMAND-PROCESSING is
      [M'', TL', < RIG', NOM', FLE' >, ERR'] := parseNoBubbles(M', T') .
  eq parseNoBubbles(M, T) = parseDefNoBubble(M, T) .
 
-
- op parseDefNoBubble : Module Term -> ParsingRes .
  
  ***	PARSING IMPORTATION DECLARATIONS
+ op parseDefNoBubble : Module Term -> ParsingRes .
  ceq parseDefNoBubble(M, 'pr_.['token[T]]) = [M', empty, < none, none, none >, nil ]
   if Q := downQid(T) /\
      I := protecting Q . /\
@@ -59,7 +48,7 @@ fmod COMMAND-PROCESSING is
 
 
  ***	SUBSORTS, OPERATORS, EQUATIONS, AND VARIABLES ARE PARSED LATED.
- eq parseDefNoBubble(M, T) = [M, T, < none, none, none >, nil ] [owise] . *** TODO!!!
+ eq parseDefNoBubble(M, T) = [M, T, < none, none, none >, nil ] [owise] .
 
  op parseArity : Term -> TypeList .
  eq parseArity('__[TL]) = parseArity*(TL) .
@@ -68,18 +57,6 @@ fmod COMMAND-PROCESSING is
  op parseArity* : TermList -> TypeList .
  eq parseArity*((T, TL)) = downQid(T) parseArity*(TL) .
  eq parseArity*(empty) = nil .
-
-*** op parseSortList : Term -> SortSet .
-*** eq parseSortList('__[TL]) = parseSortList*(TL) .
-*** eq parseSortList(T) = downQid(T) [owise] .
-
-*** op parseSortList* : TermList -> SortSet .
-*** eq parseSortList*((T, TL)) = downQid(T) ; parseSortList*(TL) .
-*** eq parseSortList*(empty) = none .
-
-*** op genSubsortNominal : SortSet -> SubsortDeclSet .
-*** eq genSubsortNominal(none) = none .
-*** eq genSubsortNominal(Srt ; SS) = subsort Srt < '@Nominal@ . genSubsortNominal(SS) .
 
  op parseAttr : Module Term -> AttrSet .
  eq parseAttr(M, '__[TL]) = parseAttr*(M, TL) .
@@ -94,8 +71,6 @@ fmod COMMAND-PROCESSING is
  op parseAttr* : Module TermList -> AttrSet .
  eq parseAttr*(M, empty) = none .
  eq parseAttr*(M, (T, TL)) = parseAttr(M, T) parseAttr*(M, TL) .
-
-
 
 
  ***	Top module, Flat module, Vars and equations
@@ -182,31 +157,17 @@ fmod COMMAND-PROCESSING is
      TOP' := addOps(TOP, OP) /\
      FLAT' := addOps(FLAT, OP) .
 
-
  ***	OWISE
  eq parseBubbles(TOP, FLAT, VS, (T, TL), ACC) = parseBubbles(TOP, FLAT, VS, TL, (ACC, T)) [owise] .
 
 
  ***	PARSE EQUATIONS
+ op parseEq : Module VariableSet Term -> Equation .
  op parseEqs : Module Module VariableSet TermList -> ParsingRes .
  eq parseEqs(TOP, FLAT, VS, empty) = [TOP, VS, nil] .
  ceq parseEqs(TOP, FLAT, VS, (T, TL)) = parseEqs(M, FLAT, VS, TL)
   if Eq := parseEq(FLAT, VS, T) /\
      M := addEqs(TOP, Eq) .
-
- op parseEq : Module VariableSet Term -> Equation .
-
- op parseCondition : Module Term VariableSet -> Condition .
- eq parseCondition(M, '_/\_[TL], VS) = parseCondition*(M, TL, VS) .
- ceq parseCondition(M, '_=_['bubble[T], 'bubble[T']], VS) = (T1 = T2)
-  if QIL := downQidList(T) /\
-     QIL' := downQidList(T') /\
-     {T1, Ty} := metaParse(M, VS, QIL, anyType) /\
-     {T2, Ty'} := metaParse(M, VS, QIL', anyType) .
-
- op parseCondition* : Module TermList VariableSet -> Condition .
- eq parseCondition*(M, empty, VS) = nil .
- eq parseCondition*(M, (T, TL), VS) = parseCondition(M, T, VS) /\ parseCondition*(M, TL, VS) .
 
  op parseVars : Term Term -> VariableSet .
  ceq parseVars(T, T') = createVars(QIL, Ty)
@@ -233,30 +194,13 @@ fmod COMMAND-PROCESSING is
  op extractTerms* : TermList -> TermList .
  eq extractTerms*(empty) = empty .
  eq extractTerms*((T, TL)) = extractTerms(T), extractTerms*(TL) .
-
 endfm
+
+**************************************
+**************************************
 
 eof
 
- ***	Header
- op parseHeader : Term -> Header .
- ceq parseHeader('token[T]) = Q
-  if Q := downQid(T) .
- ceq parseHeader('_`{_`}['token[T], T']) = Q{PL}
-  if Q := downQid(T) /\
-     PL := parsePL(T') .
-
- op parsePL : Term -> ParameterDeclList .
- ceq parsePL('_`,_[T, T']) = PL, PL'
-  if PL := parsePL(T) /\
-     PL' := parsePL(T') .
- ceq parsePL('_::_['token[T], 'token[T']]) = Q :: Q'
-  if Q := downQid(T) /\
-     Q' := downQid(T') .
-
-
- op createSubsortDecls : SortSet Type -> SubsortDeclSet .
- eq createSubsortDecls(none, Ty) = none .
- eq createSubsortDecls(Ty ; SS, Ty') = subsort Ty < Ty' .
-                                       createSubsortDecls(SS, Ty') .
+**************************************
+**************************************
 

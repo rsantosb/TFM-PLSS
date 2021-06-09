@@ -1,13 +1,15 @@
+
+**************************************
+
 set include BOOL off .
 
-fmod COMMON-SIGN is
-*** sorts @Def@ @DefSet@ @Token@ @Bubble@ @NeTokenList@ .
-*** subsort @Def@ < @DefSet@ .
-*** op __ : @DefSet@ @DefSet@ -> @DefSet@ [ctor assoc comm] .
+**************************************
 
+fmod COMMON-SIGN is
  sorts @Token@ @Bubble@ @NeTokenList@ . 
 endfm
 
+**************************************
 
 fmod COMMAND-SIGN is
  ex COMMON-SIGN .
@@ -24,9 +26,9 @@ fmod COMMAND-SIGN is
  op exit : -> @Command@ [ctor] .
  op q : -> @Command@ [ctor] .
  op help : -> @Command@ [ctor] .
- op foo_ : @Token@ -> @Command@ [ctor] .
 endfm
 
+**************************************
 
 fmod PLSS-SIGN is
  pr COMMAND-SIGN .
@@ -37,6 +39,7 @@ fmod PLSS-SIGN is
  op __ : @Input@ @Input@ -> @Input@ [ctor assoc] .
 endfm
 
+**************************************
 
 fmod META-PLSS-SIGN is
  including AUX-MODULE-OPS .
@@ -75,4 +78,14 @@ fmod META-PLSS-SIGN is
  eq GRAMMAR = addImports(BUBBLES, (including 'PLSS-SIGN .)) .
 endfm
 
+**************************************
+
 set include BOOL on .
+
+**************************************
+**************************************
+
+eof
+
+**************************************
+**************************************

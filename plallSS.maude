@@ -1,5 +1,5 @@
 
-*********************************
+**************************************
 
 load plops/theops
 load plops/modificationops
@@ -9,7 +9,7 @@ load plops/proteinops
 load plops/geneops
 load plops/siteops
 
-*********************************
+**************************************
 
 fmod ALLOPS is
  inc SITEOPS .
@@ -21,7 +21,7 @@ fmod ALLOPS is
  inc THEOPS .
 endfm
 
-*********************************
+**************************************
 
 load softset.maude
 load plrules/Tgfb1RulesSS
@@ -35,7 +35,7 @@ load pldishes/HgfDish
 load pldishes/IL6Dish
 load pldishes/NgfDish
 
-*********************************
+**************************************
 
 mod ALLRULES-TGFB1 is
  inc TGFB1RULES .
@@ -57,9 +57,7 @@ mod ALLRULES-NGF is
  inc NGFRULES .
 endm
 
-*********************************
-
-*********************************
+**************************************
 
 mod QQ1 is
  inc ALLRULES-TGFB1 .
@@ -96,6 +94,10 @@ mod QQ5 is
  inc NGFDISH .
 endm
 
+**************************************
+**************************************
 
-*********************************
+eof
 
+**************************************
+**************************************

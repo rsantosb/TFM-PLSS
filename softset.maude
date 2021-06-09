@@ -1,10 +1,13 @@
+
+**************************************
+
 fmod VALUE is
  sort Value .
-
  ops 0 1 * : -> Value [ctor] .
 endfm
 
-*******************************************************
+**************************************
+
 fmod MATRIX is
  pr VALUE .
 
@@ -18,7 +21,8 @@ fmod MATRIX is
  op __ : SoftSet SoftSet -> SoftSet [ctor assoc id: mt] .
 endfm
 
-*******************************************************
+**************************************
+
 fmod PREDEF-VALUE-FUNCTIONS is
  pr MATRIX .
  pr RAT .
@@ -29,14 +33,66 @@ fmod PREDEF-VALUE-FUNCTIONS is
  var  R : Row .
  var  V V' : Value .
 
- *** Factorial
- op fact : Nat -> Nat .
- eq fact(0) = 1 .
- eq fact(N) = N * fact(N - 1) .
 
- *** Combinatorial number
- op over : Nat Nat -> Rat .
- eq over(N, S) = fact(N)/(fact(N - S) * fact(S)) .
+ *** MAX CHOICE VALUE FUNCTION BY ZEROS
+ *** Replaces * by 0 and adds up all values
+ op undefZero : SoftSet -> Nat .
+ eq undefZero(M) = compUndefZero(M, 0, 0, 0) .
+
+ *** Current - Best value - Selected Row
+ op compUndefZero : SoftSet Nat Nat Nat -> Nat .
+ eq compUndefZero(mt, C, BV, S) = S .
+ ceq compUndefZero(R M, C, BV, S) =
+               if N >= BV
+               then compUndefZero(M, s(C), N, C)
+               else compUndefZero(M, s(C), BV, S)
+               fi
+  if N := addUndefZero(R) .
+
+ op addUndefZero : Row -> Nat .
+ eq addUndefZero(mtRow) = 0 .
+ eq addUndefZero((0, R)) = addUndefZero(R) .
+ eq addUndefZero((1, R)) = s(addUndefZero(R)) .
+ eq addUndefZero((*, R)) = addUndefZero(R) .
+
+
+ *** MAX CHOICE VALUE FUNCTION BY ONES
+ *** Replaces * by 1 and adds up all values
+ op undefOne : SoftSet -> Nat .
+ eq undefOne(M) = compUndefOne(M, 0, 0, 0) .
+
+ *** Current - Best value - Selected Row
+ op compUndefOne : SoftSet Nat Nat Nat -> Nat .
+ eq compUndefOne(mt, C, BV, S) = S .
+ ceq compUndefOne(R M, C, BV, S) =
+               if N >= BV
+               then compUndefOne(M, s(C), N, C)
+               else compUndefOne(M, s(C), BV, S)
+               fi
+  if N := addUndefOne(R) .
+
+ op addUndefOne : Row -> Nat .
+ eq addUndefOne(mtRow) = 0 .
+ eq addUndefOne((0, R)) = addUndefOne(R) .
+ eq addUndefOne((1, R)) = s(addUndefOne(R)) .
+ eq addUndefOne((*, R)) = s(addUndefOne(R)) .
+
+
+ *** MAX CHOICE VALUE FUNCTION BY ZEROS/ONES
+ *** Replaces * by 1 and adds up all values
+ op undefSemi : SoftSet -> Nat .
+ eq undefSemi(M) = compSemi(M, 0, 0, 0) .
+
+ *** Replaces * by 0.5 and adds up all values
+ op compSemi : SoftSet Nat Nat Nat -> Nat .
+ eq compSemi(mt, C, BV, S) = S .
+ ceq compSemi(R M, C, BV, S) =
+               if N >= BV
+               then compSemi(M, s(C), N, C)
+               else compSemi(M, s(C), BV, S)
+               fi
+  if N := (addUndefZero(R) + addUndefOne(R)) quo 2 .
+
 
  *** MAX CHOICE VALUE FUNCTION WEIGHTED BY ROWS
  op undefWRow : SoftSet -> Rat .
@@ -52,6 +108,16 @@ fmod PREDEF-VALUE-FUNCTIONS is
                fi
   if BVQ' := addUndefWRow(R) .
 
+ *** Funciones auxiliares para undefWRow
+ *** Factorial
+ op fact : Nat -> Nat .
+ eq fact(0) = 1 .
+ eq fact(N) = N * fact(N - 1) .
+
+ *** Combinatorial number
+ op over : Nat Nat -> Rat .
+ eq over(N, S) = fact(N)/(fact(N - S) * fact(S)) .
+
  *** NeqValue: number of V's (0, 1 or *) in a row R
  op NeqValue : Row Value -> Nat .
  eq NeqValue(R, V) = addNeqValue(R, V, 0) .
@@ -64,11 +130,11 @@ fmod PREDEF-VALUE-FUNCTIONS is
   fi .
  eq addNeqValue(mtRow, V, N) = N .
 
- --- N -> sumatory_i=0^i=N  [i * (N over i)]
+ *** N -> sumatory_i=0^i=N  [i * (N over i)]
  op sumUndefWRow : Nat -> Rat .
  eq sumUndefWRow(N) = addSumUndefWRow(N, N, 0) .
 
- --- Down-counter - Limit - Partial sum -> sumatory
+ *** Down-counter - Limit - Partial sum -> sumatory
  op addSumUndefWRow : Nat Nat Rat -> Rat . 
  eq addSumUndefWRow(0, L, Q) = Q .
  eq addSumUndefWRow(s(N), L, Q) = 
@@ -131,75 +197,14 @@ fmod PREDEF-VALUE-FUNCTIONS is
   then fMV(M, V, C, s(N))
   else fMV(M, V, C, N)
   fi .
-
-
- *** MAX CHOICE VALUE FUNCTION BY ZEROS
- *** Replaces * by 0 and adds up all values
- op undefZero : SoftSet -> Nat .
- eq undefZero(M) = compUndefZero(M, 0, 0, 0) .
-
- *** Current - Best value - Selected Row
- op compUndefZero : SoftSet Nat Nat Nat -> Nat .
- eq compUndefZero(mt, C, BV, S) = S .
- ceq compUndefZero(R M, C, BV, S) =
-               if N >= BV
-               then compUndefZero(M, s(C), N, C)
-               else compUndefZero(M, s(C), BV, S)
-               fi
-  if N := addUndefZero(R) .
-
- op addUndefZero : Row -> Nat .
- eq addUndefZero(mtRow) = 0 .
- eq addUndefZero((0, R)) = addUndefZero(R) .
- eq addUndefZero((1, R)) = s(addUndefZero(R)) .
- eq addUndefZero((*, R)) = addUndefZero(R) .
-
-
- *** MAX CHOICE VALUE FUNCTION BY ONES
- *** Replaces * by 1 and adds up all values
- op undefOne : SoftSet -> Nat .
- eq undefOne(M) = compUndefOne(M, 0, 0, 0) .
-
- *** Current - Best value - Selected Row
- op compUndefOne : SoftSet Nat Nat Nat -> Nat .
- eq compUndefOne(mt, C, BV, S) = S .
- ceq compUndefOne(R M, C, BV, S) =
-               if N >= BV
-               then compUndefOne(M, s(C), N, C)
-               else compUndefOne(M, s(C), BV, S)
-               fi
-  if N := addUndefOne(R) .
-
- op addUndefOne : Row -> Nat .
- eq addUndefOne(mtRow) = 0 .
- eq addUndefOne((0, R)) = addUndefOne(R) .
- eq addUndefOne((1, R)) = s(addUndefOne(R)) .
- eq addUndefOne((*, R)) = s(addUndefOne(R)) .
-
-
- *** MAX CHOICE VALUE FUNCTION BY ZEROS/ONES
- *** Replaces * by 1 and adds up all values
- op undefSemi : SoftSet -> Nat .
- eq undefSemi(M) = compSemi(M, 0, 0, 0) .
-
- *** Replaces * by 0.5 and adds up all values
- op compSemi : SoftSet Nat Nat Nat -> Nat .
- eq compSemi(mt, C, BV, S) = S .
- ceq compSemi(R M, C, BV, S) =
-               if N >= BV
-               then compSemi(M, s(C), N, C)
-               else compSemi(M, s(C), BV, S)
-               fi
-  if N := (addUndefZero(R) + addUndefOne(R)) quo 2 .
 endfm
 
-
-*******************************************************
+**************************************
 
 fmod SOFTSET is
- pr META-LEVEL .
  pr VALUE .
  pr DISH .
+ pr QID .
 
  sort AttId Att AttSet SoftDish .
  subsort Qid < AttId .
@@ -220,13 +225,12 @@ fmod SOFTSET is
 
  op atts : SoftDish -> AttSet .
  eq atts(DSH ATTS) =  ATTS .
-
 endfm
 
-
-*******************************************************
+**************************************
 
 fmod SOFT-SET-FUN is
+ pr META-LEVEL .
  pr SOFTSET .
  pr PREDEF-VALUE-FUNCTIONS .
 
@@ -235,15 +239,29 @@ fmod SOFT-SET-FUN is
 
  op [_,_] : Qid Nat -> ApplyCell [ctor] .
 
- vars TL TL' ATTS ATTS' : TermList .
+ vars T T' ATTS ATTS' : Term .
+ vars TL TL' : TermList .
  var  SB : Substitution .
  var  V : Variable .
  var  MX : SoftSet .
- vars T T' : Term .
  var  M : Module .
  var  Ty : Type .
  var  N : Nat .
  var  Q : Qid .
+
+ *** Variables para función auxiliar putNarrowingAtt
+ vars L R : Term .
+ var  C : Condition .
+ var  AtS : AttrSet .
+ var  H : Header .
+ var  IL : ImportList .
+ var  SS : SortSet .
+ var  SSDS : SubsortDeclSet .
+ var ODS : OpDeclSet .
+ var  MAS : MembAxSet .
+ var  EqS : EquationSet .
+ vars RS RS' : RuleSet .
+
 
  op computeValue : SoftSet Qid -> Nat .
  eq computeValue(MX,'undefZero) = undefZero(MX) .
@@ -253,29 +271,14 @@ fmod SOFT-SET-FUN is
  eq computeValue(MX,'undefWCol) = undefWCol(MX) .
 
 
-
- ************************************************
- ************************************************
- ***    INICIO ZONA DE TRABAJO     	***
- ************************************************
-
- op rewStrat : Module Term TermList Qid -> Term .
- ceq rewStrat(M, T, ATTS, Q) = rewStrat(M, T', ATTS, Q)
-  if T' := next(M, T, ATTS, Q) .
- eq rewStrat(M, T, ATTS, Q) = T [owise] .
-
-***(
-op getAtts : Term -> TermList .
-eq getAtts(T TL) = TL .
-
- op rewStrat : Module Term TermList Qid -> Term .
+ *** Función que ejecuta softrew
+ op rewStrat : Module Term Term Qid -> Term .
  ceq rewStrat(M, T, ATTS, Q) = rewStrat(M, T', ATTS', Q)
    if T' := next(M, T, ATTS, Q)  /\
       ATTS' := getAtts(T') .
  eq rewStrat(M, T, ATTS, Q) = T [owise] .
-)
 
- op next : Module Term TermList Qid ~> Term .
+ op next : Module Term Term Qid ~> Term .
  ceq next(M, T, ATTS, Q) = T'
   if TL := allReachableTerms(M, T) /\
      TL =/= empty /\
@@ -294,24 +297,15 @@ eq getAtts(T TL) = TL .
  ceq allReachableTerms(M, T, V, N, TL) = allReachableTerms(M, T, V, s(N), (TL, T'))
   if {T', Ty, SB} := metaSearch(M, T, V, nil, '+, 1, N) .
 
- ************************************************
- ************************************************
- ***    FIN ZONA DE TRABAJO     	***
- ************************************************
 
-
-
- ************************************************
- ************************************************
- ***    INICIO ZONA DE TRABAJO     	***
- ************************************************
-
- op rewNStrat : Module Term TermList Qid -> Term .
- ceq rewNStrat(M, T, ATTS, Q) = rewNStrat(M, T', ATTS, Q)
-  if T' := nextN(M, T, ATTS, Q) .
+ *** Función que ejecuta softnarrowrew
+ op rewNStrat : Module Term Term Qid -> Term .
+ ceq rewNStrat(M, T, ATTS, Q) = rewNStrat(M, T', ATTS', Q)
+  if T' := nextN(M, T, ATTS, Q) /\
+      ATTS' := getAtts(T') .
  eq rewNStrat(M, T, ATTS, Q) = T [owise] .
 
- op nextN : Module Term TermList Qid ~> Term .
+ op nextN : Module Term Term Qid ~> Term .
  ceq nextN(M, T, ATTS, Q) = T'
   if TL := allReachableNTerms(M, T) /\
      TL =/= empty /\
@@ -331,70 +325,16 @@ eq getAtts(T TL) = TL .
   if {T', Ty, SB, VQid:Qid, VSubs2:Substitution, VQid2:Qid} := metaNarrowingSearch(putNarrowingAtt(M), T, V, '+, unbounded, 'none, N) .
 
 
-
-*** Función auxiliar que imprime (QidList) sustituciones:
- op printSB : Module Substitution -> QidList .
- eq printSB (M, none) = 'none .
- eq printSB (M, V:Variable <- T:Term) = getName(V:Variable)    '<-    metaPrettyPrint(M, T:Term) .
- eq printSB (M, V:Variable <- T:Term ; S:Substitution) =  printSB (M, V:Variable <- T:Term)  printSB(M, S:Substitution) .
-
-
-*** Función auxiliar putNarrowingAtt que modifica un modulo añadiendo el atributo narrowing a cada regla:
-vars L R : Term .
-var  C : Condition .
-var  AtS : AttrSet .
-*** var M : Module .
-var  H : Header .
-var  IL : ImportList .
-var  SS : SortSet .
-var  SSDS : SubsortDeclSet .
-var ODS : OpDeclSet .
-var  MAS : MembAxSet .
-var  EqS : EquationSet .
-vars RS RS' : RuleSet .
-
-op putNarrowingAtt : Module -> Module .
-ceq putNarrowingAtt(M) = setRules(M, RS')
- if RS' := putNarrowingAtt(getRules(M)) .
-
-op putNarrowingAtt : RuleSet -> RuleSet .
-eq putNarrowingAtt(none) = none .
-ceq putNarrowingAtt(rl L => R [AtS] . RS) = rl L => R [AtS] . putNarrowingAtt(RS)
- if hasNarrowing(AtS) .
-ceq putNarrowingAtt(crl L => R if C [AtS] . RS) = crl L => R if C [AtS] . putNarrowingAtt(RS)
- if hasNarrowing(AtS) .
-ceq putNarrowingAtt(rl L => R [AtS] . RS) = rl L => R [narrowing AtS] . putNarrowingAtt(RS)
- if not hasNarrowing(AtS) .
-ceq putNarrowingAtt(crl L => R if C [AtS] . RS) = crl L => R if C [narrowing AtS] . putNarrowingAtt(RS)
- if not hasNarrowing(AtS) .
-
-op hasNarrowing : AttrSet -> Bool .
-eq hasNarrowing(narrowing AtS) = true .
-eq hasNarrowing(AtS) = false [owise] .
-
-op setRules : SModule RuleSet -> SModule .
-eq setRules(mod H is IL sorts SS . SSDS ODS MAS EqS RS endm, RS') =  
-                      mod H is IL sorts SS . SSDS ODS MAS EqS RS' endm .
-
-op getRules : SModule -> RuleSet .
-eq getRules(mod H is IL sorts SS . SSDS ODS MAS EqS RS endm)  =  RS .
-*** fin de funciones auxiliares
-
-
-
-
- ************************************************
- ***    FIN ZONA DE TRABAJO     		***
- ************************************************
- ************************************************
-
+ *** Funciones auxiliares para rewStrat y rewNStrat
+ op getAtts : Term -> Term .
+ eq getAtts('__[T, ATTS]) = ATTS .
 
  op matrixFromTerms : TermList TermList -> SoftSet .
  eq matrixFromTerms(empty, ATTS) = mt .
  eq matrixFromTerms((T, TL), ATTS) = rowFromTerm(T, ATTS) matrixFromTerms(TL, ATTS) .
 
- op rowFromTerm : Term TermList -> Row .
  *** Dish and Attributes
+ op rowFromTerm : Term TermList -> Row .
  eq rowFromTerm('__[T, T'], ATTS) = $rowFromTerm(T', ATTS) .
  eq rowFromTerm(T, ATTS) = mtRow [owise] .
 
@@ -412,15 +352,52 @@ eq getRules(mod H is IL sorts SS . SSDS ODS MAS EqS RS endm)  =  RS .
                         fi, $rowFromTerm*(TL, ATTS) .
  eq $rowFromTerm*(TL, ATTS) = mtRow [owise] .
 
- op _in_ : Term TermList -> Bool .
- eq T in (TL, T, TL') = true .
- eq T in TL = false [owise] .
-
  op _[_] : TermList Nat ~> Term .
  eq (T, TL) [0] = T .
  eq (T, TL) [s(N)] = TL [N] .
- 
- *** op rewNarrow : Module Term TermList Qid -> Term .
-  
+*** Fin de funciones auxiliares
+
+
+*** Función auxiliar que imprime (QidList) sustituciones:
+ op printSB : Module Substitution -> QidList .
+ eq printSB (M, none) = 'none .
+ eq printSB (M, V:Variable <- T:Term) = getName(V:Variable)    '<-    metaPrettyPrint(M, T:Term) .
+ eq printSB (M, V:Variable <- T:Term ; S:Substitution) =  printSB (M, V:Variable <- T:Term)  printSB(M, S:Substitution) .
+
+
+*** Función auxiliar putNarrowingAtt que modifica un modulo añadiendo el atributo narrowing a cada regla:
+ op putNarrowingAtt : Module -> Module .
+ ceq putNarrowingAtt(M) = setRules(M, RS')
+  if RS' := putNarrowingAtt(getRules(M)) .
+
+ op putNarrowingAtt : RuleSet -> RuleSet .
+ eq putNarrowingAtt(none) = none .
+ ceq putNarrowingAtt(rl L => R [AtS] . RS) = rl L => R [AtS] . putNarrowingAtt(RS)
+  if hasNarrowing(AtS) .
+ ceq putNarrowingAtt(crl L => R if C [AtS] . RS) = crl L => R if C [AtS] . putNarrowingAtt(RS)
+  if hasNarrowing(AtS) .
+ ceq putNarrowingAtt(rl L => R [AtS] . RS) = rl L => R [narrowing AtS] . putNarrowingAtt(RS)
+  if not hasNarrowing(AtS) .
+ ceq putNarrowingAtt(crl L => R if C [AtS] . RS) = crl L => R if C [narrowing AtS] . putNarrowingAtt(RS)
+  if not hasNarrowing(AtS) .
+
+ op hasNarrowing : AttrSet -> Bool .
+ eq hasNarrowing(narrowing AtS) = true .
+ eq hasNarrowing(AtS) = false [owise] .
+
+ op setRules : SModule RuleSet -> SModule .
+ eq setRules(mod H is IL sorts SS . SSDS ODS MAS EqS RS endm, RS') =  
+                       mod H is IL sorts SS . SSDS ODS MAS EqS RS' endm .
+
+ op getRules : SModule -> RuleSet .
+ eq getRules(mod H is IL sorts SS . SSDS ODS MAS EqS RS endm)  =  RS .
+*** Fin de funciones auxiliares
 endfm
 
+**************************************
+**************************************
+
+eof
+
+**************************************
+**************************************
