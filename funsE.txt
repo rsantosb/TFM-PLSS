@@ -1,0 +1,21 @@
+(loadstrat undefZero)
+
+(softrew (PD({CLc | empty} {CLi | [Hras - GDP]}) ([cdc6 = 0])))
+
+(loadstrat undefOne)
+
+(softnarrowrew (PD({CLc | empty} {CLi | [Hras - GDP]}) ([cdc6 = 0])))
+
+(loadstrat undefSemi)
+
+(softrew (PD({CLc | empty} {CLi | [Hras - GDP]}) ([cdc6 = 0])))
+
+(loadstrat undefWRow)
+
+(softnarrowrew (PD({CLc | empty} {CLi | [Hras - GDP]}) ([cdc6 = 0])))
+
+(loadstrat undefWCol)
+
+(softrew (PD({CLc | empty} {CLi | [Hras - GDP]}) ([cdc6 = 0])))
+
+(q)

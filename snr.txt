@@ -1,0 +1,10 @@
+
+(loadmodule QQ1)
+
+(softnarrowrew (PD({CLc | empty} {CLi | [Hras - GDP]}) ([cdc6 = 0])))
+
+(loadmodule QQ2)
+
+(softnarrowrew EgfDish ([cdc6 = 0]))
+
+(exit)
