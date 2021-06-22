@@ -25,7 +25,7 @@ mod PLSS is
 
  vars Text Read STR : String .
  vars TL IN INPLST ATTS : TermList .
- vars T T' T'' DISH T1 T1' : Term .
+ vars T T' T'' DISH T1 T1' T2 : Term .
  vars FHIn MI : Oid .
  var  AtS : AttributeSet .
  var  LP : List{Preload} .
@@ -101,7 +101,7 @@ mod PLSS is
 
  *** Initial value for loading into the user module
  op qModule : -> Qid .
- eq qModule = 'QQ1 .					*** eq qModule = 'QQ2 .
+ eq qModule = 'QQ1 .
  op userModule : -> FModule .
  eq userModule = putNarrowingAtt(upModule(qModule, true)) .
 
@@ -230,9 +230,30 @@ mod PLSS is
   => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, strat: MQ, AtS >
      write(stdout, plss, STR)
   if {'__[DISH, ATTS], 'SoftDish} := metaParse(M, downQidList(T), 'SoftDish) /\
-     T' := rewStrat(M, '__[DISH, ATTS], ATTS, MQ) /\
+     T' := rewStrat(M, '__[DISH, ATTS], getNames(ATTS), MQ) /\
      QIL := metaPrettyPrint(M, T') /\
      STR := "\nResult softrew: " + printTokens(QIL) + "\n" .
+
+ ***							 			                        ***
+ ***	  SOFTNARROWREW (STRAT)   	***
+ ***		 			                        					***
+
+ crl [softnarrowrewstratComm] :
+     < plss : PLSS | state: executeComm, input: ('softnarrowrew_['bubble[T]], INPLST), module: M, strat: MQ, AtS >
+  => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, strat: MQ, AtS >
+     write(stdout, plss, STR)
+  if {'__[DISH, ATTS], 'SoftDish} := metaParse(M, downQidList(T), 'SoftDish) /\
+     T' := rewNStrat(M, '__[DISH, ATTS], getNames(ATTS), MQ) /\
+     QIL := metaPrettyPrint(M, T') /\
+     STR := "\nResult softnarrowrew: " + printTokens(QIL) + "\n" .
+
+ op getNames : Term -> TermList .
+ eq getNames('_`,_[TL]) = getNames*(TL) .
+ eq getNames('`[_=_`][T1, T2]) = T1 .
+
+ op getNames* : TermList -> TermList .
+ eq getNames*(empty) = empty .
+ eq getNames*((T, TL)) = getNames(T), getNames*(TL) .
 
 
  ***		 			                         					***
@@ -278,20 +299,6 @@ mod PLSS is
 			"\nSubstitution2: " + printTokens(QIL2) +
 			"\nTerm-ini (T): " + printTokens(QIL3) +
 			"\nTerm-patron (T1): " + printTokens(QIL4) + "\n\n" .
-
-
- ***							 			                        ***
- ***	  SOFTNARROWREW (STRAT)   	***
- ***		 			                        					***
-
- crl [softnarrowrewstratComm] :
-     < plss : PLSS | state: executeComm, input: ('softnarrowrew_['bubble[T]], INPLST), module: M, strat: MQ, AtS >
-  => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, strat: MQ, AtS >
-     write(stdout, plss, STR)
-  if {'__[DISH, ATTS], 'SoftDish} := metaParse(M, downQidList(T), 'SoftDish) /\
-     T' := rewNStrat(M, '__[DISH, ATTS], ATTS, MQ) /\
-     QIL := metaPrettyPrint(M, T') /\
-     STR := "\nResult softnarrowrew: " + printTokens(QIL) + "\n" .
 
 
  ***		 			                         ***
@@ -365,7 +372,7 @@ mod PLSS is
   "   5. softrew + ( Término SoftDish ): \n" +
   "      Reescribe el término con soft reglas. \n" +
   "      Ejemplos: \n" +
-  "      PLSS> softrew (Tgfb1Dish  ([cdc6 = 0], [cdkn2b = *])) \n" +
+  "      PLSS> softrew (SmallDish ([cdc6 = 0])) \n" +
   "      PLSS> softrew (PD({CLc | empty})  ([cdc6 = 0])) \n" +
   "       \n" +
   "   6. softnarrowrew + ( Término SoftDish ): \n" +

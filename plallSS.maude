@@ -24,6 +24,7 @@ endfm
 **************************************
 
 load softset.maude
+
 load plrules/Tgfb1RulesSS
 load plrules/EgfRulesSS
 load plrules/HgfRulesSS
@@ -35,7 +36,12 @@ load pldishes/HgfDish
 load pldishes/IL6Dish
 load pldishes/NgfDish
 
+
 **************************************
+
+mod ALLRULES-IL6 is
+ inc IL6RULES .
+endm
 
 mod ALLRULES-TGFB1 is
  inc TGFB1RULES .

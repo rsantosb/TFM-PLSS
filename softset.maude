@@ -244,6 +244,7 @@ fmod SOFT-SET-FUN is
  var  SB : Substitution .
  var  V : Variable .
  var  MX : SoftSet .
+ var  MX? : [SoftSet] .
  var  M : Module .
  var  Ty : Type .
  var  N : Nat .
@@ -262,6 +263,7 @@ fmod SOFT-SET-FUN is
  var  EqS : EquationSet .
  vars RS RS' : RuleSet .
 
+var ATTSN : TermList .
 
  op computeValue : SoftSet Qid -> Nat .
  eq computeValue(MX,'undefZero) = undefZero(MX) .
@@ -272,17 +274,16 @@ fmod SOFT-SET-FUN is
 
 
  *** Función que ejecuta softrew
- op rewStrat : Module Term Term Qid -> Term .
- ceq rewStrat(M, T, ATTS, Q) = rewStrat(M, T', ATTS', Q)
-   if T' := next(M, T, ATTS, Q)  /\
-      ATTS' := getAtts(T') .
- eq rewStrat(M, T, ATTS, Q) = T [owise] .
+ op rewStrat : Module Term TermList Qid -> Term .
+ ceq rewStrat(M, T, ATTSN, Q) = T'
+   if T' := next(M, T, ATTSN, Q) .
+ eq rewStrat(M, T, ATTSN, Q) = T [owise] .
 
- op next : Module Term Term Qid ~> Term .
- ceq next(M, T, ATTS, Q) = T'
+ op next : Module Term TermList Qid ~> Term .
+ ceq next(M, T, ATTSN, Q) = T'
   if TL := allReachableTerms(M, T) /\
      TL =/= empty /\
-     MX := matrixFromTerms(TL, ATTS) /\
+     MX := matrixFromTerms(TL, ATTSN) /\
      N := computeValue(MX, Q) /\
      T' := TL [N] .
 
@@ -293,23 +294,22 @@ fmod SOFT-SET-FUN is
 
  op allReachableTerms : Module Term Variable Nat TermList -> TermList .
  ceq allReachableTerms(M, T, V, N, TL) = TL
-  if metaSearch(M, T, V, nil, '+, 1, N) == failure .
+  if metaSearch(M, T, V, nil, '+, unbounded, N) == failure .
  ceq allReachableTerms(M, T, V, N, TL) = allReachableTerms(M, T, V, s(N), (TL, T'))
-  if {T', Ty, SB} := metaSearch(M, T, V, nil, '+, 1, N) .
+  if {T', Ty, SB} := metaSearch(M, T, V, nil, '+, unbounded, N) .
 
 
  *** Función que ejecuta softnarrowrew
- op rewNStrat : Module Term Term Qid -> Term .
- ceq rewNStrat(M, T, ATTS, Q) = rewNStrat(M, T', ATTS', Q)
-  if T' := nextN(M, T, ATTS, Q) /\
-      ATTS' := getAtts(T') .
- eq rewNStrat(M, T, ATTS, Q) = T [owise] .
+ op rewNStrat : Module Term TermList Qid -> Term .
+ ceq rewNStrat(M, T, ATTSN, Q) = T'
+   if T' := nextN(M, T, ATTSN, Q) .
+ eq rewNStrat(M, T, ATTSN, Q) = T [owise] .
 
- op nextN : Module Term Term Qid ~> Term .
- ceq nextN(M, T, ATTS, Q) = T'
+ op nextN : Module Term TermList Qid ~> Term .
+ ceq nextN(M, T, ATTSN, Q) = T'
   if TL := allReachableNTerms(M, T) /\
      TL =/= empty /\
-     MX := matrixFromTerms(TL, ATTS) /\
+     MX := matrixFromTerms(TL, ATTSN) /\
      N := computeValue(MX, Q) /\
      T' := TL [N] .
 
@@ -329,28 +329,33 @@ fmod SOFT-SET-FUN is
  op getAtts : Term -> Term .
  eq getAtts('__[T, ATTS]) = ATTS .
 
+
  op matrixFromTerms : TermList TermList -> SoftSet .
- eq matrixFromTerms(empty, ATTS) = mt .
- eq matrixFromTerms((T, TL), ATTS) = rowFromTerm(T, ATTS) matrixFromTerms(TL, ATTS) .
+ eq matrixFromTerms(empty, ATTSN) = mt .
+ eq matrixFromTerms((T, TL), ATTSN) = rowFromTerm(T, ATTSN) matrixFromTerms(TL, ATTSN) .
 
  *** Dish and Attributes
  op rowFromTerm : Term TermList -> Row .
- eq rowFromTerm('__[T, T'], ATTS) = $rowFromTerm(T', ATTS) .
- eq rowFromTerm(T, ATTS) = mtRow [owise] .
-
- op $rowFromTerm : Term TermList -> Row .
+ eq rowFromTerm('__[T, T'], ATTSN) = $rowFromTerm(T', ATTSN) .
+ eq rowFromTerm(T, ATTSN) = mtRow [owise] .
+ 
+  op $rowFromTerm : Term TermList -> Row .
  *** Attribute list
- eq $rowFromTerm('_`,_[TL], ATTS) = $rowFromTerm*(TL, ATTS) .
- eq $rowFromTerm(T, ATTS) = mtRow [owise] .
+ eq $rowFromTerm('_`,_[TL], ATTSN) = $rowFromTerm*(TL, ATTSN) .
+ eq $rowFromTerm(T, ATTSN) = mtRow [owise] .
 
  op $rowFromTerm* : TermList TermList -> Row .
- eq $rowFromTerm*(empty, ATTS) = mtRow .
- eq $rowFromTerm*(('`[_=_`][T,T'], TL), ATTS) =
-                        if T in ATTS
+ eq $rowFromTerm*(empty, ATTSN) = mtRow .
+ eq $rowFromTerm*(('`[_=_`][T,T'], TL), ATTSN) =
+                        if T in ATTSN
                         then downTerm(T', 0)
                         else mtRow
-                        fi, $rowFromTerm*(TL, ATTS) .
- eq $rowFromTerm*(TL, ATTS) = mtRow [owise] .
+                        fi, $rowFromTerm*(TL, ATTSN) .
+ eq $rowFromTerm*(TL, ATTSN) = mtRow [owise] .
+
+ op _in_ : Term TermList -> Bool .
+ eq T in (TL, T, TL') = true .
+ eq T in TL = false [owise] .
 
  op _[_] : TermList Nat ~> Term .
  eq (T, TL) [0] = T .
