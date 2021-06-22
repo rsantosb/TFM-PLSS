@@ -3,46 +3,45 @@ mod TGFB1DISH is
  inc ALLOPS .
 
  op Tgfb1Dish : -> Dish .
- ops TinyDish TinyDish1 TinyDish2 : -> Dish .
  op SmallDish : -> Dish .
+ ops TinyDish TinyDish1 TinyDish2 TinyDish3 : -> Dish .
 
+ eq Tgfb1Dish = PD(
+  {XOut		|	Tgfb1}
+  {Tgfb1RC |	TgfbR1 TgfbR2}
+  {CLo			|	empty}
+  {CLm			|	empty}
+  {CLi   		|	[Cdc42 - GDP] [Hras - GDP] [Rac1 - GDP]}
+  {CLc   		|	Abl1 Akt1 Atf2 Erks Fak1 Jnks Mekk1 Mlk3 P38s Pak2 Pml Smad2 Smad3 Smad4 Smurf1 Smurf2
+						Tab1 Tab2 Tab3 Tak1 Traf6 Zfyve16}
+  {NUc   		|	Ctdsp1 Ets1 Smad7 Cdc6-gene Cdkn1a-gene Cdkn2b-gene Col1a1-gene Col3a1-gene Ctgf-gene
+						Fn1-gene Mmp2-gene Pai1-gene Smad6-gene Smad7-gene Tgfb1-gene Timp1-gene Cst6-gene Dst-gene
+						Mmp9-gene Mylk-gene Pthlh-gene Gfi1-gene Csrp2-gene RoRc-gene}) .
 
-eq TinyDish = PD(
- {XOut    	|	Tgfb1}
- {Tgfb1RC |	TgfbR1 TgfbR2}
- {CLc   	|	Erks}) .
+ eq SmallDish = PD(
+  {XOut		|	Tgfb1}
+  {Tgfb1RC |	TgfbR1 TgfbR2}
+  {CLi   		|	[Hras - GDP]}
+  {CLc   		|	Erks}
+  {NUc			|	Cdc6-gene Cdkn2b-gene Smad7}) .
 
+ eq TinyDish = PD(
+  {XOut    	|	Tgfb1}
+  {Tgfb1RC |	TgfbR1 TgfbR2}
+  {CLc   		|	Erks}) .
 
-eq TinyDish1 = PD(
- {XOut		|	Tgfb1}
- {Tgfb1RC |	TgfbR1 TgfbR2}) .
+ eq TinyDish1 = PD(
+  {XOut		|	Tgfb1}
+  {Tgfb1RC |	TgfbR1 TgfbR2}) .
 
+ eq TinyDish2 = PD(
+  {XOut		|	Tgfb1}
+  {NUc     	|	Cdc6-gene Cdkn2b-gene Tgfb1-gene Col3a1-gene}
+  {Tgfb1RC |	TgfbR1 TgfbR2}) .
 
-eq TinyDish2 = PD(
- {XOut		|	empty}
- {Tgfb1RC |	([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1)}) .
-
-
-eq SmallDish = PD(
- {XOut		|	Tgfb1}
- {Tgfb1RC |	TgfbR1 TgfbR2}
- {CLo		|	empty}
- {CLm		|	empty}
- {CLi   		|	[Hras - GDP]}
- {CLc   	|	Erks}
- {NUc		|	Smad7}) .
-
-
-eq Tgfb1Dish = PD(
- {XOut		|	Tgfb1}
- {Tgfb1RC |	TgfbR1 TgfbR2}
- {CLo		|	empty}
- {CLm		|	empty}
- {CLi   		|	[Cdc42 - GDP] [Hras - GDP] [Rac1 - GDP]}
- {CLc   	|	Abl1 Akt1 Atf2 Erks Fak1 Jnks Mekk1 Mlk3 P38s Pak2 Pml Smad2 Smad3 Smad4 Smurf1 Smurf2
-					Tab1 Tab2 Tab3 Tak1 Traf6 Zfyve16}
- {NUc   	|	Ctdsp1 Ets1 Smad7 Cdc6-gene Cdkn1a-gene Cdkn2b-gene Col1a1-gene Col3a1-gene Ctgf-gene
-					Fn1-gene Mmp2-gene Pai1-gene Smad6-gene Smad7-gene Tgfb1-gene Timp1-gene Cst6-gene Dst-gene
-					Mmp9-gene Mylk-gene Pthlh-gene Gfi1-gene Csrp2-gene RoRc-gene}) .
+ eq TinyDish3 = PD(
+   {Tgfb1RC | ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+   {CLc   		| empty}
+   {NUc   		| Gfi1-gene Dst-gene Fn1-gene RoRc-gene Ets1 Cdkn1a-gene Mmp2-gene }) .
 
 endm

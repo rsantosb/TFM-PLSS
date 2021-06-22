@@ -3,59 +3,46 @@ mod EGFDISH is
  inc ALLOPS .
 
  op EgfDish : -> Dish .
+ ops SmallDish SmallDish2 SmallDish3 : -> Dish .
  op TinyDish : -> Dish .
- op SmallDish : -> Dish .
- op KKK : -> Dish .
 
-eq KKK = PD(
- {XOut |	Egf }
- {EgfRC |	EgfR }
- {CLo 	|	empty }
- {CLm	|	Erbb2 Pag1 Plscr1 }
- {CLi	|	[Cdc42 - GDP] [Hras - GDP] [Kras - GDP] [Nras - GDP] [Rac1 - GDP] [Rala - GDP] [Ralb - GDP]
-				[Rap1a - GDP] [Rap2b - GDP] [Rit1 - GDP] Gnai1 Gnai3 Pld1 Pld2 Src }
- {CLc	|	(Mlst8 : Mtor : Raptor) [Gsk3s - act]
-				Abl1 Akt1 Araf ArhGap5 ArhGef4 ArhGef7 Atf2 Bmx Braf Cbl Cblb Cin85 Crk CrkL Csk Dbl Dok1 Dok2
-				Eif4ebp1 EndA1 Eps8 Eps15 Erk5 Erks Fak1 Fak2 Flna Freud1 Gab1 Gab2 Git1 Grb2 Hpk1 Ipo7 IqGap1
-				Jak1 Jak2 Jnks Lkb1 Mapkapk2 Mek1 Mek5 Mekk1 Mekk2 Mekk3 Mlk3 Nckipsd P38s Pdpk1 Pi3k
-				Pkcd Pkcz Plcg1 Plce1 Ptk6 Pxn Raf1 RalGds RapGef1 Rasa1 RasGrp3 Rela Rictor Rin1 Rps6 Rsk1 Rsk2 Rsk3
-				S6k1 Sh2d3a Sh2d3c Shc1 Shoc2 Shp2 Sin1 Smad3 Sos1 Stat1 Stat3 Stat5a Stat5b Tnk2 Tns3 Ube2l3 Vav1 Vav2 Vav3 Ywhaz }
- {NUc	| 	Atf1 Creb1 Egr1-gene Elk1 Fos HistH3 Irf1-gene Jun Jun-gene Junb-gene Msk1 Msk2 Myc Myc-gene
-				Nos2a-gene Socs3-gene Tbp-gene } ) .
+ eq EgfDish = PD(
+  {XOut 	|	Egf}
+  {EgfRC |	EgfR}
+  {CLo 		|	empty}
+  {CLm 	|	Erbb2 Pag1 Plscr1}
+  {CLi 		|	[Cdc42 - GDP] [Hras - GDP] [Kras - GDP] [Nras - GDP] [Rac1 - GDP] [Rala - GDP] [Ralb - GDP] [Rap1a - GDP]
+					[Rap2b - GDP] [Rit1 - GDP] Gnai1 Gnai3 Pld1 Pld2 Src }
+  {CLc		|	(Mlst8 : Mtor : Raptor) [Gsk3s - act] Abl1 Akt1 Araf ArhGap5 ArhGef4 ArhGef7 Atf2 Bmx Braf Cbl Cblb Cin85 Crk CrkL Csk
+					Dbl Dok1 Dok2 Eif4ebp1 EndA1 Eps8 Eps15 Erk5 Erks Fak1 Fak2 Flna Freud1 Gab1 Gab2 Git1 Grb2 Hpk1 Ipo7 IqGap1
+					Jak1 Jak2 Jnks Lkb1 Mapkapk2 Mek1 Mek5 Mekk1 Mekk2 Mekk3 Mlk3 Nckipsd P38s Pdpk1 Pi3k Pkcd Pkcz Plcg1 Plce1
+					Ptk6 Pxn Raf1 RalGds RapGef1 Rasa1 RasGrp3 Rela Rictor Rin1 Rps6 Rsk1 Rsk2 Rsk3 S6k1 Sh2d3a Sh2d3c Shc1
+					Shoc2 Shp2 Sin1 Smad3 Sos1 Stat1 Stat3 Stat5a Stat5b Tnk2 Tns3 Ube2l3 Vav1 Vav2 Vav3 Ywhaz }
+  {NUc		|	Atf1 Creb1 Egr1-gene Elk1 Fos HistH3 Irf1-gene Jun Jun-gene Junb-gene Msk1 Msk2 Myc Myc-gene Nos2a-gene
+					Socs3-gene Tbp-gene } ) .
 
+ eq SmallDish = PD(
+  {XOut 	|	Egf}
+  {EgfRC	|	([EgfR - Yphos] : Egf)           }
+  {CLo 		|	empty}
+  {CLm 	|	Pag1 Plscr1}
+  {CLi		|	[Hras - GTP]                    }
+  {CLc		|	Akt1 Braf Erk5 Mekk1 }
+  {NUc		|	  Elk1 HistH3 Jun } ) .
 
-eq SmallDish = PD(
- {XOut |	Egf}
- {EgfRC | ([EgfR - Yphos] : Egf)           }
-*** {EgfRC |	EgfR}
- {CLo 	|	empty}
- {CLm 	|	empty}
- {CLi 	|	empty }
- {CLc	|	Braf  }
- {NUc	|	empty } ) .
+ eq SmallDish2 = PD(
+  {XOut  	| 	Egf }
+  {EgfRC	|	EgfR }
+  {CLc   	|	 Abl1 Bmx Araf }).
 
+ eq SmallDish3 = PD(
+  {XOut 	| 	empty}
+  {EgfRC	|	(Egf :[EgfR - Yphos])[Bmx - Yphos]}
+  {CLc 		| 	Araf[Abl1 - act]}).
 
-
-
-eq TinyDish = PD(
- {XOut	|	Tgfb1}
- {Tgfb1RC |	TgfbR1 TgfbR2}
- {CLc	|	Erks}) .
-
-
-eq EgfDish = PD(
- {XOut |	Egf}
- {EgfRC |	EgfR}
- {CLo 	|	empty}
- {CLm 	|	Erbb2 Pag1 Plscr1}
- {CLi 	|	[Cdc42 - GDP] [Hras - GDP] [Kras - GDP] [Nras - GDP] [Rac1 - GDP] [Rala - GDP] [Ralb - GDP] [Rap1a - GDP]
-				[Rap2b - GDP] [Rit1 - GDP] Gnai1 Gnai3 Pld1 Pld2 Src }
- {CLc	|	(Mlst8 : Mtor : Raptor) [Gsk3s - act] Abl1 Akt1 Araf ArhGap5 ArhGef4 ArhGef7 Atf2 Bmx Braf Cbl Cblb Cin85 Crk CrkL Csk
-				Dbl Dok1 Dok2 Eif4ebp1 EndA1 Eps8 Eps15 Erk5 Erks Fak1 Fak2 Flna Freud1 Gab1 Gab2 Git1 Grb2 Hpk1 Ipo7 IqGap1
-				Jak1 Jak2 Jnks Lkb1 Mapkapk2 Mek1 Mek5 Mekk1 Mekk2 Mekk3 Mlk3 Nckipsd P38s Pdpk1 Pi3k Pkcd Pkcz Plcg1 Plce1
-				Ptk6 Pxn Raf1 RalGds RapGef1 Rasa1 RasGrp3 Rela Rictor Rin1 Rps6 Rsk1 Rsk2 Rsk3 S6k1 Sh2d3a Sh2d3c Shc1
-				Shoc2 Shp2 Sin1 Smad3 Sos1 Stat1 Stat3 Stat5a Stat5b Tnk2 Tns3 Ube2l3 Vav1 Vav2 Vav3 Ywhaz }
- {NUc	|	Atf1 Creb1 Egr1-gene Elk1 Fos HistH3 Irf1-gene Jun Jun-gene Junb-gene Msk1 Msk2 Myc Myc-gene Nos2a-gene
-				Socs3-gene Tbp-gene } ) .
+ eq TinyDish = PD(
+  {XOut 	|	Egf}
+  {EgfRC	|	EgfR}
+  {CLc		|	Akt1 Erks}) .
 
 endm
