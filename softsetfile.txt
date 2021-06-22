@@ -11,6 +11,4 @@
 (softnarrowsearch (SD:SoftDish)
 								(PD({XOut | Tgfb1}) ([cdc6 = 1])))
 
-(help)
-
 (exit)
