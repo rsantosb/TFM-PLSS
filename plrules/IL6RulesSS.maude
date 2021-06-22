@@ -3,8 +3,9 @@
 ***  IL6Rules.maude
 ***
 **************************************************************************
-mod IL6RULES is inc ALLOPS .
+mod IL6RULES is
 
+  inc ALLOPS .
   pr SOFTSET .
 
 var xout : Soup .
@@ -14,39 +15,82 @@ vars ero erm eri erc pxo pxm pxi pxc : Soup .
 vars gao gam gai gac lyo lym lyi lyc : Soup .
 vars eeo eem eei eec leo lem lei lec : Soup .
 vars cpo cpm cpi cpc ct ptc sig : Soup .
-vars tgfb1rc : Soup .
 var  SOUP : Soup .
 vars fak1mods smad2mods smad3mods tak1mods : ModSet .
 var  Atts : AttSet .
 var  V : Value .
-
-ops cdc6 cdkn1a cdkn2b col1a1 col3a1 timp1 csrp2 cst6 ctgf dst fn1
-    gfi1 mmp2 mmp9 myc mylk pai1 pthlh rorc smad6 smad7 tgfb1
-    timp1 : -> AttId [ctor] .
-
 vars gp130c tak1c : Soup .
 vars erksmods : ModSet .
 
+ops cdc6 cdkn1a cdkn2b col1a1 col3a1 timp1 csrp2 cst6 ctgf dst fn1
+    gfi1 mmp2 mmp9 myc mylk pai1 pthlh rorc smad6 smad7 tgfb1
+    timp1 il6r a2m akt1 erks stat3 hck : -> AttId [ctor] .
 
-rl[XXXXXX]:
-PD({XOut    | Tgfb1 }  SOUP ) ([cdc6 = 0])
-  =>
-PD({XOut    | Tgfb1 }  SOUP ) ([cdc6 = 1])  [narrowing]  .
-
-
+***(
+   ([il6r = 1], Atts) 					=>   ([il6r = 1], Atts) .
+   ([hck = 0], [akt1 = *], Atts)  =>   ([hck = 0], [akt1 = 1], Atts) .
+   ([hck = 0], [akt1 = 1], Atts) =>   ([hck = *], [akt1 = *], Atts) .
+)
 
 *** ~/evidence/IL6-Evidence/00IL6-Evidence.txt
 
-rl[1221.IL6R.irt.IL6]:
+rl[SS1221.IL6R.irt.IL6]:
+  PD( SOUP
   {XOut   | xout   IL6                  }
   {GP130C | gp130c Gp130                }
-  {CLm    | clm    IL6R                 }
+  {CLm    | clm    IL6R                 })
+  ([il6r = 1], Atts) 
   =>
+  PD( SOUP
   {XOut   | xout                        }
   {GP130C | gp130c (IL6 : IL6R : Gp130) }
-  {CLm    | clm                         } .
+  {CLm    | clm                         }) 
+  ([il6r = 1], Atts) .
   -----------------------------------------
   *** ~/evidence/IL6-Evidence/IL6R.irt.IL6.1221.txt
+
+*** Akt1--
+
+rl[1223.Akt1.irt.IL6]:
+  PD( SOUP
+  {GP130C | gp130c (IL6 : IL6R : Gp130) }
+  {CLc    | clc     Akt1                })
+  ([hck = 0], [akt1 = *], Atts)
+  =>
+  PD( SOUP
+  {GP130C | gp130c (IL6 : IL6R : Gp130) }
+  {CLc    | clc    [Akt1 - act]         }) 
+  ([hck = 0], [akt1 = 1], Atts) .
+  ----------------------------------------
+  *** ~/evidence/IL6-Evidence/Akt1.irt.IL6.1223.txt
+
+*** Hck--
+
+rl[1227.Hck.irt.IL6]:
+  PD( SOUP
+  {GP130C | gp130c (IL6 : IL6R : Gp130) }
+  {CLc    | clc    Hck                  })
+  ([hck = 0], [akt1 = 1], Atts)
+  =>
+  PD( SOUP
+  {GP130C | gp130c (IL6 : IL6R : Gp130) }
+  {CLc    | clc    [Hck - act]          }) 
+  ([hck = *], [akt1 = *], Atts) .
+  ---------------------------------------
+  *** ~/evidence/IL6-Evidence/Hck.irt.IL6.1227.txt
+
+*** Stat3--
+
+rl[1237.Stat3.to.Gp130C.irt.IL6]:
+  PD( SOUP
+  {GP130C | gp130c (IL6 : IL6R : Gp130)                 }
+  {CLc    | clc     Stat3                               })
+  =>
+  PD( SOUP
+  {GP130C | gp130c (IL6 : IL6R : Gp130) [Stat3 - Yphos] }
+  {CLc    | clc                                         }) .
+  ---------------------------------------------------------
+  *** ~/evidence/IL6-Evidence/Stat3.to.Gp130C.irt.IL6.1237.txt
 
 *** A2m-- A2m-gene--
 
@@ -58,17 +102,6 @@ rl[1222.A2m-gene.irt.IL6]:
   {NUc    | nuc    Foxo1 [Stat3 - act] Lmo4 [A2m-gene - on] } .
   -----------------------------------------------------------
   *** ~/evidence/IL6-Evidence/A2m-gene.irt.IL6.1222.txt
-
-*** Akt1--
-
-rl[1223.Akt1.irt.IL6]:
-  {GP130C | gp130c (IL6 : IL6R : Gp130) }
-  {CLc    | clc     Akt1                }
-  =>
-  {GP130C | gp130c (IL6 : IL6R : Gp130) }
-  {CLc    | clc    [Akt1 - act]         } .
-  ----------------------------------------
-  *** ~/evidence/IL6-Evidence/Akt1.irt.IL6.1223.txt
 
 *** Erks--
 
@@ -102,17 +135,6 @@ rl[1226.Gab2.irt.IL6]:
   {CLc    | clc    [Hck - act]                         } .
   --------------------------------------------------------
   *** ~/evidence/IL6-Evidence/Gab2.irt.IL6.1226.txt
-
-*** Hck--
-
-rl[1227.Hck.irt.IL6]:
-  {GP130C | gp130c (IL6 : IL6R : Gp130) }
-  {CLc    | clc    Hck                  }
-  =>
-  {GP130C | gp130c (IL6 : IL6R : Gp130) }
-  {CLc    | clc    [Hck - act]          } .
-  ---------------------------------------
-  *** ~/evidence/IL6-Evidence/Hck.irt.IL6.1227.txt
 
 *** Irf1--  Irf1-gene--
 
@@ -220,17 +242,6 @@ rl[1243.Stat1.to.Gp130C.irt.IL6]:
   ------------------------------------------------------------------------
   *** ~/evidence/IL6-Evidence/Stat1.to.Gp130C.irt.IL6.1243.txt
 
-*** Stat3--
-
-rl[1237.Stat3.to.Gp130C.irt.IL6]:
-  {GP130C | gp130c (IL6 : IL6R : Gp130)                 }
-  {CLc    | clc     Stat3                               }
-  =>
-  {GP130C | gp130c (IL6 : IL6R : Gp130) [Stat3 - Yphos] }
-  {CLc    | clc                                         } .
-  ---------------------------------------------------------
-  *** ~/evidence/IL6-Evidence/Stat3.to.Gp130C.irt.IL6.1237.txt
-
 rl[1239.Stat3.Sphos.irt.IL6]:
   {GP130C | gp130c (IL6 : IL6R : Gp130) [Pkcd - act] [Rac1 - GTP]
                    [Stat3 - Yphos]                                  }
@@ -274,16 +285,5 @@ rl[1234.Vavs.irt.IL6]:
 endm
 
 
-***(
-
-rl[xxx.xxx.irt.IL6]:
-  {GP130C | gp130c (IL6 : IL6R : Gp130) }
-  {CLc    | clc             }
-  =>
-  {GP130C | gp130c (IL6 : IL6R : Gp130) }
-  {CLc    | clc             } .
-  ----------------------------------------
-  *** ~/evidence/IL6-Evidence/xxx.irt.IL6.xxx.txt
 
 
-)***

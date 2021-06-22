@@ -3,8 +3,9 @@
 ***  NgfRules.maude
 ***
 **************************************************************************
-mod NGFRULES is inc ALLOPS .
+mod NGFRULES is
 
+  inc ALLOPS .
   pr SOFTSET .
 
 var xout : Soup .
@@ -19,31 +20,32 @@ var  SOUP : Soup .
 vars fak1mods smad2mods smad3mods tak1mods : ModSet .
 var  Atts : AttSet .
 var  V : Value .
-
-ops cdc6 cdkn1a cdkn2b col1a1 col3a1 timp1 csrp2 cst6 ctgf dst fn1
-    gfi1 mmp2 mmp9 myc mylk pai1 pthlh rorc smad6 smad7 tgfb1
-    timp1 : -> AttId [ctor] .
-
 vars rnac cvc chr : Soup .
 vars ngfrc trkac : Soup .
 vars erksmods : ModSet .
 
+ops cdc6 cdkn1a cdkn2b col1a1 col3a1 timp1 csrp2 cst6 ctgf dst fn1
+    gfi1 mmp2 mmp9 myc mylk pai1 pthlh rorc smad6 smad7 tgfb1
+    timp1 irak1 jnks myd88 : -> AttId [ctor] .
 
-rl[XXXXXX]:
-PD({XOut    | Tgfb1 }  SOUP ) ([cdc6 = 0])
-  =>
-PD({XOut    | Tgfb1 }  SOUP ) ([cdc6 = 1])  [narrowing]  .
-
-
+***(
+  ([irak1 = V], Atts) 	 	=>  ([irak1 = 0], Atts) .
+  ([jnks = V], Atts)  		=>  ([jnks = *], Atts) .
+  ([myd88 = 1], Atts)  	=>  ([myd88 = *], Atts) .
+)
 
 *** ~/evidence/Ngf-Evidence/00NgfEvidence.txt
 
-rl[1482.NgfR.irt.Ngf]:
-  {XOut  | xout Ngf           }
+rl[SS1482.NgfR.irt.Ngf]:
+  PD({XOut  | xout Ngf           }
   {NgfRC | ngfrc NgfR         }
+  SOUP )
+  (Atts)
   =>
-  {XOut  | xout Ngf              }
-  {NgfRC | ngfrc (NgfR : Ngf) } .
+  PD({XOut  | xout Ngf              }
+  {NgfRC | ngfrc (NgfR : Ngf) }
+  SOUP )
+  (Atts) .
   --------------------------------------------
   *** ~/evidence/Ngf-Evidence/NgfR.irt.Ngf.1482.txt
 
@@ -319,23 +321,31 @@ rl[1504.Ikk2.irt.Ngf]:
 
 *** Irak1--
 
-rl[1491.Irak1.irt.Ngf]:
-  {NgfRC | ngfrc (NgfR : Ngf)               }
+rl[SS1491.Irak1.irt.Ngf]:
+  PD({NgfRC | ngfrc (NgfR : Ngf)               }
   {CLc   | clc    Irak1                     }
+  SOUP )
+  ([irak1 = V], Atts)
   =>
-  {NgfRC | ngfrc (NgfR : Ngf) [Irak1 - act] }
-  {CLc   | clc                              } .
+  PD({NgfRC | ngfrc (NgfR : Ngf) [Irak1 - act] }
+  {CLc   | clc                              }
+  SOUP )
+  ([irak1 = 0], Atts) .
   --------------------------------------------
   *** ~/evidence/Ngf-Evidence/Irak1.irt.Ngf.1491.txt
 
 *** Jnks--
 
-rl[525.Jnks.irt.Ngf]:
-  {NgfRC | ngfrc (NgfR : Ngf) Traf6  }
+rl[SS525.Jnks.irt.Ngf]:
+  PD({NgfRC | ngfrc (NgfR : Ngf) Traf6  }
   {CLc   | clc    Jnks               }
+  SOUP )
+  ([jnks = V], Atts)
   =>
-  {NgfRC | ngfrc (NgfR : Ngf) Traf6  }
-  {CLc   | clc   [Jnks - act]        } .
+  PD({NgfRC | ngfrc (NgfR : Ngf) Traf6  }
+  {CLc   | clc   [Jnks - act]        }
+  SOUP )
+  ([jnks = *], Atts) .
   --------------------------------------
   *** ~/evidence/Ngf-Evidence/Jnks.irt.Ngf.525.txt
 
@@ -364,12 +374,16 @@ rl[1505.Mek12s.irt.Ngf]:
 
 *** Myd88--
 
-rl[1506.Myd88.irt.Ngf]:
-  {NgfRC | ngfrc (NgfR : Ngf)               }
+rl[SS1506.Myd88.irt.Ngf]:
+  PD({NgfRC | ngfrc (NgfR : Ngf)               }
   {CLc   | clc    Myd88                     }
+  SOUP )
+  ([myd88 = 1], Atts)
   =>
-  {NgfRC | ngfrc (NgfR : Ngf) Myd88         }
-  {CLc   | clc                              } .
+  PD({NgfRC | ngfrc (NgfR : Ngf) Myd88         }
+  {CLc   | clc                              }
+  SOUP )
+  ([myd88 = *], Atts) .
   --------------------------------------------
   *** ~/evidence/Ngf-Evidence/Myd88.irt.Ngf.1506.txt
 

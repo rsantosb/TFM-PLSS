@@ -3,8 +3,9 @@
 ***  Tgfb1Rules.maude
 ***
 **************************************************************************
-mod TGFB1RULES is inc ALLOPS .
+mod TGFB1RULES is
 
+  inc ALLOPS .
   pr SOFTSET .
 
 var xout : Soup .
@@ -21,57 +22,66 @@ var  Atts : AttSet .
 var  V : Value .
 
 ops cdc6 cdkn1a cdkn2b col1a1 col3a1 timp1 csrp2 cst6 ctgf dst fn1
-    gfi1 mmp2 mmp9 myc mylk pai1 pthlh rorc smad6 smad7 tgfb1
-    timp1 : -> AttId [ctor] .
-
-
-rl[XXXXXX]:
-PD({XOut    | Tgfb1 }  SOUP ) ([cdc6 = 0])
-  =>
-PD({XOut    | Tgfb1 }  SOUP ) ([cdc6 = 1])  .
+    gfi1 mmp2 mmp9 myc mylk pai1 pthlh rorc smad6 smad7 tgfb1 timp1 : -> AttId [ctor] .
 
 
 *** ~/evidence/Tgfb1-Evidence/00Tgfb1evidence.txt
 
-rl[931.TgfbR1.TgfbR2.by.Tgfb1]:
-  {XOut    | xout Tgfb1                                        }
-  {Tgfb1RC | tgfb1rc  TgfbR1 TgfbR2                            }
+rl[SS931.TgfbR1.TgfbR2.by.Tgfb1]:
+  PD({XOut    | xout Tgfb1                                        }
+     {Tgfb1RC | tgfb1rc  TgfbR1 TgfbR2                            }
+     SOUP)
+  (Atts)
   =>
-  {XOut    | xout                                              }
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) } .
+  PD({XOut    | xout                                              }
+	 {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+     SOUP)
+  (Atts) .
   ----------------------------------------------------------------
   *** ~/evidence/Tgfb1-Evidence/TgfbR1.TgfbR2.by.Tgfb1.931.txt
 
 *** Abl1--
 
-rl[1719.Abl1.irt.Tgfb1]:
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
-  {CLc     | clc      [Fak1 - fak1mods] Abl1                   }
+rl[SS1719.Abl1.irt.Tgfb1]:
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+     {CLc     | clc      [Fak1 - fak1mods] Abl1                   }
+     SOUP)
+  (Atts)
   =>
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
-  {CLc     | clc      [Fak1 - fak1mods] [Abl1 - act]           } .
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+     {CLc     | clc      [Fak1 - fak1mods] [Abl1 - act]           }
+     SOUP)
+  (Atts) .
   ----------------------------------------------------------------
   *** ~/evidence/Tgfb1-Evidence/Abl1.irt.Tgfb1.1719.txt
 
 *** Akt1--
 
-rl[915.Akt1.irt.Tgfb1]:
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
-  {CLc     | clc      Akt1                                     }
+rl[SS915.Akt1.irt.Tgfb1]:
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+     {CLc     | clc      Akt1                                     }
+     SOUP)
+  (Atts)
   =>
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
-  {CLc     | clc      [Akt1 - phos(S 473)phos(T 308)]          } .
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+     {CLc     | clc      [Akt1 - phos(S 473)phos(T 308)]          }
+     SOUP)
+  (Atts) .
   ----------------------------------------------------------------
   *** ~/evidence/Tgfb1-Evidence/Akt1.irt.Tgfb1.915.txt
 
 *** Atf2--
 
-rl[541.Atf2.irt.Tgfb1]:
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
-  {CLc     | clc     [P38s - act] Atf2                         }
+rl[SS541.Atf2.irt.Tgfb1]:
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+     {CLc     | clc     [P38s - act] Atf2                         }
+      SOUP)
+  (Atts)
   =>
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
-  {CLc     | clc     [P38s - act] [Atf2 - phos]                } .
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+     {CLc     | clc     [P38s - act] [Atf2 - phos]                }
+     SOUP)
+  (Atts) .
   ----------------------------------------------------------------
   *** ~/evidence/Tgfb1-Evidence/Atf2.irt.Tgfb1.541.txt
 
@@ -81,7 +91,8 @@ rl[SS1724.Cdc6-gene.irt.Tgfb1]:
   PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
      {NUc     | nuc       Cdc6-gene                             }
      SOUP)
-  ([cdc6 = V], Atts)
+***  ([cdc6 = V], Atts)
+  ([cdc6 = 0], Atts)
   =>
   PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
      {NUc     | nuc      [Cdc6-gene - on]                       }
@@ -92,12 +103,16 @@ rl[SS1724.Cdc6-gene.irt.Tgfb1]:
 
 *** Cdc42--
 
-rl[1708.Cdc42.irt.Tgfb1]:
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
-  {CLi     | cli    [Cdc42 - GDP]                              }
+rl[SS1708.Cdc42.irt.Tgfb1]:
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+     {CLi     | cli    [Cdc42 - GDP]                              }
+     SOUP)
+  (Atts)
   =>
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
-  {CLi     | cli    [Cdc42 - GTP]                              } .
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+     {CLi     | cli    [Cdc42 - GTP]                              }
+     SOUP)
+  (Atts) .
   ----------------------------------------------------------------
   *** ~/evidence/Tgfb1-Evidence/Cdc42.irt.Tgfb1.1708.txt
 
@@ -155,6 +170,7 @@ rl[SS1714.Col3a1-gene.irt.Tgfb1]:
      {NUc     | nuc       Col3a1-gene                             }
      SOUP)
   ([col3a1 = V], Atts)
+***  ([col3a1 = *], Atts)
   =>
   PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
      {NUc     | nuc      [Col3a1-gene - on]                       }
@@ -227,28 +243,35 @@ rl[SS1726.Dst-gene.irt.Tgfb1]:
 
 *** Erks--
 
-rl[921.Erks.irt.Tgfb1]:
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
-  {CLi     | cli     [Hras - GTP]
+rl[SS921.Erks.irt.Tgfb1]:
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+     {CLi     | cli     [Hras - GTP]
                      ([cr:Cdc42Rac1S - GTP] : [Pak2 - act])    }
-  {CLc     | clc      Erks                                     }
+     {CLc     | clc      Erks                                     }
+     SOUP)
+  (Atts)
   =>
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
-  {CLi     | cli     [Hras - GTP]
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+     {CLi     | cli     [Hras - GTP]
                      ([cr:Cdc42Rac1S - GTP] : [Pak2 - act])    }
-  {CLc     | clc      [Erks - phos(TEY)]                       } .
+     {CLc     | clc      [Erks - phos(TEY)]                       }
+     SOUP)
+  (Atts) .
   ----------------------------------------------------------------
   *** ~/evidence/Tgfb1-Evidence/Erks.irt.Tgfb1.921.txt
 
-
 *** Fak1--
 
-rl[1720.Fak1.irt.Tgfb1]:
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1)     }
-  {CLc     | clc      Fak1                                         }
+rl[SS1720.Fak1.irt.Tgfb1]:
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1)     }
+     {CLc     | clc      Fak1                                         }
+     SOUP)
+  (Atts)
   =>
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1)     }
-  {CLc     | clc      [Fak1 - phos(Y 397) phos(Y 577) phos(Y 925)] } .
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1)     }
+     {CLc     | clc      [Fak1 - phos(Y 397) phos(Y 577) phos(Y 925)] }
+     SOUP)
+  (Atts) .
   --------------------------------------------------------------------
   *** ~/evidence/Tgfb1-Evidence/Fak1.irt.Tgfb1.1720.txt
 
@@ -286,36 +309,48 @@ rl[SS1733.Gfi1-gene.irt.Tgfb1]:
 
 *** Hras--
 
-rl[1722.Hras.irt.Tgfb1]:
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+rl[SS1722.Hras.irt.Tgfb1]:
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
   {CLi     | cli     [Hras - GDP]                              }
+     SOUP)
+  (Atts)
   =>
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
-  {CLi     | cli     [Hras - GTP]                              } .
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+  {CLi     | cli     [Hras - GTP]                              }
+     SOUP)
+  (Atts) .
   ----------------------------------------------------------------
   *** ~/evidence/Tgfb1-Evidence/Hras.irt.Tgfb1.1722.txt
 
 *** Jnks--
 
-rl[929.Jnks.irt.Tgfb1]:
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1)
+rl[SS929.Jnks.irt.Tgfb1]:
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1)
                      ([Tak1 - act tak1mods] : Tab1 : tab23s:Tab23S)  }
   {CLc     | clc     Jnks                                            }
+     SOUP)
+  (Atts)
   =>
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1)
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1)
                      ([Tak1 - act tak1mods] : Tab1 : tab23s:Tab23S)  }
-  {CLc     | clc     [Jnks - act]                                    } .
+  {CLc     | clc     [Jnks - act]                                    }
+       SOUP)
+  (Atts) .
   -----------------------------------------------------------------------------
   *** ~/evidence/Tgfb1-Evidence/Jnks.irt.Tgfb1.929.txt
 
 *** Mlk3--
 
-rl[1723.Mlk3.irt.Tgfb1]:
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+rl[SS1723.Mlk3.irt.Tgfb1]:
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
   {CLc     | clc     Mlk3                                      }
+     SOUP)
+  (Atts)
   =>
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
-  {CLc     | clc     [Mlk3 - act]                              } .
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+  {CLc     | clc     [Mlk3 - act]                              }
+      SOUP)
+  (Atts) .
   ----------------------------------------------------------------
   *** ~/evidence/Tgfb1-Evidence/Mlk3.irt.Tgfb1.1723.txt
 
@@ -330,7 +365,8 @@ rl[SS1716.Mmp2-gene.irt.Tgfb1]:
   PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
      {NUc     | nuc      [Mmp2-gene - on]                         }
      SOUP)
-  ([mmp2 = 1], Atts) .
+  ([mmp2 = 0], Atts) .
+***  ([mmp2 = 1], Atts)
   ----------------------------------------------------------------
   *** ~/evidence/Tgfb1-Evidence/Mmp2-gene.irt.Tgfb1.1716.txt
 
@@ -383,16 +419,20 @@ rl[SS1727.Mylk-gene.irt.Tgfb1]:
 
 *** P38s--
 
-rl[543.P38s.irt.Tgfb1]:
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) Smad7
+rl[SS543.P38s.irt.Tgfb1]:
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) Smad7
                      ([Tak1 - act tak1mods] : Tab1 : tab23s:Tab23S)
                       [Traf6 - ubiq]                                       }
   {CLc     | clc     [Mlk3 - act] P38s                                     }
+     SOUP)
+  (Atts)
   =>
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) Smad7
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) Smad7
                      ([Tak1 - act tak1mods] : Tab1 : tab23s:Tab23S)
                       [Traf6 - ubiq]                                       }
-  {CLc     | clc     [Mlk3 - act] [P38s - act]                             } .
+  {CLc     | clc     [Mlk3 - act] [P38s - act]                             }
+     SOUP)
+  (Atts) .
   ----------------------------------------------------------------------------
   *** ~/evidence/Tgfb1-Evidence/P38s.irt.Tgfb1.543.txt
 
@@ -417,14 +457,18 @@ rl[SS549.Pai1-gene.irt.Tgfb1]:
 
 *** Pak2--
 
-rl[1710.Pak2.to.Cdc42Rac1s]:
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+rl[SS1710.Pak2.to.Cdc42Rac1s]:
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
   {CLi     | cli      [cr:Cdc42Rac1S - GTP]                    }
   {CLc     | clc      Pak2                                     }
+     SOUP)
+  (Atts)
   =>
-  {Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
+  PD({Tgfb1RC | tgfb1rc ([TgfbR1 - act] : [TgfbR2 - act] : Tgfb1) }
   {CLi     | cli     ([cr:Cdc42Rac1S - GTP] : Pak2)            }
-  {CLc     | clc                                               } .
+  {CLc     | clc                                               }
+     SOUP)
+  (Atts) .
   ----------------------------------------------------------------------
   *** ~/evidence/Tgfb1-Evidence/Pak2.to.Cdc42Rac1s.1710.txt
 
@@ -778,4 +822,4 @@ rl[1590.Traf6.ubiq.irt.Tgfb1]:
   *** ~/evidence/Tgfb1-Evidence/Traf6.ubiq.irt.Tgfb1.1590.txt
 
 endm
-
+eof
