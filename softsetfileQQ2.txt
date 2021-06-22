@@ -1,0 +1,18 @@
+(loadmodule QQ2)
+
+(red (EgfDish ([abl1 = 0])))
+
+(loadstrat undefOne)
+
+(softrew (SmallDish2 ([abl1 = 0], [araf = 1], [bmx = 0])))
+
+(loadstrat undefWRow)
+
+(softrew (SmallDish2 ([abl1 = 0], [araf = 1], [bmx = 0])))
+
+(softnarrowrew (PD({XOut | Egf }) ([abl1 = 0], [araf = 1], [bmx = 0])))
+
+(softnarrowsearch (SD:SoftDish)
+								(SmallDish2 ([abl1 = *],[araf = *],[bmx = *])))
+
+(exit)

@@ -1,0 +1,17 @@
+(loadmodule QQ4)
+
+(loadstrat undefZero)
+
+(red (IL6Dish ([akt1 = 0])))
+
+(softrew (SmallDish  ([il6r = 1], [hck = 0], [akt1 = 1])))
+
+(loadstrat undefOne)
+
+(softrew (SmallDish  ([il6r = 1], [hck = 0], [akt1 = 1])))
+
+(softnarrowrew (SmallDish  ([il6r = 1], [hck = 0], [akt1 = *])))
+
+(softnarrowsearch SD:SoftDish (TinyDish ([il6r = 1])))
+
+(exit)

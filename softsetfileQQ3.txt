@@ -1,0 +1,19 @@
+(loadmodule QQ3)
+
+(loadstrat undefZero)
+
+(red (HgfDish ([akt1 = 0])))
+
+(softrew (SmallDish ([akt1 = 0], [erks = 1])))
+
+(loadstrat undefOne)
+
+(softrew (SmallDish ([akt1 = 0], [erks = 1])))
+
+(softnarrowrew (PD({XOut | Hgf }) ([akt1 = 0], [erks = 1])))
+
+(softnarrowrew (TinyDish ([akt1 = 0], [erks = 1])))
+
+(softnarrowsearch (D:Dish ([akt1 = 0], [erks = 1])) (SmallDish2 ([akt1 = *],[erks = *])))
+
+(exit)
