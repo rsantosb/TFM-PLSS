@@ -6,8 +6,12 @@
 
 (softrew (SmallDish2 ([irak1 = *], [jnks = 0], [myd88 = 1])))
 
+(softnarrow (SmallDish2 ([irak1 = *], [jnks = 0], [myd88 = 1])))
+
 (loadstrat undefWRow)
 
 (softrew (SmallDish2 ([irak1 = 1], [jnks = 1], [myd88 = *])))
+
+(softnarrow (SmallDish2 ([irak1 = 1], [jnks = 1], [myd88 = *])))
 
 (exit)

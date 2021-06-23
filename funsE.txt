@@ -4,7 +4,7 @@
 
 (loadstrat undefOne)
 
-(softnarrowrew (PD({CLc | empty} {CLi | [Hras - GDP]}) ([cdc6 = 0])))
+(softnarrow (PD({CLc | empty} {CLi | [Hras - GDP]}) ([cdc6 = 0])))
 
 (loadstrat undefSemi)
 
@@ -12,7 +12,7 @@
 
 (loadstrat undefWRow)
 
-(softnarrowrew (PD({CLc | empty} {CLi | [Hras - GDP]}) ([cdc6 = 0])))
+(softnarrow (PD({CLc | empty} {CLi | [Hras - GDP]}) ([cdc6 = 0])))
 
 (loadstrat undefWCol)
 

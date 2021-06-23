@@ -300,10 +300,10 @@ var ATTSN : TermList .
 
 
  *** Función que ejecuta softnarrowrew
- op rewNStrat : Module Term TermList Qid -> Term .
- ceq rewNStrat(M, T, ATTSN, Q) = T'
+ op narrowStrat : Module Term TermList Qid -> Term .
+ ceq narrowStrat(M, T, ATTSN, Q) = T'
    if T' := nextN(M, T, ATTSN, Q) .
- eq rewNStrat(M, T, ATTSN, Q) = T [owise] .
+ eq narrowStrat(M, T, ATTSN, Q) = T [owise] .
 
  op nextN : Module Term TermList Qid ~> Term .
  ceq nextN(M, T, ATTSN, Q) = T'

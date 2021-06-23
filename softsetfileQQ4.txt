@@ -10,7 +10,7 @@
 
 (softrew (SmallDish  ([il6r = 1], [hck = 0], [akt1 = 1])))
 
-(softnarrowrew (SmallDish  ([il6r = 1], [hck = 0], [akt1 = *])))
+(softnarrow (SmallDish  ([il6r = 1], [hck = 0], [akt1 = *])))
 
 (softnarrowsearch SD:SoftDish (TinyDish ([il6r = 1])))
 

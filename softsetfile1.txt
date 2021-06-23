@@ -6,12 +6,12 @@
 
 (softrew (SmallDish ([cdc6 = 0])))
 
-(softnarrowrew (SmallDish ([cdc6 = 0])))
+(softnarrow (SmallDish ([cdc6 = 0])))
 
 (red (TinyDish1 ([cdc6 = 0])))
 
 (softrew (TinyDish1 ([cdc6 = 0])))
 
-(softnarrowrew (TinyDish1 ([cdc6 = 0])))
+(softnarrow (TinyDish1 ([cdc6 = 0])))
 
 (q)

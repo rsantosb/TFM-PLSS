@@ -10,9 +10,9 @@
 
 (softrew (TinyDish ([akt1 = 0], [erks = 1])))
 
-(softnarrowrew (PD({XOut | Hgf }) ([akt1 = 0], [erks = 1])))
+(softnarrow (PD({XOut | Hgf }) ([akt1 = 0], [erks = 1])))
 
-(softnarrowrew (TinyDish ([akt1 = 0], [erks = 1])))
+(softnarrow (TinyDish ([akt1 = 0], [erks = 1])))
 
 (softnarrowsearch (D:Dish ([akt1 = 0], [erks = 1])) (SmallDish2 ([akt1 = *],[erks = *])))
 

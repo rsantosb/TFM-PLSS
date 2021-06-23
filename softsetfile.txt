@@ -6,7 +6,7 @@
 
 (softrew (TinyDish ([cdc6 = 0])))
 
-(softnarrowrew (PD({XOut | Tgfb1 }) ([cdc6 = 0])))
+(softnarrow (PD({XOut | Tgfb1 }) ([cdc6 = 0])))
 
 (softnarrowsearch (SD:SoftDish)
 								(PD({XOut | Tgfb1}) ([cdc6 = 1])))

@@ -234,18 +234,18 @@ mod PLSS is
      QIL := metaPrettyPrint(M, T') /\
      STR := "\nResult softrew: " + printTokens(QIL) + "\n" .
 
- ***							 			                        ***
- ***	  SOFTNARROWREW (STRAT)   	***
- ***		 			                        					***
+ ***							 		                    ***
+ ***	  SOFTNARROW (STRAT)   	***
+ ***		 			                        			***
 
- crl [softnarrowrewstratComm] :
-     < plss : PLSS | state: executeComm, input: ('softnarrowrew_['bubble[T]], INPLST), module: M, strat: MQ, AtS >
+ crl [softnarrowstratComm] :
+     < plss : PLSS | state: executeComm, input: ('softnarrow_['bubble[T]], INPLST), module: M, strat: MQ, AtS >
   => < plss : PLSS | state: print&executeComm, input: INPLST, module: M, strat: MQ, AtS >
      write(stdout, plss, STR)
   if {'__[DISH, ATTS], 'SoftDish} := metaParse(M, downQidList(T), 'SoftDish) /\
-     T' := rewNStrat(M, '__[DISH, ATTS], getNames(ATTS), MQ) /\
+     T' := narrowStrat(M, '__[DISH, ATTS], getNames(ATTS), MQ) /\
      QIL := metaPrettyPrint(M, T') /\
-     STR := "\nResult softnarrowrew: " + printTokens(QIL) + "\n" .
+     STR := "\nResult softnarrow: " + printTokens(QIL) + "\n" .
 
  op getNames : Term -> TermList .
  eq getNames('_`,_[TL]) = getNames*(TL) .
@@ -375,11 +375,11 @@ mod PLSS is
   "      PLSS> softrew (SmallDish ([cdc6 = 0])) \n" +
   "      PLSS> softrew (PD({CLc | empty})  ([cdc6 = 0])) \n" +
   "       \n" +
-  "   6. softnarrowrew + ( Término SoftDish ): \n" +
+  "   6. softnarrow + ( Término SoftDish ): \n" +
   "      Reescribe el término para la simplificación de la búsqueda mediante narrowing. \n" +
   "      Ejemplos: \n" +
-  "      PLSS> softnarrowrew (TinyDish1  ([cdc6 = 0])) \n" +
-  "      PLSS> softnarrowrew (PD({CLc | empty})  ([cdc6 = 0])) \n" +
+  "      PLSS> softnarrow (TinyDish1  ([cdc6 = 0])) \n" +
+  "      PLSS> softnarrow (PD({CLc | empty})  ([cdc6 = 0])) \n" +
   "       \n" +
   "   7. softnarrowsearch + ( Término SoftDish inicial ) ( Término SoftDish patrón ): \n" +
   "      Se encarga de realizar el análisis con narrowing (estrechamiento).\n" +

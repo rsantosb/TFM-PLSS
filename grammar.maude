@@ -21,7 +21,7 @@ fmod COMMAND-SIGN is
  op loadmodule_ : @Token@ -> @Command@ [ctor] .
  op red_ : @Bubble@ -> @Command@ [ctor] .
  op softrew_ : @Bubble@ -> @Command@ [ctor] .
- op softnarrowrew_ : @Bubble@ -> @Command@ [ctor] .
+ op softnarrow_ : @Bubble@ -> @Command@ [ctor] .
  op softnarrowsearch__ : @Bubble@ @Bubble@ -> @Command@ [ctor] .
  op exit : -> @Command@ [ctor] .
  op q : -> @Command@ [ctor] .
