@@ -4,11 +4,11 @@
 
 (red (HgfDish ([akt1 = 0])))
 
-(softrew (SmallDish ([akt1 = 0], [erks = 1])))
+(softrew (TinyDish ([akt1 = 0], [erks = 1])))
 
 (loadstrat undefOne)
 
-(softrew (SmallDish ([akt1 = 0], [erks = 1])))
+(softrew (TinyDish ([akt1 = 0], [erks = 1])))
 
 (softnarrowrew (PD({XOut | Hgf }) ([akt1 = 0], [erks = 1])))
 
