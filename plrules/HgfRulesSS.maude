@@ -62,8 +62,6 @@ rl[SS1285.Erks.irt.Hgf]:
   --------------------------------------------------------
   *** ~/evidence/Hgf-Evidence/Erks.irt.Hgf.1285.txt
 
-endm
-eof
 
 *** Bad--
 
@@ -563,8 +561,6 @@ rl[1334.Stat3.irt.Hgf]:
   {CLc   | clc    [Stat3 - phos(Y 705)] } .
   -----------------------------------------
   *** ~/evidence/Hgf-Evidence/Stat3.irt.Hgf.1334.txt
-
-***endm
 
 endm
 eof
